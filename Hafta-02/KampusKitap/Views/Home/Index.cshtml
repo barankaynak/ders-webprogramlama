@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="text-center">
+    <h1 class="display-4">KampusKitap</h1>
+    <p class="lead">Kampüs içi ikinci el kitap alışveriş platformu</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-10 offset-md-1">
+        <div class="alert alert-secondary">
+            <h4 class="alert-heading">Hafta 2 — MVC, routing, middleware, DI</h4>
+            <p class="mb-0">
+                Bu hafta uygulamaya <strong>iki controller</strong>, <strong>bir servis</strong>,
+                <strong>bir middleware</strong> ve <strong>bir route kısıtı</strong> eklendi.
+                Aşağıdaki adresleri deneyin &mdash; her biri ders notundaki bir konuya karşılık geliyor.
+            </p>
+        </div>
+
+        <h5 class="mt-4">Deneyecekleriniz</h5>
+        <table class="table table-sm table-bordered align-middle">
+            <thead class="table-light">
+                <tr><th style="width:34%">Adres</th><th>Ne gösteriyor</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="/Kitap">/Kitap</a></td>
+                    <td>Varsayılan action (<code>Index</code>) + <strong>DI</strong> ile gelen sayaç.
+                        Sayfayı yenileyin: <code>AddSingleton</code> olduğu için sayı artar.</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kitap/Detay/42">/Kitap/Detay/42</a></td>
+                    <td>Route&rsquo;un üçüncü segmenti <code>id</code> parametresine bağlandı</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kitap/Detay">/Kitap/Detay</a></td>
+                    <td><code>{id?}</code> opsiyonel &mdash; parametre <code>int?</code> olduğu için
+                        <code>null</code> geldi, 0 değil</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kitap/Detay/abc">/Kitap/Detay/abc</a></td>
+                    <td><strong>404</strong> &mdash; <code>{id:int?}</code> kısıtı yüzünden route eşleşmedi</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kitap/Ara?kelime=roman&amp;sayfa=2">/Kitap/Ara?kelime=roman&amp;sayfa=2</a></td>
+                    <td>Değerler <strong>sorgu dizesinden</strong> geldi</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kategori">/Kategori</a></td>
+                    <td>İkinci controller</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kategori/Detay/99">/Kategori/Detay/99</a></td>
+                    <td><code>NotFound()</code> &mdash; 404 döndüren action</td>
+                </tr>
+                <tr>
+                    <td><a href="/Kategori/Ara">/Kategori/Ara</a></td>
+                    <td><code>RedirectToAction</code> &mdash; 302 ile <code>/Kategori</code>&rsquo;ye gider</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-warning mt-4">
+            <strong>Terminale bakın.</strong> Her istek için <code>→ GİRİŞ</code> ve
+            <code>← ÇIKIŞ</code> satırları yazılıyor &mdash; bu, <code>Program.cs</code>&rsquo;e
+            eklediğimiz middleware&rsquo;in çıktısı. Tek sayfa açtığınızda birden fazla satır
+            görüyorsanız sebebi şu: <strong>bir sayfa tek istek değildir.</strong>
+        </div>
+    </div>
+</div>
