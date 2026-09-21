@@ -1,0 +1,11 @@
+# Satır sonlarını depoda LF olarak tut, çalışma kopyasında işletim sistemine bırak.
+* text=auto eol=lf
+
+# İkili dosyalar dönüştürülmesin
+*.pdf   binary
+*.xlsx  binary
+*.png   binary
+*.jpg   binary
+
+# Kabuk betiği her yerde LF olmalı
+*.sh    text eol=lf

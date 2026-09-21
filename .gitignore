@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------
+# .NET derleme çıktıları — ASLA depoya girmez
+# ---------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+artifacts/
+
+# ---------------------------------------------------------------
+# Veritabanı dosyaları — göç (migration) izlenir, VERİTABANI izlenmez
+# ---------------------------------------------------------------
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+# ---------------------------------------------------------------
+# Sırlar
+# ---------------------------------------------------------------
+appsettings.*.local.json
+secrets.json
+*.pfx
+.env
+
+# ---------------------------------------------------------------
+# Öğrencinin yüklediği dosyalar (H13 dosya yükleme)
+# ---------------------------------------------------------------
+wwwroot/yuklenenler/
+wwwroot/uploads/
+
+# ---------------------------------------------------------------
+# İşletim sistemi / editör
+# ---------------------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+
+# ---------------------------------------------------------------
+# Hocaya özel dosyalar — bu depo PUBLIC, buraya asla girmemeli
+# (yayinla.sh zaten kopyalamıyor; bu ikinci güvenlik ağı)
+# ---------------------------------------------------------------
+*anlatim*
+*ders-plani*
+*izlence-taslak*

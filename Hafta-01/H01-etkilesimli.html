@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hafta 1 — Sunucu Tarafı Web ve ASP.NET Core</title>
+<style>
+:root{
+  --bg:#fbfaf7; --fg:#1c1a17; --muted:#5d574e; --card:#fff; --card2:#f4f1ea;
+  --line:#ddd6ca; --accent:#8a3d0f; --accent2:#14607a; --warn:#a4231b; --ok:#2f6b2a;
+  --code:#f2efe8; --shadow:0 1px 3px rgba(0,0,0,.08);
+}
+:root[data-theme="dark"]{
+  --bg:#16161a; --fg:#ece9e3; --muted:#a49e93; --card:#1f1f25; --card2:#26262e;
+  --line:#34343d; --accent:#e8a05c; --accent2:#6cc6e0; --warn:#f08a80; --ok:#86c97e;
+  --code:#1a1a20; --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html{font-size:19px}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.6; -webkit-text-size-adjust:100%;
+}
+.slide{display:none; min-height:100vh; padding:2.2rem 1rem 6rem}
+.slide.on{display:block}
+.wrap{max-width:60rem; margin:0 auto}
+.eyebrow{
+  font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); font-weight:700; margin:0 0 .5rem
+}
+h1{font-size:2.3rem; line-height:1.2; margin:.2rem 0 1rem}
+h2{font-size:1.75rem; line-height:1.25; margin:.2rem 0 1rem; letter-spacing:-.01em}
+h3{font-size:1.1rem; margin:1.6rem 0 .5rem}
+p{margin:0 0 1rem}
+.body-txt{font-size:1.02rem}
+.lead{font-size:1.15rem; color:var(--muted)}
+ul,ol{margin:0 0 1rem; padding-left:1.3rem}
+li{margin:.35rem 0}
+code{font-family:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace; font-size:.9em;
+  background:var(--code); padding:.1em .35em; border-radius:4px}
+pre{background:var(--code); border:1px solid var(--line); border-radius:8px;
+  padding:.9rem 1rem; overflow-x:auto; margin:0 0 1rem}
+pre code{background:none; padding:0; font-size:.82rem; line-height:1.55}
+table{border-collapse:collapse; width:100%; margin:0 0 1rem; font-size:.92rem}
+th,td{border:1px solid var(--line); padding:.5rem .6rem; text-align:left; vertical-align:top}
+th{background:var(--card2); font-weight:650}
+figure{margin:1.4rem 0}
+figcaption{font-size:.85rem; color:var(--muted); margin-top:.5rem; font-style:italic}
+svg.dg{width:100%; height:auto; display:block; color:var(--fg)}
+.card{background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:1rem 1.1rem; box-shadow:var(--shadow); margin:0 0 1rem}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+.callout{border-left:4px solid var(--accent); background:var(--card2);
+  padding:.8rem 1rem; border-radius:0 8px 8px 0; margin:0 0 1rem}
+.callout.warn{border-left-color:var(--warn)}
+.callout.ok{border-left-color:var(--ok)}
+.tag{display:inline-block; font-size:.7rem; font-weight:700; letter-spacing:.06em;
+  padding:.12rem .45rem; border-radius:4px; border:1px solid var(--line);
+  background:var(--card2); color:var(--muted); vertical-align:middle}
+.tag.y{color:var(--ok); border-color:var(--ok)}
+.tag.t{color:var(--accent2); border-color:var(--accent2)}
+.tag.d{color:var(--muted)}
+
+/* ---- kontroller ---- */
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:0 0 1rem}
+.seg button{font:inherit; font-size:.9rem; padding:.45rem .9rem; border:0; cursor:pointer;
+  background:var(--card); color:var(--fg)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent); color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{color:#16161a}
+.btn{font:inherit; font-size:.88rem; padding:.42rem .85rem; border:1px solid var(--line);
+  border-radius:8px; background:var(--card); color:var(--fg); cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
+:root[data-theme="dark"] .btn[aria-pressed="true"]{color:#16161a}
+
+/* ---- tıklanabilir liste + panel ---- */
+.pick{display:flex; flex-wrap:wrap; gap:.4rem; margin:0 0 1rem}
+.pick button{font:inherit; font-size:.85rem; padding:.4rem .7rem; border:1px solid var(--line);
+  border-radius:20px; background:var(--card); color:var(--fg); cursor:pointer}
+.pick button[aria-pressed="true"]{background:var(--accent2); color:#fff; border-color:var(--accent2)}
+:root[data-theme="dark"] .pick button[aria-pressed="true"]{color:#16161a}
+.panel{background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:1rem 1.1rem; min-height:7rem}
+.panel h4{margin:.1rem 0 .5rem; font-size:1.02rem; color:var(--accent)}
+
+/* ---- kartlar (quiz) ---- */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(15rem,1fr)); gap:.7rem}
+.qcard{background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:.8rem .9rem; cursor:pointer; text-align:left; font:inherit; color:var(--fg)}
+.qcard:hover{border-color:var(--accent)}
+.qcard .q{font-size:.9rem; display:block; margin-bottom:.4rem}
+.qcard .a{display:none; font-size:.86rem; border-top:1px dashed var(--line); padding-top:.4rem}
+.qcard.open .a{display:block}
+.qcard .code{font-weight:700; color:var(--accent); font-size:1.15rem}
+.qcard .hint{color:var(--muted); font-size:.8rem; display:block; margin-top:.25rem}
+
+/* ---- dosya ağacı ---- */
+.tree{font-family:"Cascadia Mono",Consolas,monospace; font-size:.84rem; line-height:1.75}
+.tree button{font:inherit; background:none; border:0; padding:.05rem .3rem; border-radius:4px;
+  cursor:pointer; color:var(--fg); text-align:left}
+.tree button:hover{background:var(--card2)}
+.tree button[aria-pressed="true"]{background:var(--accent2); color:#fff}
+:root[data-theme="dark"] .tree button[aria-pressed="true"]{color:#16161a}
+
+/* ---- adım göstergesi ---- */
+.steps{display:flex; gap:.4rem; margin:0 0 1rem; flex-wrap:wrap}
+.steps button{font:inherit; font-size:.85rem; width:2.2rem; height:2.2rem; border-radius:50%;
+  border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer}
+.steps button[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
+:root[data-theme="dark"] .steps button[aria-pressed="true"]{color:#16161a}
+
+/* ---- pipeline ---- */
+.pipe{display:flex; flex-direction:column; gap:.35rem; margin:0 0 1rem}
+.pipe .mw{border:1px solid var(--line); border-radius:8px; padding:.5rem .8rem;
+  background:var(--card); font-family:"Cascadia Mono",Consolas,monospace; font-size:.84rem}
+.pipe .mw.hl{border-color:var(--accent); background:var(--card2)}
+.pipe .mw.bad{border-color:var(--warn); background:var(--card2)}
+.pipe .arrow{text-align:center; color:var(--muted); font-size:.8rem; line-height:1}
+.verdict{border-radius:10px; padding:.9rem 1.1rem; border:1px solid var(--line); background:var(--card2)}
+.verdict.bad{border-color:var(--warn)}
+.verdict.ok{border-color:var(--ok)}
+.verdict strong{display:block; margin-bottom:.3rem}
+
+/* ---- terminal ---- */
+.term{background:#14140f; color:#e6e2d6; border-radius:8px; padding:.8rem 1rem;
+  font-family:"Cascadia Mono",Consolas,monospace; font-size:.8rem; line-height:1.6;
+  overflow-x:auto; border:1px solid var(--line); white-space:pre-wrap}
+.term .dim{color:#8d887a}
+.term .g{color:#9ed08a}
+.term .r{color:#e8837a}
+
+
+.bar button{font:inherit; font-size:.76rem; padding:.2rem .55rem; border:1px solid var(--line);
+  border-radius:6px; background:var(--bg); color:var(--fg); cursor:pointer}
+main{padding-left:2.6rem}
+
+/* ---- karartma ---- */
+#black{position:fixed; inset:0; background:#000; z-index:100; display:none}
+body.black #black{display:block}
+
+kbd{font-family:inherit; font-size:.78rem; border:1px solid var(--line); border-bottom-width:2px;
+  border-radius:4px; padding:.05rem .32rem; background:var(--card2)}
+
+@media (max-width:760px){
+  html{font-size:17px}
+  .grid2{grid-template-columns:1fr}
+  .rail{width:2.1rem} main{padding-left:2.1rem} .bar{left:2.1rem}
+  .slide{padding:1.4rem .9rem 5rem}
+}
+@media print{.rail,.bar,#black{display:none} .slide{display:block!important; page-break-after:always}}
+</style>
+</head>
+<body>
+
+<div id="black"></div>
+<nav class="rail" id="rail" aria-label="Bölümler"></nav>
+
+<main id="deck">
+
+<!-- ============ 1 ============ -->
+<section class="slide" data-title="Başlangıç">
+ <div class="wrap">
+  <p class="eyebrow">Web Programlama · Hafta 1 / 13</p>
+  <h1>Sunucu Tarafı Web ve ASP.NET Core'a Giriş</h1>
+  <p class="lead">Geçen dönem tarayıcının içini öğrendiniz. Bu dönem, isteğin <em>gittiği yeri</em> öğreneceğiz — ve dönem sonunda orada sizin yazdığınız kod çalışacak.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">Bugün üç blok</h3>
+      <ol>
+        <li><strong>Sunucu tarafının haritası</strong> — HTTP, durum kodları, durumsuzluk</li>
+        <li><strong>İlk proje</strong> — .NET ekosistemi, iskelet, <code>Program.cs</code></li>
+        <li><strong>Middleware Pipeline</strong> — isteğin sunucudaki yolculuğu</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">🧩 Haftanın ilkesi</h3>
+      <p style="margin:0"><strong>Katmanlama ve sıra.</strong> Bir isteği işleyen her bileşen sıradaki yerini bilir. Sırayı bozmak çoğu zaman hata vermez — <strong>sessizce yanlış davranış üretir.</strong></p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Ön koşul:</strong> <code>Web Teknolojileri</code>. HTML, CSS ve JavaScript bu derste <em>öğretilmez</em> — kullanılır.
+  </div>
+</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="slide" data-title="Kara kutu">
+ <div class="wrap">
+  <p class="eyebrow">Nereden geliyoruz</p>
+  <h2>Web Teknolojileri'nin bilinçli olarak kapalı bıraktığı kutu</h2>
+  <p class="body-txt">Geçen dönem tarayıcının bir adrese istek gönderdiğini, karşılığında HTML aldığını, onu DOM'a çevirip ekrana boyadığını öğrendiniz. O dersin bilerek kara kutu bıraktığı tek yer vardı: <strong>isteğin gittiği yer.</strong> Bu dönem o kutuyu açıyoruz.</p>
+
+  <figure>
+    <svg class="dg" viewBox="0 0 760 210" role="img" aria-label="Tarayıcıdan sunucuya giden HTTP isteği ve geri dönen yanıt; sunucu tarafı bu dersin konusu olarak işaretlenmiş soru işaretli bir kutu.">
+      <defs>
+        <marker id="a2a" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 9 3.5, 0 7" fill="var(--accent)"/>
+        </marker>
+        <marker id="a2b" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 9 3.5, 0 7" fill="var(--accent2)"/>
+        </marker>
+      </defs>
+      <rect x="20" y="60" width="180" height="90" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <text x="110" y="95" text-anchor="middle" font-size="14" fill="currentColor" font-weight="600">Tarayıcı</text>
+      <text x="110" y="116" text-anchor="middle" font-size="11.5" fill="var(--muted)">Web Teknolojileri</text>
+      <text x="110" y="132" text-anchor="middle" font-size="11.5" fill="var(--muted)">(ön koşul)</text>
+
+      <rect x="540" y="60" width="200" height="90" rx="10" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-dasharray="7 4"/>
+      <text x="640" y="98" text-anchor="middle" font-size="30" fill="var(--accent)" font-weight="700">?</text>
+      <text x="640" y="126" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="600">bu dersin konusu</text>
+
+      <line x1="205" y1="88" x2="532" y2="88" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#a2a)"/>
+      <text x="368" y="79" text-anchor="middle" font-size="12.5" fill="var(--accent)">HTTP isteği</text>
+
+      <line x1="532" y1="126" x2="205" y2="126" stroke="var(--accent2)" stroke-width="1.8" marker-end="url(#a2b)"/>
+      <text x="368" y="145" text-anchor="middle" font-size="12.5" fill="var(--accent2)">HTTP yanıtı (HTML / JSON)</text>
+
+      <text x="380" y="192" text-anchor="middle" font-size="12" fill="var(--muted)">Dönem sonunda sağdaki kutunun içinde sizin yazdığınız C# kodu olacak.</text>
+    </svg>
+    <figcaption>Bu dersin sınırı tam olarak burada başlar: ok sağa girdiği andan itibaren her şey bizim sorumluluğumuz.</figcaption>
+  </figure>
+</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="slide" data-title="Statik ↔ dinamik">
+ <div class="wrap">
+  <p class="eyebrow">Temel ayrım <span class="tag t">T</span></p>
+  <h2>Statik site mi, dinamik uygulama mı?</h2>
+  <p class="body-txt">Fark "dosya var mı yok mu" değildir. Fark, <strong>içeriğin ne zaman ve kim tarafından üretildiğidir.</strong> Aşağıdaki düğmelerle iki akışı karşılaştırın.</p>
+
+  <div class="seg" role="group" aria-label="Akış seçimi">
+    <button type="button" data-sd="s" aria-pressed="true">Statik site</button>
+    <button type="button" data-sd="d" aria-pressed="false">Dinamik uygulama</button>
+  </div>
+
+  <div class="panel" id="sdPanel"></div>
+
+  <table style="margin-top:1.2rem">
+    <thead><tr><th></th><th>Statik</th><th>Dinamik</th></tr></thead>
+    <tbody>
+      <tr><td>İçeriği kim üretir</td><td>Geliştirici, önceden</td><td>Sunucudaki kod, istek anında</td></tr>
+      <tr><td>Kullanıcıya göre değişir mi</td><td>Hayır</td><td><strong>Evet</strong></td></tr>
+      <tr><td>Veritabanı gerekir mi</td><td>Hayır</td><td>Genellikle evet</td></tr>
+      <tr><td>Kim çalıştırır</td><td>Hiç kimse — dosya okunur</td><td>Uygulama sunucusu</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="slide" data-title="İsteğin anatomisi">
+ <div class="wrap">
+  <p class="eyebrow">HTTP · sunucu tarafından <span class="tag y">Y</span></p>
+  <h2>Bir isteğin ham hâli</h2>
+  <p class="body-txt">HTTP bir <strong>metin protokolüdür.</strong> Aşağıdaki, ağdan geçen şeyin ta kendisidir. Parçaların üzerine tıklayın.</p>
+
+  <pre><code>POST /Uye/Giris HTTP/1.1
+Host: kampuskitap.local
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 41
+Cookie: .AspNetCore.Session=CfDJ8N...
+
+eposta=ayse@example.com&amp;parola=gizli123</code></pre>
+
+  <div class="pick" role="group" aria-label="İstek parçaları">
+    <button type="button" data-rq="line" aria-pressed="true">① İstek satırı</button>
+    <button type="button" data-rq="head" aria-pressed="false">② Başlıklar</button>
+    <button type="button" data-rq="blank" aria-pressed="false">③ Boş satır</button>
+    <button type="button" data-rq="body" aria-pressed="false">④ Gövde</button>
+    <button type="button" data-rq="cookie" aria-pressed="false">🍪 Cookie satırı</button>
+  </div>
+  <div class="panel" id="rqPanel"></div>
+</div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="slide" data-title="Metotlar">
+ <div class="wrap">
+  <p class="eyebrow">HTTP sözleşmesi <span class="tag y">Y</span></p>
+  <h2>Metotlar: güvenli ve etkisiz</h2>
+
+  <table>
+    <thead><tr><th>Metot</th><th>Anlamı</th><th>Gövde</th><th>Bu derste</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET</code></td><td>Getir, okuma amaçlı</td><td>Yok</td><td>Hafta 2</td></tr>
+      <tr><td><code>POST</code></td><td>Oluştur / işlem yap</td><td><strong>Var</strong></td><td>Hafta 4</td></tr>
+      <tr><td><code>PUT</code></td><td>Tamamen değiştir</td><td>Var</td><td>Hafta 12</td></tr>
+      <tr><td><code>PATCH</code></td><td>Kısmen değiştir</td><td>Var</td><td>Hafta 12</td></tr>
+      <tr><td><code>DELETE</code></td><td>Sil</td><td>Genelde yok</td><td>Hafta 12</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">Güvenli (safe)</h3>
+      <p style="margin:0">Sunucuda bir şeyi <strong>değiştirmez.</strong> <code>GET</code> güvenlidir — bu yüzden tarayıcı bir <code>GET</code> isteğini sormadan tekrarlayabilir.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Etkisiz (idempotent)</h3>
+      <p style="margin:0">Aynı isteği 1 kez de 10 kez de gönderin, sonuç aynıdır. <code>GET</code>, <code>PUT</code>, <code>DELETE</code> etkisizdir — <strong><code>POST</code> değildir.</strong></p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Bu yüzden</strong> formu iki kez gönderince iki kayıt oluşur. Çözümü <strong>Hafta 4</strong>’te: Post-Redirect-Get deseni.
+  </div>
+</div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="slide" data-title="Durum kodları">
+ <div class="wrap">
+  <p class="eyebrow">HTTP sözleşmesi <span class="tag y">Y</span></p>
+  <h2>Durum kodları — önce tahmin edin</h2>
+  <p class="body-txt">Ezberlenecek tek kural: <strong>4xx = senin isteğinde sorun var · 5xx = benim kodumda sorun var.</strong> Kartlara tıklayarak cevabı açın.</p>
+
+  <div class="cards" id="scards"></div>
+
+  <div class="callout" style="margin-top:1.2rem">
+    <strong>İki sık karıştırılan çift.</strong>
+    <code>401</code> = "kim olduğunu bilmiyorum, giriş yap" ↔ <code>403</code> = "kim olduğunu biliyorum, ama bu senin işin değil".
+    <code>200</code> = başarılı ↔ <code>204</code> = başarılı ama <strong>gövde yok</strong>.
+  </div>
+</div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="slide" data-title="Stateless">
+ <div class="wrap">
+  <p class="eyebrow">Dönemin en önemli kavramı <span class="tag t">T</span></p>
+  <h2>Sunucu sizi hatırlamaz</h2>
+  <p class="body-txt"><strong>HTTP durumsuzdur (stateless):</strong> her istek bağımsızdır. Sunucu iki isteği kendiliğinden birbirine bağlamaz. Adımları tıklayarak ilerleyin.</p>
+
+  <div class="steps" id="slSteps" role="group" aria-label="Adımlar"></div>
+  <div class="panel" id="slPanel"></div>
+
+  <div class="callout ok" style="margin-top:1.2rem">
+    <strong>Bu bir kusur değil, tercih.</strong> Stateless olmak sayesinde istekler farklı sunuculara dağıtılabilir, bir sunucu çökse diğeri devam eder, ölçeklemek kolaydır.
+  </div>
+
+  <p class="body-txt">Peki sepet nasıl çalışıyor? Çünkü <strong>durumu biz elle taşıyoruz.</strong> Üç yol vardır ve üçünü de bu dönem öğreneceğiz:</p>
+  <table>
+    <thead><tr><th>Yol</th><th>Nerede tutulur</th><th>Hafta</th></tr></thead>
+    <tbody>
+      <tr><td>Çerez (Cookie)</td><td>İstemcide; her istekte otomatik gider</td><td>7</td></tr>
+      <tr><td>Oturum (Session)</td><td>Sunucuda; istemcide yalnızca anahtarı durur</td><td>7</td></tr>
+      <tr><td>Veritabanı</td><td>Sunucuda, kalıcı</td><td>10</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="slide" data-title="Yolculuk — adım adım">
+ <div class="wrap">
+  <p class="eyebrow">what-happens-when <span class="tag t">T</span></p>
+  <h2>Bir isteğin uçtan uca yolculuğu</h2>
+  <p class="body-txt"><code>Enter</code>'a bastınız. Ekranda sayfa belirene kadar ne oldu? Aşağıdaki adımlara tıklayın — şemada ilgili durak vurgulanacak. <strong>Koyu renkli bölge bu dersin alanıdır.</strong></p>
+
+  <figure style="margin:1rem 0 .8rem">
+   <svg class="dg" viewBox="0 0 760 250" role="img" aria-label="Bir HTTP isteğinin tarayıcıdan ağ katmanına, oradan ters vekile, ASP.NET Core uygulamasına ve veritabanına giden yolculuğu; yanıt aynı yoldan geri döner. Ters vekil, uygulama ve veritabanı bu dersin alanı olarak işaretli.">
+    <defs>
+     <marker id="wq" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+       <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+     </marker>
+     <marker id="wr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+       <polygon points="0 0, 8 3, 0 6" fill="var(--accent2)"/>
+     </marker>
+    </defs>
+
+    <!-- dersin bölgesi bandı -->
+    <rect id="wzBand" x="300" y="48" width="452" height="122" rx="10" fill="var(--card2)" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5 4" opacity=".55"/>
+    <text x="526" y="186" text-anchor="middle" font-size="11.5" fill="var(--accent)" font-weight="700">BU DERSİN BÖLGESİ</text>
+
+    <!-- 1 tarayıcı -->
+    <g id="wz1">
+      <rect x="14" y="70" width="112" height="76" rx="9" fill="var(--card)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="70" y="100" text-anchor="middle" font-size="12.5" fill="currentColor" font-weight="600">Tarayıcı</text>
+      <text x="70" y="120" text-anchor="middle" font-size="10.5" fill="var(--muted)">URL · render</text>
+    </g>
+    <!-- 2 ağ -->
+    <g id="wz2">
+      <rect x="152" y="70" width="126" height="76" rx="9" fill="none" stroke="var(--muted)" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <text x="215" y="96" text-anchor="middle" font-size="12" fill="var(--muted)" font-weight="600">Ağ katmanı</text>
+      <text x="215" y="113" text-anchor="middle" font-size="10" fill="var(--muted)">DNS · TCP · TLS</text>
+      <text x="215" y="130" text-anchor="middle" font-size="9.5" fill="var(--muted)" font-style="italic">Bilgisayar Ağları</text>
+    </g>
+    <!-- 3 ters vekil -->
+    <g id="wz3">
+      <rect x="312" y="70" width="118" height="76" rx="9" fill="var(--card)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="371" y="100" text-anchor="middle" font-size="12.5" fill="currentColor" font-weight="600">Ters vekil</text>
+      <text x="371" y="120" text-anchor="middle" font-size="10.5" fill="var(--muted)">TLS · yük · önbellek</text>
+    </g>
+    <!-- 4 uygulama -->
+    <g id="wz4">
+      <rect x="456" y="70" width="158" height="76" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="2.4"/>
+      <text x="535" y="97" text-anchor="middle" font-size="12.5" fill="var(--accent)" font-weight="700">ASP.NET Core</text>
+      <text x="535" y="115" text-anchor="middle" font-size="10.5" fill="var(--muted)">Kestrel + kodunuz</text>
+      <text x="535" y="131" text-anchor="middle" font-size="10" fill="var(--accent)">← dönem boyunca burası</text>
+    </g>
+    <!-- 5 veritabanı -->
+    <g id="wz5">
+      <rect x="640" y="70" width="104" height="76" rx="9" fill="var(--card)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="692" y="100" text-anchor="middle" font-size="12.5" fill="currentColor" font-weight="600">Veritabanı</text>
+      <text x="692" y="120" text-anchor="middle" font-size="10.5" fill="var(--muted)">EF Core</text>
+    </g>
+
+    <!-- istek okları -->
+    <line id="wa1" x1="128" y1="100" x2="148" y2="100" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#wq)"/>
+    <line id="wa2" x1="280" y1="100" x2="308" y2="100" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#wq)"/>
+    <line id="wa3" x1="432" y1="100" x2="452" y2="100" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#wq)"/>
+    <line id="wa4" x1="616" y1="100" x2="636" y2="100" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#wq)"/>
+    <text x="215" y="60" text-anchor="middle" font-size="11" fill="var(--accent)">HTTP isteği →</text>
+
+    <!-- yanıt oku -->
+    <line id="wa5" x1="736" y1="160" x2="80" y2="160" stroke="var(--accent2)" stroke-width="1.6" marker-end="url(#wr)" opacity=".5"/>
+    <text x="400" y="153" text-anchor="middle" font-size="11" fill="var(--accent2)">← HTTP yanıtı (HTML / JSON)</text>
+
+    <text x="70" y="212" text-anchor="middle" font-size="10.5" fill="var(--muted)" font-style="italic">Web Teknolojileri</text>
+    <text x="380" y="238" text-anchor="middle" font-size="11" fill="var(--muted)">Soldaki iki durak ön koşul derslerin; sağdaki üç durak bizim.</text>
+   </svg>
+   <figcaption>Aynı şema dönem boyunca kullanılacak: her hafta bu resmin bir parçasını açacağız.</figcaption>
+  </figure>
+
+  <div class="steps" id="whSteps" role="group" aria-label="Yolculuk adımları"></div>
+  <div class="panel" id="whPanel"></div>
+</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="slide" data-title="Sunucuda ne var">
+ <div class="wrap">
+  <p class="eyebrow">Bizim bölgemiz <span class="tag t">T</span></p>
+  <h2>İstek sunucuya vardı — peki sunucuda ne var?</h2>
+  <p class="body-txt">Şemadaki "ASP.NET Core" kutusunu açalım. Üretimde bir web uygulaması genellikle <strong>iki katmanlıdır</strong> ve bu ayrımı bilmek, ilerideki pek çok hatayı anlamlandırır.</p>
+
+  <figure>
+   <svg class="dg" viewBox="0 0 760 230" role="img" aria-label="İnternetten gelen istek önce ters vekile, oradan Kestrel web sunucusuna, oradan ASP.NET Core uygulama koduna ve gerekirse veritabanına gidiyor. Ters vekil TLS, yük dengeleme ve statik dosya önbelleği yapar.">
+    <defs>
+      <marker id="sv1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+      </marker>
+    </defs>
+    <text x="60" y="30" font-size="12" fill="var(--muted)">İnternet</text>
+    <line x1="60" y1="36" x2="60" y2="56" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#sv1)"/>
+
+    <rect x="18" y="60" width="300" height="60" rx="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <text x="34" y="83" font-size="12.5" fill="currentColor" font-weight="600">Ters vekil (reverse proxy)</text>
+    <text x="34" y="102" font-size="10.5" fill="var(--muted)">IIS · Nginx · Apache — TLS, yük dengeleme, statik önbellek</text>
+    <line x1="60" y1="120" x2="60" y2="140" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#sv1)"/>
+
+    <rect x="18" y="144" width="300" height="60" rx="9" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+    <text x="34" y="167" font-size="12.5" fill="var(--accent)" font-weight="700">Kestrel + ASP.NET Core uygulaması</text>
+    <text x="34" y="186" font-size="10.5" fill="var(--muted)">sizin kodunuz — dönem boyunca burayı yazacağız</text>
+
+    <line x1="322" y1="174" x2="396" y2="174" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#sv1)"/>
+    <rect x="400" y="144" width="130" height="60" rx="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="465" y="172" text-anchor="middle" font-size="12.5" fill="currentColor" font-weight="600">Veritabanı</text>
+    <text x="465" y="190" text-anchor="middle" font-size="10.5" fill="var(--muted)">Hafta 8’den itibaren</text>
+
+    <rect x="560" y="60" width="184" height="144" rx="9" fill="var(--card2)" stroke="var(--accent2)" stroke-width="1.4"/>
+    <text x="575" y="82" font-size="11.5" fill="var(--accent2)" font-weight="700">Neden iki katman?</text>
+    <text x="575" y="104" font-size="10.5" fill="var(--muted)">· sertifika yönetimi</text>
+    <text x="575" y="122" font-size="10.5" fill="var(--muted)">· tek porttan çok uygulama</text>
+    <text x="575" y="140" font-size="10.5" fill="var(--muted)">· yavaş istemci koruması</text>
+    <text x="575" y="158" font-size="10.5" fill="var(--muted)">· uygulama çökerse yeniden</text>
+    <text x="575" y="176" font-size="10.5" fill="var(--muted)">  başlatma</text>
+    <text x="575" y="196" font-size="10" fill="var(--accent2)" font-style="italic">sınır: Altyapı dersi</text>
+   </svg>
+   <figcaption><strong>Kestrel</strong> uygulamanızın içinde gelir; ters vekil ayrı bir programdır. Geliştirirken yalnızca Kestrel çalışır.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <strong>Geliştirme makinenizde ters vekil yok.</strong> <code>dotnet run</code> dediğinizde yalnızca Kestrel çalışır ve doğrudan onu ziyaret edersiniz. Bu yüzden <em>"yerelde çalışıyor, sunucuda çalışmıyor"</em> hatalarının bir kısmı bu katman farkından doğar — <strong>Hafta 13</strong>'te yayına alırken göreceğiz.
+  </div>
+</div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="slide" data-title="Yanıt dönerken">
+ <div class="wrap">
+  <p class="eyebrow">Yolculuğun dönüşü <span class="tag t">T</span></p>
+  <h2>Yanıt geri dönerken neler oluyor?</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">Önbellek katmanları</h3>
+      <p>Yanıtınız kullanıcıya varmadan önce birkaç yerde saklanabilir:</p>
+      <ol style="margin-bottom:.4rem">
+        <li><strong>Ters vekil</strong> — aynı dosyayı herkese</li>
+        <li><strong>CDN</strong> — kullanıcıya coğrafi olarak yakın</li>
+        <li><strong>Tarayıcı</strong> — aynı kullanıcıya tekrar</li>
+      </ol>
+      <p style="margin:0">Hangisinin ne kadar saklayacağını <strong>sizin gönderdiğiniz yanıt başlıkları</strong> belirler (<code>Cache-Control</code>, <code>ETag</code>).</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">HTTP sürümleri</h3>
+      <table style="margin:0; font-size:.86rem">
+        <tbody>
+          <tr><td><strong>HTTP/1.1</strong></td><td>düz metin, tek bağlantıda sıra beklenir</td></tr>
+          <tr><td><strong>HTTP/2</strong></td><td>ikili, tek bağlantıda çoğullama</td></tr>
+          <tr><td><strong>HTTP/3</strong></td><td>QUIC (UDP) üzerinde</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:.7rem 0 0"><strong>Kodunuzu neredeyse hiç etkilemez.</strong> Yazdığınız controller üç sürümde de aynıdır; ASP.NET Core farkı sizin yerinize halleder.</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Önbellek, bu dersin en sinsi hata kaynaklarından biridir.</strong> "Kodu değiştirdim ama sayfa eskisini gösteriyor" şikâyetinin cevabı çoğu zaman buradadır. <kbd>Ctrl</kbd>+<kbd>F5</kbd> ve DevTools'taki <em>Disable cache</em> seçeneği ilk bakılacak yerdir.
+  </div>
+
+  <h3>Bu yolculuktan aklımızda kalması gerekenler</h3>
+  <ol>
+    <li><strong>Zincirin yalnızca üç halkası bizim</strong> — ama yanıtın tamamı bizim sorumluluğumuzda.</li>
+    <li><strong>Her halka gecikme ekler.</strong> Kodunuz hızlı olsa da site yavaş olabilir.</li>
+    <li><strong>Sunucu, isteği ham metin olarak alır ve ham metin döndürür.</strong> Aradaki her şey bizim ürettiğimizdir.</li>
+  </ol>
+</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="slide" data-title=".NET'in iki dünyası">
+ <div class="wrap">
+  <p class="eyebrow">Blok B · ekosistem <span class="tag t">T</span></p>
+  <h2>İki ayrı .NET vardı — ve isimlendirme karışık</h2>
+
+  <figure>
+    <svg class="dg" viewBox="0 0 760 230" role="img" aria-label=".NET Framework 2002'den 4.8'e kadar yalnızca Windows'ta; .NET Core 2016'da yeniden yazıldı, 5. sürümden sonra adı sadece .NET oldu ve çapraz platform çalışıyor.">
+      <defs>
+        <marker id="a8" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 9 3.5, 0 7" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <line x1="40" y1="200" x2="738" y2="200" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+      <text x="62" y="220" text-anchor="middle" font-size="11.5" fill="var(--muted)">2002</text>
+      <text x="340" y="220" text-anchor="middle" font-size="11.5" fill="var(--muted)">2016</text>
+      <text x="492" y="220" text-anchor="middle" font-size="11.5" fill="var(--muted)">2020</text>
+      <text x="700" y="220" text-anchor="middle" font-size="11.5" fill="var(--muted)">2025</text>
+      <circle cx="62" cy="200" r="3.5" fill="var(--muted)"/>
+      <circle cx="340" cy="200" r="3.5" fill="var(--accent)"/>
+      <circle cx="492" cy="200" r="3.5" fill="var(--accent)"/>
+
+      <rect x="45" y="40" width="265" height="52" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
+      <text x="177" y="62" text-anchor="middle" font-size="13" fill="currentColor" font-weight="600">.NET Framework 1.0 … 4.8</text>
+      <text x="177" y="81" text-anchor="middle" font-size="11.5" fill="var(--muted)">yalnızca Windows · yalnızca bakım</text>
+      <line x1="62" y1="92" x2="62" y2="194" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+
+      <rect x="330" y="112" width="132" height="52" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+      <text x="396" y="134" text-anchor="middle" font-size="12.5" fill="var(--accent)" font-weight="600">.NET Core 1.0 … 3.1</text>
+      <text x="396" y="153" text-anchor="middle" font-size="11.5" fill="var(--muted)">sıfırdan yazıldı</text>
+      <line x1="340" y1="164" x2="340" y2="194" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
+
+      <rect x="478" y="112" width="254" height="52" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+      <text x="605" y="134" text-anchor="middle" font-size="13" fill="var(--accent)" font-weight="700">.NET 5 · 6 · 7 · 8 · 9 · 10</text>
+      <text x="605" y="153" text-anchor="middle" font-size="11.5" fill="var(--muted)">"Core" düştü · çapraz platform</text>
+      <line x1="492" y1="164" x2="492" y2="194" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
+
+      <text x="605" y="30" text-anchor="middle" font-size="12" fill="var(--warn)">4'ten sonra 5 gelince</text>
+      <text x="605" y="46" text-anchor="middle" font-size="12" fill="var(--warn)">karışmasın diye numara atlandı</text>
+      <line x1="605" y1="52" x2="605" y2="108" stroke="var(--warn)" stroke-width="1" stroke-dasharray="3 3"/>
+    </svg>
+    <figcaption>Üstteki ve alttaki şerit <strong>aynı ürünün iki sürümü değildir</strong> — alttaki, üsttekinin yerine sıfırdan yazılmış ayrı bir platformdur.</figcaption>
+  </figure>
+
+  <div class="callout warn">
+    <strong>Ezberlenecek cümle:</strong> .NET 10, <strong>.NET Core'un devamıdır</strong> — .NET Framework 4.8'in devamı <em>değildir</em>. Ama web çatısının adı hâlâ <strong>ASP.NET Core</strong>'dur.
+  </div>
+</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="slide" data-title="LTS ve doküman tuzağı">
+ <div class="wrap">
+  <p class="eyebrow">Pratik · en çok zaman kaybettiren detay <span class="tag y">Y</span></p>
+  <h2>Hangi sürüm ve hangi dokümantasyon?</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">LTS ↔ STS</h3>
+      <p><strong>LTS</strong> (Long Term Support) — 3 yıl destek. Üretim ve <strong>dersler</strong> için.<br>
+      <strong>STS</strong> (Standard Term Support) — 18 ay.</p>
+      <p style="margin:0"><strong>Bu derste .NET 10 (LTS)</strong> — Kasım 2028'e kadar destekli.</p>
+    </div>
+    <div class="card" style="border-color:var(--warn)">
+      <h3 style="margin-top:0; color:var(--warn)">⚠️ .NET 8 kurmayın</h3>
+      <p style="margin:0">.NET 8 ve .NET 9'un desteği <strong>10 Kasım 2026</strong>'da sona eriyor. Desteği biten sürüm güvenlik yaması almaz.</p>
+    </div>
+  </div>
+
+  <h3>Dokümantasyon sürümü tuzağı</h3>
+  <p class="body-txt">Microsoft <strong>her sayfayı birden çok .NET sürümü için</strong> yayımlar. Adresin sonundaki <code>?view=</code> parçası kodu değiştirir. Arama motorundan gelen sonuç çoğu zaman eski sürüme düşer.</p>
+
+  <div class="seg" role="group" aria-label="Sürüm seçimi">
+    <button type="button" data-mv="old" aria-pressed="false">?view=aspnetcore-5.0</button>
+    <button type="button" data-mv="new" aria-pressed="true">?view=aspnetcore-10.0</button>
+  </div>
+  <div class="panel" id="mvPanel"></div>
+
+  <div class="callout warn" style="margin-top:1.1rem">
+    <strong>Belirti:</strong> Örnekte <code>Startup.cs</code> görüyorsanız <strong>yanlış sürümdesiniz.</strong> .NET 6'dan beri o dosya yoktur.
+  </div>
+</div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="slide" data-title="Proje iskeleti">
+ <div class="wrap">
+  <p class="eyebrow">İlk proje <span class="tag y">Y</span></p>
+  <h2><code>dotnet new mvc</code> ne üretti?</h2>
+  <p class="body-txt">Dosya ve klasörlere tıklayın. <strong>Sözleşme (convention):</strong> bu isimler keyfî değildir — ASP.NET Core tam olarak bu isimleri arar.</p>
+
+  <div class="grid2">
+    <div class="tree" id="tree"></div>
+    <div class="panel" id="treePanel"></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="slide" data-title="Program.cs">
+ <div class="wrap">
+  <p class="eyebrow">İlk proje <span class="tag y">Y</span></p>
+  <h2><code>Program.cs</code> — dört evre</h2>
+  <p class="body-txt">Dosya ilk bakışta kalabalık görünür. <strong>Dört evreyi</strong> görürseniz bir daha karışık gelmez. Adımlara tıklayın.</p>
+
+  <div class="steps" id="pgSteps" role="group" aria-label="Evreler"></div>
+  <pre><code id="pgCode"></code></pre>
+  <div class="panel" id="pgPanel"></div>
+
+  <div class="callout warn" style="margin-top:1.1rem">
+    <strong>En sık yeni başlayan hatası:</strong> <code>builder.Build()</code> çağrıldıktan <em>sonra</em> <code>builder.Services.Add…</code> yazmak. Derlenir, ama <strong>hiçbir etkisi olmaz.</strong>
+  </div>
+</div>
+</section>
+
+<!-- ============ 16 ============ -->
+<section class="slide" data-title="Kapanış ve ev görevi">
+ <div class="wrap">
+  <p class="eyebrow">Toparlama</p>
+  <h2>Bu hafta ne öğrendik, haftaya ne var?</h2>
+
+  <div class="card">
+    <h3 style="margin-top:0">🧩 Haftanın ilkesi</h3>
+    <p style="margin:0"><strong>Katmanlama ve sıra.</strong> Bir isteği işleyen her bileşen sıradaki yerini bilir. Sırayı bozmak çoğu zaman hata vermez — <strong>sessizce yanlış davranış üretir.</strong> Bu dersin en pahalı hataları buradan çıkar.</p>
+  </div>
+
+  <h3>🐛 Hata Köşesi — dönem boyunca birikecek rehberin 1. satırı</h3>
+  <table>
+    <thead><tr><th>Belirti</th><th>Gerçek sebep</th><th>Çözüm</th></tr></thead>
+    <tbody>
+      <tr><td><code>'dotnet' is not recognized</code></td><td>Terminal kurulumdan önce açılmış</td><td>Terminali kapat-aç</td></tr>
+      <tr><td><code>Address already in use</code></td><td>Proje zaten çalışıyor</td><td>Önceki terminalde <kbd>Ctrl</kbd>+<kbd>C</kbd></td></tr>
+      <tr><td>"Bağlantınız gizli değil"</td><td>Geliştirme sertifikasına güvenilmemiş</td><td><code>dotnet dev-certs https --trust</code></td></tr>
+      <tr><td>Servis "bulunamadı"</td><td><code>Build()</code>'dan <em>sonra</em> kaydedilmiş</td><td>Kaydı <code>Build()</code> öncesine taşı</td></tr>
+      <tr><td>CSS/JS 404</td><td>Dosya <code>wwwroot</code> dışında</td><td><code>wwwroot/css/…</code> altına taşı</td></tr>
+      <tr><td>Öğreticide <code>Startup.cs</code> var</td><td>Öğretici .NET 5 ve öncesi</td><td><code>?view=aspnetcore-10.0</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2" style="margin-top:1.2rem">
+    <div class="card" style="border-color:var(--accent)">
+      <h3 style="margin-top:0">🏠 Ev görevi</h3>
+      <ol style="margin-bottom:.5rem">
+        <li><code>00-kurulum-rehberi.md</code>'yi izleyerek <strong>.NET 10 SDK + IDE</strong> kurun</li>
+        <li><code>dotnet new mvc</code> → <code>dotnet run</code></li>
+        <li><strong>Teslim:</strong> <code>dotnet --version</code> çıktısı + tarayıcıdaki sayfa (iki ekran görüntüsü)</li>
+      </ol>
+      <p style="margin:0; font-size:.88rem; color:var(--muted)">Puan için değil, <strong>"kurulum tamam" onayı</strong> için. Hafta 2 bunun üzerine kurulacak.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">🔜 Hafta 2 — MVC Temelleri ve Mimari Yapı</h3>
+      <p><strong>Düşünerek gelin:</strong> Adres çubuğuna yalnızca <code>https://localhost:7xxx/</code> yazdınız. Hiçbir sayfa adı vermediniz.</p>
+      <p><strong>Sunucu hangi kodu çalıştıracağını nereden bildi?</strong></p>
+      <p style="margin:0; font-size:.9rem; color:var(--muted)">Ayrıca: <code>Program.cs</code>’teki <code>app.Use…</code> satırları ne yapıyor? İstek onların oluşturduğu bir zincirden geçiyor.</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:1rem">
+    <strong>Okuma:</strong> <em>Get started with ASP.NET Core MVC — Part 1</em> · learn.microsoft.com → <code>tutorials/first-mvc-app/start-mvc</code><br>
+    Adresin sonundaki <code>?view=aspnetcore-10.0</code> parçasını <strong>silmeyin.</strong>
+  </div>
+</div>
+</section>
+
+</main>
+
+<div class="bar">
+  <span class="ttl" id="barTitle"></span>
+  <span id="barNum"></span>
+  <button type="button" id="btnTheme" title="D">Tema</button>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+
+/* ---------- güvenli depolama ---------- */
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* ---------- tema ---------- */
+var saved=lsGet('h01-theme');
+if(saved==='dark') document.documentElement.setAttribute('data-theme','dark');
+$('#btnTheme').addEventListener('click',function(){
+  var d=document.documentElement.getAttribute('data-theme')==='dark';
+  if(d){document.documentElement.removeAttribute('data-theme'); lsSet('h01-theme','light');}
+  else {document.documentElement.setAttribute('data-theme','dark'); lsSet('h01-theme','dark');}
+});
+
+/* ---------- gezinme ---------- */
+var slides=$$('.slide'), rail=$('#rail'), cur=0;
+slides.forEach(function(s,i){
+  var b=document.createElement('button');
+  b.type='button'; b.textContent=String(i+1);
+  b.title=s.getAttribute('data-title')||('Bölüm '+(i+1));
+  b.addEventListener('click',function(){go(i)});
+  rail.appendChild(b);
+});
+var railBtns=$$('button',rail);
+
+function go(i){
+  if(i<0)i=0; if(i>=slides.length)i=slides.length-1;
+  slides[cur].classList.remove('on');
+  slides[i].classList.add('on');
+  railBtns[cur].removeAttribute('aria-current');
+  railBtns[i].setAttribute('aria-current','true');
+  cur=i;
+  $('#barTitle').textContent=slides[i].getAttribute('data-title')||'';
+  $('#barNum').textContent=(i+1)+' / '+slides.length;
+  if(history.replaceState) history.replaceState(null,'','#b'+(i+1));
+  window.scrollTo(0,0);
+  railBtns[i].scrollIntoView({block:'nearest'});
+}
+
+document.addEventListener('keydown',function(e){
+  var t=e.target.tagName;
+  if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT') return;
+  var k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'){e.preventDefault(); go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault(); go(cur-1)}
+  else if(k==='Home'){e.preventDefault(); go(0)}
+  else if(k==='End'){e.preventDefault(); go(slides.length-1)}
+    else if(k==='d'||k==='D'){$('#btnTheme').click()}
+  else if(k==='b'||k==='B'){document.body.classList.toggle('black')}
+  else if(k==='Escape'){document.body.classList.remove('black')}
+});
+$('#black').addEventListener('click',function(){document.body.classList.remove('black')});
+
+/* ---------- 3. statik ↔ dinamik ---------- */
+var sdData={
+  s:{h:'Statik site — dosya olduğu gibi gönderilir',
+     b:'<pre><code>GET /hakkimizda.html\n      │\n      ▼\n[ Sunucu ] → diskteki dosyayı oku → gönder</code></pre>'+
+       '<p style="margin:0"><strong>Herkese aynı içerik gider.</strong> Sunucuda hiçbir kod çalışmaz; dosya okunup yollanır. <code>Web Teknolojileri</code> dersinde GitHub Pages\'e koyduğunuz sayfa böyleydi.</p>'},
+  d:{h:'Dinamik uygulama — HTML o anda üretilir',
+     b:'<pre><code>GET /Urun/Detay/42\n      │\n      ▼\n[ Sunucu ] → kodu çalıştır\n           → veritabanından 42 numaralı ürünü çek\n           → HTML\'i ÜRET → gönder</code></pre>'+
+       '<p style="margin:0"><strong>Sunucuda hazır dosya yoktur.</strong> Aynı adres, farklı kullanıcıya farklı içerik döndürebilir. Sepetiniz sizin sepetinizdir. <strong>Bu dersin konusu budur.</strong></p>'}
+};
+function sdShow(k){
+  $('#sdPanel').innerHTML='<h4>'+sdData[k].h+'</h4>'+sdData[k].b;
+  $$('[data-sd]').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-sd')===k?'true':'false')});
+}
+$$('[data-sd]').forEach(function(b){b.addEventListener('click',function(){sdShow(b.getAttribute('data-sd'))})});
+sdShow('s');
+
+/* ---------- 4. isteğin anatomisi ---------- */
+var rqData={
+  line:{h:'① İstek satırı',b:'<p><code>POST /Uye/Giris HTTP/1.1</code></p><p style="margin:0">Üç parça: <strong>metot</strong> (ne yapmak istiyorum), <strong>yol</strong> (neyin üzerinde) ve <strong>protokol sürümü</strong>. Sunucudaki kodunuzun ilk baktığı satır budur — <strong>Hafta 2</strong>\'de bu yolu bir C# metoduna bağlayacağız.</p>'},
+  head:{h:'② Başlıklar',b:'<p style="margin:0">Her satır bir <code>Ad: Değer</code> çiftidir. <code>Host</code> hangi siteyi istediğinizi, <code>Content-Type</code> gövdenin biçimini, <code>Content-Length</code> uzunluğunu söyler. Sunucudaki kodunuz <strong>hepsine erişebilir</strong> — ve istemciden geldikleri için <strong>hiçbirine güvenemez.</strong></p>'},
+  blank:{h:'③ Boş satır',b:'<p style="margin:0">Küçük ama kritik: başlıkların bittiğini, bundan sonrasının <strong>gövde</strong> olduğunu gösterir. Protokolün metin tabanlı olması sayesinde ayrıştırma bu kadar basittir.</p>'},
+  body:{h:'④ Gövde (body)',b:'<p><code>eposta=ayse@example.com&amp;parola=gizli123</code></p><p style="margin:0">Formun gönderdiği veri. <code>GET</code> isteklerinde <strong>yoktur</strong>. <strong>Hafta 4</strong>\'te bu metnin bir C# nesnesine nasıl dönüştüğünü (model bağlama), formu <strong>Hafta 4</strong>\'te kuracak, <strong>Hafta 5</strong>\'te Tag Helper\'larla sadeleştireceğiz.</p>'},
+  cookie:{h:'🍪 Cookie satırı — dönemin düğüm noktası',b:'<p><code>Cookie: .AspNetCore.Session=CfDJ8N...</code></p><p style="margin:0">Bu satır, <strong>sunucunun sizi hatırlamamasına rağmen</strong> sepetinizin durmasının sebebidir. Tarayıcı bu değeri <strong>her istekte otomatik gönderir.</strong> Bir sonraki bölümde bu sorunu açacağız — çözümü <strong>Hafta 7</strong>\'nin tamamıdır.</p>'}
+};
+function rqShow(k){
+  $('#rqPanel').innerHTML='<h4>'+rqData[k].h+'</h4>'+rqData[k].b;
+  $$('[data-rq]').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-rq')===k?'true':'false')});
+}
+$$('[data-rq]').forEach(function(b){b.addEventListener('click',function(){rqShow(b.getAttribute('data-rq'))})});
+rqShow('line');
+
+/* ---------- 6. durum kodu kartları ---------- */
+var sc=[
+ {q:'Ana sayfa başarıyla açıldı',c:'200',h:'OK — en sık görülen'},
+ {q:'Yeni kullanıcı kaydedildi',c:'201',h:'Created — "oluşturuldu" 200\'den farklıdır'},
+ {q:'Kayıt silindi, dönecek içerik yok',c:'204',h:'No Content — başarılı ama gövde yok'},
+ {q:'Var olmayan bir ürün sayfası istendi',c:'404',h:'Not Found — adres yanlış'},
+ {q:'Giriş yapmadan "Profilim"e gidildi',c:'401',h:'Unauthorized — "seni tanımıyorum, giriş yap"'},
+ {q:'Normal kullanıcı yönetim paneline gitti',c:'403',h:'Forbidden — "tanıyorum ama izin yok"'},
+ {q:'Sunucuda NullReferenceException oluştu',c:'500',h:'BİZİM hatamız — loglara bak'},
+ {q:'Form gönderildi, zorunlu alan boş',c:'400',h:'İSTEMCİNİN hatası — Hafta 6'}
+];
+var scw=$('#scards');
+sc.forEach(function(o,i){
+  var b=document.createElement('button');
+  b.type='button'; b.className='qcard'+(i===0?' open':'');
+  b.innerHTML='<span class="q"><strong>'+(i+1)+'.</strong> '+o.q+'</span>'+
+              '<span class="a"><span class="code">'+o.c+'</span><span class="hint">'+o.h+'</span></span>';
+  b.addEventListener('click',function(){b.classList.toggle('open')});
+  scw.appendChild(b);
+});
+
+/* ---------- 7. durumsuzluk ---------- */
+var sl=[
+ {t:'1. istek — giriş',
+  b:'<pre><code>POST /Uye/Giris\neposta=ayse@example.com&amp;parola=***</code></pre>'+
+    '<p style="margin:0">Sunucu parolayı doğrular ve <strong>"Merhaba Ayşe, giriş başarılı"</strong> der. Buraya kadar her şey normal.</p>'},
+ {t:'2. istek — bir ürüne tıklandı',
+  b:'<pre><code>GET /Urun/42</code></pre>'+
+    '<p style="margin:0"><strong>Sunucu: "Siz kimsiniz?"</strong><br>Bu isteğin, biraz önce giriş yapan kişiden geldiğini bilmiyor. HTTP\'de <em>hatırlama</em> diye bir şey yoktur — her istek, sunucunun ilk kez gördüğü bir istektir.</p>'},
+ {t:'3. çözüm — durumu biz taşıyoruz',
+  b:'<pre><code>GET /Urun/42\nCookie: .AspNetCore.Session=CfDJ8N...</code></pre>'+
+    '<p style="margin:0">Tarayıcı, sunucunun daha önce verdiği anahtarı <strong>her istekte geri gönderir.</strong> Sunucu bu anahtara bakıp "bu Ayşe" der.<br><strong>Sunucu hâlâ hatırlamıyor</strong> — biz ona her seferinde kim olduğumuzu yeniden söylüyoruz.</p>'}
+];
+var slSteps=$('#slSteps');
+sl.forEach(function(o,i){
+  var b=document.createElement('button');
+  b.type='button'; b.textContent=String(i+1); b.title=o.t;
+  b.addEventListener('click',function(){slShow(i)});
+  slSteps.appendChild(b);
+});
+function slShow(i){
+  $('#slPanel').innerHTML='<h4>'+sl[i].t+'</h4>'+sl[i].b;
+  $$('button',slSteps).forEach(function(b,j){b.setAttribute('aria-pressed', j===i?'true':'false')});
+}
+slShow(0);
+
+/* ---------- 9. moniker ---------- */
+var mvData={
+  old:{h:'⚠️ Eski sürüm — .NET 5 ve öncesi',
+    b:'<pre><code>// Startup.cs\npublic void ConfigureServices(IServiceCollection services)\n{\n    services.AddControllersWithViews();\n}\n\npublic void Configure(IApplicationBuilder app)\n{\n    app.UseRouting();\n}</code></pre>'+
+      '<p style="margin:0"><strong>İki dosya, iki metot.</strong> Bu kodu kendi projenizde arayamazsınız — <code>Startup.cs</code> diye bir dosyanız yok. Sizde hata yok; <strong>öğretici eski.</strong></p>'},
+  new:{h:'✅ Bu derste kullanacağımız — .NET 10',
+    b:'<pre><code>// Program.cs (tek dosya)\nvar builder = WebApplication.CreateBuilder(args);\nbuilder.Services.AddControllersWithViews();\n\nvar app = builder.Build();\napp.UseRouting();</code></pre>'+
+      '<p style="margin:0"><strong>Tek dosya.</strong> .NET 6 ile gelen <em>minimal hosting</em> modeli: <code>ConfigureServices</code> → <code>builder.Services</code>, <code>Configure</code> → <code>app.Use…</code>. Yaptıkları iş aynıdır.</p>'}
+};
+function mvShow(k){
+  $('#mvPanel').innerHTML='<h4>'+mvData[k].h+'</h4>'+mvData[k].b;
+  $$('[data-mv]').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-mv')===k?'true':'false')});
+}
+$$('[data-mv]').forEach(function(b){b.addEventListener('click',function(){mvShow(b.getAttribute('data-mv'))})});
+mvShow('new');
+
+/* ---------- 10. dosya ağacı ---------- */
+var tree=[
+ {k:'ctrl', d:0, label:'Controllers/', info:'<h4>Controllers/ — istekleri karşılayan sınıflar</h4><p style="margin:0">Gelen her istek buradaki bir C# metoduna düşer. <strong>İsim sözleşmedir:</strong> sınıf adı <code>…Controller</code> ile bitmelidir, yoksa çatı onu bulamaz. <strong>Hafta 2</strong>\'nin konusu.</p>'},
+ {k:'models', d:0, label:'Models/', info:'<h4>Models/ — veri sınıfları</h4><p style="margin:0">Uygulamanızdaki nesneler: <code>Kitap</code>, <code>Kullanici</code>, <code>Siparis</code>… Şimdilik düz C# sınıflarıdır; <strong>Hafta 8</strong>\'de bunlardan veritabanı tabloları üreteceğiz.</p>'},
+ {k:'views', d:0, label:'Views/', info:'<h4>Views/ — HTML üreten Razor şablonları</h4><p style="margin:0"><code>.cshtml</code> uzantılıdır ve <strong>sunucuda çalışır.</strong> İçinde hem HTML hem C# vardır. <code>Views/Home/Index.cshtml</code> → <code>HomeController</code>\'ın <code>Index</code> action\'ına aittir. <strong>Hafta 3</strong>\'ün konusu.</p>'},
+ {k:'shared', d:1, label:'Shared/_Layout.cshtml', info:'<h4>_Layout.cshtml — ortak sayfa iskeleti</h4><p style="margin:0">Her sayfada tekrar eden kısım (menü, üstbilgi, altbilgi) burada <strong>bir kez</strong> yazılır. Alt çizgiyle başlaması "bu doğrudan görüntülenen bir sayfa değil" demektir. <strong>Hafta 3</strong>.</p>'},
+ {k:'www', d:0, label:'wwwroot/', info:'<h4>wwwroot/ — ⚠️ DIŞARIYA AÇIK klasör</h4><p>Bu klasördeki <strong>her şey tarayıcıdan doğrudan indirilebilir.</strong> <code>wwwroot/css/site.css</code> → <code>https://siteniz/css/site.css</code></p><p style="margin:0"><strong>Buraya koymayacaklarınız:</strong> veritabanı parolası, API anahtarı, yedek dosyası, not defteri… Dışarıdan görülmemesi gereken hiçbir şey.</p>'},
+ {k:'prog', d:0, label:'Program.cs', info:'<h4>Program.cs — uygulamanın başladığı yer</h4><p style="margin:0">Servisler burada kaydedilir, Middleware Pipeline burada kurulur. <strong>Dönem boyunca bu dosyaya satır ekleyeceğiz.</strong> Bir sonraki bölümde satır satır açacağız.</p>'},
+ {k:'appset', d:0, label:'appsettings.json', info:'<h4>appsettings.json — yapılandırma</h4><p style="margin:0">Bağlantı dizesi, günlükleme seviyesi gibi ayarlar. <strong>Ortama göre değişebilir:</strong> <code>appsettings.Development.json</code> yalnızca geliştirmede okunur.</p><p style="margin:.6rem 0 0"><strong>⚠️ Sırlar buraya yazılmaz</strong> — bu dosya kod deposuna gider. <strong>Hafta 7</strong>.</p>'},
+ {k:'launch', d:0, label:'Properties/launchSettings.json', info:'<h4>launchSettings.json — yalnızca sizin makinenizde</h4><p style="margin:0">Hangi portta çalışacağı, hangi ortamda başlayacağı burada yazar. <strong>Yayına alındığında kullanılmaz.</strong> "Port çakıştı" hatasında bakacağınız yer burasıdır.</p>'},
+ {k:'csproj', d:0, label:'IlkProje.csproj', info:'<h4>.csproj — proje tanımı</h4><p style="margin:0">Hedef .NET sürümü ve NuGet paketleri burada listelenir. <code>dotnet add package</code> komutu buraya bir <code>&lt;PackageReference&gt;</code> satırı ekler.</p>'}
+];
+var tw=$('#tree');
+tw.innerHTML='<div style="margin-bottom:.4rem; color:var(--muted)">IlkProje/</div>';
+tree.forEach(function(o,i){
+  var row=document.createElement('div');
+  row.style.paddingLeft=(0.9+o.d*1.2)+'rem';
+  var b=document.createElement('button');
+  b.type='button'; b.textContent=o.label;
+  b.addEventListener('click',function(){treeShow(i)});
+  row.appendChild(b); tw.appendChild(row);
+});
+var tBtns=$$('button',tw);
+function treeShow(i){
+  $('#treePanel').innerHTML=tree[i].info;
+  tBtns.forEach(function(b,j){b.setAttribute('aria-pressed', j===i?'true':'false')});
+}
+treeShow(4); /* wwwroot — en öğretici olan açık başlar */
+
+/* ---------- 11. Program.cs evreleri ---------- */
+var pgSrc=[
+ {l:'var builder = WebApplication.CreateBuilder(args);', p:1},
+ {l:'', p:0},
+ {l:'builder.Services.AddControllersWithViews();', p:2},
+ {l:'', p:0},
+ {l:'var app = builder.Build();', p:3},
+ {l:'', p:0},
+ {l:'if (!app.Environment.IsDevelopment())', p:4},
+ {l:'{', p:4},
+ {l:'    app.UseExceptionHandler("/Home/Error");', p:4},
+ {l:'    app.UseHsts();', p:4},
+ {l:'}', p:4},
+ {l:'', p:0},
+ {l:'app.UseHttpsRedirection();', p:4},
+ {l:'app.UseRouting();', p:4},
+ {l:'app.UseAuthorization();', p:4},
+ {l:'app.MapStaticAssets();', p:4},
+ {l:'', p:0},
+ {l:'app.MapControllerRoute(', p:4},
+ {l:'    name: "default",', p:4},
+ {l:'    pattern: "{controller=Home}/{action=Index}/{id?}")', p:4},
+ {l:'    .WithStaticAssets();', p:4},
+ {l:'', p:0},
+ {l:'app.Run();', p:4}
+];
+var pgInfo=[
+ {t:'1. Kurucu (builder)',
+  b:'<p style="margin:0"><code>CreateBuilder</code> tek satırdır ama arkasında çok iş vardır: yapılandırma dosyaları okunur, günlükleme kurulur, Dependency Injection kabı hazırlanır, Kestrel yapılandırılır, ortam (<code>Development</code>/<code>Production</code>) belirlenir.</p>'},
+ {t:'2. Servis kaydı',
+  b:'<p style="margin:0">"Uygulamada şu yetenekler olsun" dediğimiz yer. <code>AddControllersWithViews()</code> = "MVC kullanacağım".<br><strong>Dönem boyunca buraya satır ekleyeceğiz:</strong> Hafta 7\'de kendi servisimizi, Hafta 8\'de <code>DbContext</code>\'i, Hafta 11\'de Identity\'yi.</p>'},
+ {t:'3. İnşa',
+  b:'<p style="margin:0"><code>builder.Build()</code> uygulama nesnesini üretir.<br><strong>⚠️ Bu satırdan sonra servis eklenemez.</strong> Eklerseniz derlenir ama hiçbir etkisi olmaz — yeni başlayanların en sık hatası budur.</p>'},
+ {t:'4. Pipeline',
+  b:'<p style="margin:0">İsteği kimin, <strong>hangi sırayla</strong> işleyeceği burada belirlenir. <code>app.Run()</code> uygulamayı başlatır ve istekleri dinlemeye geçer.<br><strong>Haftanın ilkesi tam burada:</strong> bu satırların sırası davranışı belirler — sonraki iki bölümün konusu.</p>'}
+];
+var pgSteps=$('#pgSteps');
+[1,2,3,4].forEach(function(n){
+  var b=document.createElement('button');
+  b.type='button'; b.textContent=String(n); b.title=pgInfo[n-1].t;
+  b.addEventListener('click',function(){pgShow(n)});
+  pgSteps.appendChild(b);
+});
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function pgShow(n){
+  $('#pgCode').innerHTML=pgSrc.map(function(o){
+    var t=esc(o.l);
+    if(o.p===n && o.l) return '<span style="background:var(--accent); color:var(--bg); display:inline-block; padding:0 .25rem; border-radius:3px">'+t+'</span>';
+    if(o.p!==n && o.l) return '<span style="opacity:.38">'+t+'</span>';
+    return t;
+  }).join('\n');
+  $('#pgPanel').innerHTML='<h4>'+pgInfo[n-1].t+'</h4>'+pgInfo[n-1].b;
+  $$('button',pgSteps).forEach(function(b,j){b.setAttribute('aria-pressed', j===n-1?'true':'false')});
+}
+pgShow(1);
+
+
+/* ---------- adres çubuğundan #b7 ile atlama ---------- */
+function fromHash(){
+  var m=(window.location.hash||'').match(/^#b(\d+)$/);
+  if(!m) return false;
+  var i=Math.min(Math.max(parseInt(m[1],10),1),slides.length)-1;
+  if(i!==cur) go(i);
+  return true;
+}
+window.addEventListener('hashchange',fromHash);
+
+/* ---------- 8. what-happens-when: adım adım ---------- */
+var wh=[
+ {t:'1. URL ayrıştırılıyor', z:['wz1'], a:[], scope:'ön koşul',
+  b:'<pre><code>https://kampuskitap.local:5001/Urun/Detay/42?renk=mavi</code></pre>'+
+    '<p style="margin:0">Tarayıcı adresi parçalara ayırır: <strong>şema</strong> (https), <strong>host</strong>, <strong>port</strong>, <strong>yol</strong> (/Urun/Detay/42), <strong>sorgu dizesi</strong> (?renk=mavi).<br>Bu parçalardan <strong>yol ve sorgu dizesi sunucuya gider</strong> — ve <strong>Hafta 2</strong>’de onları bir C# metoduna bağlayacağız.</p>'},
+ {t:'2. Ağ katmanı', z:['wz2'], a:['wa1'], scope:'Bilgisayar Ağları',
+  b:'<p><strong>DNS</strong> alan adını IP’ye çevirir → <strong>TCP</strong> bağlantı kurulur → <strong>TLS</strong> ile şifreli hat açılır.</p>'+
+    '<p style="margin:0"><strong>Bu adımlar bu dersin konusu değil.</strong> <code>Bilgisayar Ağları</code> dersine aittir; biz bunların çalıştığını varsayıyoruz. Bilmemiz gereken tek şey: <em>bu adımlar zaman alır ve biz onları hızlandıramayız.</em></p>'},
+ {t:'3. HTTP isteği gönderiliyor', z:[], a:['wa2'], scope:'BU DERS',
+  b:'<pre><code>GET /Urun/Detay/42?renk=mavi HTTP/1.1\nHost: kampuskitap.local\nAccept: text/html\nCookie: .AspNetCore.Session=CfDJ8N...</code></pre>'+
+    '<p style="margin:0">Ağdan geçen şey <strong>bu düz metindir.</strong> Sunucudaki kodunuz bu metnin her satırına erişebilir — ve <strong>hiçbirine güvenemez</strong> (bkz. <em>İsteğin anatomisi</em> bölümü).</p>'},
+ {t:'4. Ters vekil karşılıyor', z:['wz3'], a:['wa2'], scope:'BU DERS (sınırda)',
+  b:'<p>İstek önce <strong>ters vekile</strong> (IIS / Nginx) düşer. Burada TLS sonlandırılır, yük dengelenir, statik dosyalar önbellekten servis edilebilir.</p>'+
+    '<p style="margin:0">⚠️ <strong>Geliştirme makinenizde bu kutu yoktur.</strong> <code>dotnet run</code> dediğinizde doğrudan bir sonraki kutuya gidersiniz. Ayrıntı: sonraki bölüm.</p>'},
+ {t:'5. Kestrel + sizin kodunuz', z:['wz4'], a:['wa3'], scope:'★ MERKEZ',
+  b:'<p><strong>İşte buradan sonrası bizim sorumluluğumuz.</strong> Kestrel isteği alır, ASP.NET Core middleware hattına verir; route çözülür, bir controller metodu çalışır.</p>'+
+    '<p style="margin:0">Dönem boyunca bu kutunun içini dolduracağız: <strong>Hafta 2</strong> routing ve mimari, <strong>Hafta 3</strong> HTML üretimi, <strong>Hafta 4–6</strong> form ve validation, <strong>Hafta 7</strong> state management.</p>'},
+ {t:'6. Veriye iniliyor', z:['wz5'], a:['wa4'], scope:'BU DERS',
+  b:'<p>Sayfa için veri gerekiyorsa uygulama veritabanına gider. Bu derste veritabanına <strong>yalnızca EF Core üzerinden</strong> dokunacağız; ham SQL yazmayacağız.</p>'+
+    '<p style="margin:0"><strong>Hafta 8</strong>’den itibaren bu kutu devreye girer. O zamana kadar verimiz bellekte duracak.</p>'},
+ {t:'7. Yanıt üretiliyor', z:['wz4'], a:[], scope:'★ MERKEZ',
+  b:'<p>Uygulama HTML’i (veya JSON’u) <strong>o anda üretir</strong> ve bir HTTP yanıtına sarar:</p>'+
+    '<pre><code>HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nCache-Control: no-cache</code></pre>'+
+    '<p style="margin:0">Durum kodunu, başlıkları ve gövdeyi <strong>siz belirlersiniz.</strong></p>'},
+ {t:'8. Yanıt geri dönüyor', z:[], a:['wa5'], scope:'BU DERS',
+  b:'<p>Yanıt aynı zinciri tersten kat eder. Yolda <strong>önbelleklenebilir</strong>: ters vekil, CDN ve tarayıcı — hepsi sizin gönderdiğiniz başlıklara bakar.</p>'+
+    '<p style="margin:0">Bu yüzden <em>“kodu değiştirdim ama sayfa eskisini gösteriyor”</em> şikâyetinin cevabı çoğu zaman önbellektir.</p>'},
+ {t:'9. Tarayıcı boyuyor', z:['wz1'], a:[], scope:'ön koşul',
+  b:'<p>Tarayıcı HTML’i ayrıştırır, DOM ve CSSOM kurar, yerleşimi hesaplar ve ekranı boyar.</p>'+
+    '<p style="margin:0"><strong>Bu adım <code>Web Teknolojileri</code> dersinin konusudur.</strong> Biz yalnızca <em>ona doğru HTML göndermekten</em> sorumluyuz.</p>'}
+];
+var whZones=['wz1','wz2','wz3','wz4','wz5'], whArrows=['wa1','wa2','wa3','wa4','wa5'];
+var whSteps=$('#whSteps');
+wh.forEach(function(o,i){
+  var b=document.createElement('button');
+  b.type='button'; b.textContent=String(i+1); b.title=o.t;
+  b.addEventListener('click',function(){whShow(i)});
+  whSteps.appendChild(b);
+});
+function whShow(i){
+  var o=wh[i];
+  whZones.forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    var on=o.z.indexOf(id)>-1;
+    el.style.opacity = on ? '1' : '.32';
+    el.style.filter = on ? 'drop-shadow(0 0 6px var(--accent))' : 'none';
+  });
+  whArrows.forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    var on=o.a.indexOf(id)>-1;
+    el.style.opacity = on ? '1' : '.2';
+    el.setAttribute('stroke-width', on ? '3' : '1.6');
+  });
+  var cls = o.scope==='★ MERKEZ' ? 'var(--accent)' : (o.scope.indexOf('ön koşul')>-1||o.scope.indexOf('Ağlar')>-1 ? 'var(--muted)' : 'var(--accent2)');
+  $('#whPanel').innerHTML='<h4>'+o.t+' <span class="tag" style="color:'+cls+'; border-color:'+cls+'">'+o.scope+'</span></h4>'+o.b;
+  $$('button',whSteps).forEach(function(b,j){b.setAttribute('aria-pressed', j===i?'true':'false')});
+}
+whShow(4); /* merkez adımla açılır: dersin bölgesi vurgulanmış olsun */
+
+/* ---------- açılış ---------- */
+var qs=window.location.search||'';
+
+if(!fromHash()) go(0);
+})();
+</script>
+</body>
+</html>

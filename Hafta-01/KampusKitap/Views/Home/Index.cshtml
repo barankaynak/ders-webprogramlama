@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="text-center">
+    <h1 class="display-4">KampusKitap</h1>
+    <p class="lead">Kampüs içi ikinci el kitap alışveriş platformu</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-8 offset-md-2">
+        <div class="alert alert-secondary">
+            <h4 class="alert-heading">Hafta 1 — proje iskeleti</h4>
+            <p class="mb-2">
+                Bu sayfa <code>dotnet new mvc</code> ile üretilen şablonun ta kendisidir.
+                Dönem boyunca <strong>bu uygulamaya her hafta bir katman ekleyeceğiz.</strong>
+            </p>
+            <hr>
+            <p class="mb-0">
+                Şu an sunucuda çalışan kod: <code>Controllers/HomeController.cs</code> içindeki
+                <code>Index()</code> metodu. O metot bu <code>.cshtml</code> dosyasını render ediyor.
+                <strong>Hafta 2</strong>&rsquo;de sunucunun bu metodu nasıl bulduğunu göreceğiz.
+            </p>
+        </div>
+
+        <h5 class="mt-4">Bu hafta neyi görmüş olmalısınız</h5>
+        <ul>
+            <li><code>Program.cs</code> &mdash; dört evre: kurucu, servis kaydı, inşa, pipeline</li>
+            <li>Proje iskeleti &mdash; <code>Controllers/</code>, <code>Views/</code>, <code>Models/</code>, <code>wwwroot/</code></li>
+            <li><code>wwwroot</code> neden &ldquo;dışarıya açık&rdquo; klasördür</li>
+            <li><code>dotnet run</code> ile <code>dotnet watch</code> arasındaki fark</li>
+        </ul>
+    </div>
+</div>
