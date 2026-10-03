@@ -1,0 +1,13 @@
+@*
+    Bu görünümün adı metot adından FARKLI: Detay() action'ı View("Secilmedi") diyor.
+    Çatı bu durumda "Detay" yerine "Secilmedi" arar (ders notu §2.5).
+*@
+@{
+    ViewData["Title"] = "Kitap seçilmedi";
+}
+
+<h1>Kitap seçilmedi</h1>
+<p class="ipucu">
+    Adreste bir kimlik yok. Deneyin: <code>/Kitap/Detay/42</code>
+</p>
+<p><a asp-controller="Kitap" asp-action="Index">← Listeye dön</a></p>

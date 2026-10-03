@@ -1,0 +1,14 @@
+@*
+    _ViewImports.cshtml — YÖNERGELERİ paylaştırır (ders notu §2.4)
+    Kod çalıştırmaz. Kod çalıştıran dosya _ViewStart.cshtml'dir.
+*@
+@using KampusKitap
+@using KampusKitap.Models
+
+@* Çatının hazır Tag Helper'ları: <partial>, asp-controller, asp-action … *@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@* HAFTA 3'TE EKLENDİ: projenin KENDİ bileşenleri.
+   Bu satır olmadan <vc:ziyaret-rozeti /> etiketi çalışmaz;
+   tarayıcıda olduğu gibi metin olarak görünür. *@
+@addTagHelper *, KampusKitap

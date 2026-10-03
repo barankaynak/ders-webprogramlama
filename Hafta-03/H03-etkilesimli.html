@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hafta 3 — Razor Syntax, View Component, Layout</title>
+<meta name="description" content="Web Programlama · Hafta 3 — Razor sözdizimi, Layout yapısı, Partial View ve View Component. Adım adım animasyonlu ders sunumu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font:"Source Sans 3","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
+  --bg:#fbfaf7; --fg:#1c1a17; --ink2:#3a352e; --muted:#5d574e; --faint:#8a8377;
+  --line:#ddd6ca; --line2:#ece7dd; --card:#fff; --card2:#f4f1ea;
+  --accent:#8a3d0f; --accent-s:#fbeadf;
+  --accent2:#14607a; --accent2-s:#e0eff4;
+  --ok:#2f6b2a; --ok-s:#e6f1e4;
+  --warn:#a4231b; --warn-s:#fae7e5;
+  --gold:#9a6b0c; --gold-s:#fbf0da;
+  --plum:#5c3f78; --plum-s:#eee8f5;
+  --code:#f2efe8;
+  --grid:rgba(28,26,23,.045);
+  --shadow:0 1px 2px rgba(28,26,23,.06),0 10px 26px rgba(28,26,23,.07);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#20201d}
+body{font-family:var(--font);color:var(--fg);-webkit-font-smoothing:antialiased}
+svg{font-family:inherit;overflow:visible}
+button{font-family:inherit}
+code,.mono{font-family:var(--mono)}
+
+/* ---------- sahne ---------- */
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  overflow:hidden;background:var(--bg);box-shadow:0 30px 90px rgba(0,0,0,.5)}
+.slide{position:absolute;inset:0;padding:48px 72px 70px;display:flex;flex-direction:column;
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:40px 40px;background-position:-1px -1px;
+  opacity:0;visibility:hidden;transform:translateX(30px);
+  transition:opacity .42s ease,transform .42s cubic-bezier(.2,.7,.2,1),visibility 0s linear .42s}
+.slide.past{transform:translateX(-30px)}
+.slide.active{opacity:1;visibility:visible;transform:none;
+  transition:opacity .42s ease,transform .42s cubic-bezier(.2,.7,.2,1),visibility 0s}
+.slide.dark{background-color:#1c1a17;color:#fff;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px)}
+.slide .notes{display:none}
+
+.secA{--sec:var(--accent);--sec-s:var(--accent-s)}
+.secB{--sec:var(--accent2);--sec-s:var(--accent2-s)}
+.secC{--sec:var(--plum);--sec-s:var(--plum-s)}
+.sec0{--sec:var(--accent);--sec-s:var(--accent-s)}
+
+/* ---------- başlıklar ---------- */
+.s-head{margin-bottom:20px;flex:none}
+.kicker{font-size:15px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--sec);
+  display:flex;align-items:center;gap:11px}
+.kicker::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--sec);box-shadow:0 0 0 4px var(--sec-s)}
+.dark .kicker::before{box-shadow:0 0 0 4px rgba(255,255,255,.14)}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.015em}
+h2{font-size:42px;line-height:1.1;margin-top:9px}
+.sub{font-size:21px;line-height:1.4;color:var(--muted);margin-top:9px;max-width:1300px}
+.dark .sub{color:rgba(255,255,255,.72)}
+.s-body{flex:1;position:relative;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.src{position:absolute;left:72px;bottom:46px;font-size:13px;color:var(--faint)}
+
+/* ---------- adım parçaları ---------- */
+.f{opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
+.f.on{opacity:1;transform:none}
+.f.fx{transform:translateX(-16px)} .f.fx.on{transform:none}
+.f.fs{transform:scale(.88)} .f.fs.on{transform:none}
+.f.fo{transform:none}
+svg .f{transform-box:fill-box;transform-origin:center}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1s ease}
+.draw.on,.on .draw{stroke-dashoffset:0}
+.dim{opacity:.26;transition:opacity .4s}
+
+/* ---------- bileşenler ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow)}
+.card h3{font-size:22px;margin-bottom:7px}
+.lead{font-size:23px;line-height:1.45;color:var(--ink2)}
+.muted{color:var(--muted)}
+.row{display:flex;gap:20px}
+.col{display:flex;flex-direction:column;gap:16px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;
+  font-size:15px;font-weight:700;background:var(--sec-s);color:var(--sec)}
+.pill.gri{background:var(--card2);color:var(--muted)}
+.hint{font-size:15px;color:var(--faint)}
+.big{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.num{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;
+  background:var(--sec);color:#fff;font-weight:800;font-size:17px;flex:none}
+.btn{appearance:none;border:1.5px solid var(--line);background:var(--card);color:var(--fg);
+  font-size:16px;font-weight:700;padding:9px 16px;border-radius:10px;cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--sec);color:var(--sec)}
+.btn.primary{background:var(--sec);border-color:var(--sec);color:#fff}
+.seg{display:inline-flex;background:var(--card2);border-radius:12px;padding:4px;gap:4px}
+.seg button{appearance:none;border:0;background:transparent;font-size:16px;font-weight:700;
+  color:var(--muted);padding:9px 16px;border-radius:9px;cursor:pointer;transition:.22s}
+.seg button.on{background:var(--card);color:var(--sec);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:15px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--sec-s);color:var(--sec)}
+.chip.gri{background:var(--card2);color:var(--ink2)}
+
+table.tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:18px;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+table.tbl th{background:var(--ink2);color:#fff;text-align:left;font-weight:700;padding:11px 14px;font-size:16px}
+table.tbl td{padding:10px 14px;border-top:1px solid var(--line2);vertical-align:top;line-height:1.35}
+table.tbl td:first-child{font-weight:700}
+table.tbl tr.hot td{background:var(--sec-s)}
+
+/* ---------- kod ---------- */
+.kod{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  font-family:var(--mono);font-size:17px;line-height:1.62;white-space:pre;overflow:hidden}
+.kod.sm{font-size:15px;line-height:1.55}
+.kod .c{color:var(--muted)}                 /* yorum */
+.kod .h{color:var(--accent2)}               /* html */
+.kod .s{color:var(--accent);font-weight:700}/* c# / razor */
+.kod .y{background:var(--gold-s);border-radius:3px}
+.kod .ekle{background:var(--ok-s);border-radius:3px}
+.kod .sil{background:var(--warn-s);border-radius:3px;text-decoration:line-through;opacity:.6}
+.dosya{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--muted);
+  background:var(--card2);border:1px solid var(--line);border-bottom:0;
+  border-radius:10px 10px 0 0;padding:6px 14px;display:inline-block}
+.dosya + .kod{border-radius:0 12px 12px 12px}
+
+/* ---------- çıktı kutusu (tarayıcı) ---------- */
+.tarayici{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.tarayici .ub{background:var(--card2);border-bottom:1px solid var(--line);padding:7px 12px;
+  display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);font-family:var(--mono)}
+.tarayici .ub i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.tarayici .ic{padding:14px 18px;font-size:17px;line-height:1.5}
+.tarayici .ic h4{margin:0 0 6px;font-size:21px}
+
+/* ---------- uyarı kutuları ---------- */
+.kutu{border-left:5px solid var(--sec);background:var(--card2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:18px;line-height:1.45}
+.kutu.warn{border-left-color:var(--warn);background:var(--warn-s)}
+.kutu.ok{border-left-color:var(--ok);background:var(--ok-s)}
+.kutu.gold{border-left-color:var(--gold);background:var(--gold-s)}
+.kutu b{color:var(--sec)}
+.kutu.warn b{color:var(--warn)}
+.kutu.ok b{color:var(--ok)}
+
+/* ---------- kapak ---------- */
+.cover .ct{position:absolute;left:72px;top:150px;width:760px}
+.cover h1{font-size:68px;line-height:1.04;margin-top:18px;letter-spacing:-.03em}
+.cover h1 em{font-style:normal;color:#e8a05c}
+.cover .sl{font-size:22px;line-height:1.45;color:rgba(255,255,255,.75);margin-top:22px;max-width:680px}
+.cover .meta{position:absolute;left:72px;bottom:86px;display:flex;gap:10px;flex-wrap:wrap}
+.cover .meta span{font-size:14px;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;padding:6px 13px}
+.cover .meta kbd{font-family:inherit;font-weight:800;color:#fff}
+
+/* ---------- yol haritası ---------- */
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative;margin-top:10px}
+.road::before{content:"";position:absolute;left:14%;right:14%;top:36px;height:6px;border-radius:6px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--plum))}
+.durak{text-align:center;cursor:pointer}
+.durak .d{width:78px;height:78px;margin:0 auto;border-radius:50%;background:var(--card);
+  border:6px solid var(--sec);display:grid;place-items:center;font-weight:800;font-size:21px;
+  color:var(--sec);position:relative;z-index:1;transition:.25s}
+.durak:hover .d{background:var(--sec);color:#fff;transform:scale(1.06)}
+.durak .t{font-size:23px;font-weight:800;margin-top:14px;line-height:1.2}
+.durak .q{font-size:18px;color:var(--muted);margin-top:7px;line-height:1.35}
+
+/* ---------- çalışan kısayol çubuğu ---------- */
+#bar{position:absolute;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 72px;font-size:13px;color:var(--faint);pointer-events:none;z-index:20}
+#bar .sn{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#bar .ctr{font-variant-numeric:tabular-nums;font-size:19px;font-weight:800;color:var(--fg);
+  background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:2px 15px}
+#bar .ctr b{color:var(--sec,var(--accent))}
+#stage.dk #bar{color:rgba(255,255,255,.55)}
+#stage.dk #bar .ctr{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.26)}
+#stage.dk #bar .ctr b{color:#e8a05c}
+#ilerleme{position:absolute;left:0;bottom:0;height:4px;background:var(--sec,var(--accent));transition:width .45s ease;z-index:21}
+#nokta{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:6px;z-index:21}
+#nokta i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:.3s}
+#nokta i.on{background:var(--sec,var(--accent))}
+#stage.dk #nokta i{background:rgba(255,255,255,.2)}
+#stage.dk #nokta i.on{background:#fff}
+#gez{position:absolute;right:190px;bottom:7px;display:flex;gap:6px;z-index:22;opacity:0;transition:opacity .3s}
+#stage:hover #gez{opacity:1}
+#gez button{width:33px;height:29px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+  color:var(--fg);cursor:pointer;font-size:14px}
+
+/* ---------- katmanlar ---------- */
+#kus{position:fixed;inset:0;background:rgba(20,18,15,.94);z-index:100;display:none;overflow:auto;padding:36px 44px}
+#kus.open{display:block}
+#kus h3{color:#fff;font-size:21px;margin:0 0 18px;font-weight:700}
+#kus .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:13px}
+#kus .k{background:#2a2621;border:1px solid #3d382f;border-radius:13px;padding:13px 15px;color:#e4ded3;
+  cursor:pointer;transition:.2s;min-height:92px}
+#kus .k:hover,#kus .k.cur{border-color:#e8a05c;background:#332e27}
+#kus .k b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;color:#e8a05c}
+#kus .k span{font-size:15px;line-height:1.35}
+#yardim{position:fixed;inset:0;background:rgba(20,18,15,.8);z-index:110;display:none;place-items:center}
+#yardim.open{display:grid}
+#yardim .b{background:var(--card);border-radius:16px;padding:26px 32px;min-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#yardim h3{font-size:21px;margin-bottom:13px}
+#yardim table{border-collapse:collapse;font-size:16px}
+#yardim td{padding:5px 14px 5px 0}
+#yardim kbd{display:inline-block;min-width:28px;text-align:center;padding:3px 8px;border:1px solid var(--line);
+  border-bottom-width:3px;border-radius:6px;font-family:inherit;font-weight:700;font-size:13px;background:var(--card2)}
+#kara{position:fixed;inset:0;background:#000;z-index:120;display:none}
+#kara.open{display:block}
+#atla{position:fixed;right:22px;top:18px;z-index:130;background:#1c1a17;color:#fff;font-size:26px;
+  font-weight:800;padding:7px 17px;border-radius:11px;display:none}
+
+
+</style>
+</head>
+<body>
+<div id="stage">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker>
+  <marker id="ok2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker>
+  <marker id="okb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e8a05c"/></marker>
+</defs></svg>
+
+<!-- ========== 1 · KAPAK ========== -->
+<section class="slide dark cover sec0" id="s-kapak" data-title="Kapak">
+  <svg viewBox="0 0 1600 900" style="position:absolute;inset:0;width:1600px;height:900px">
+    <g transform="translate(900,210)">
+      <rect x="0" y="0" width="300" height="330" rx="16" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+      <text x="18" y="34" font-size="14" font-weight="700" fill="#e8a05c" font-family="monospace">Index.cshtml</text>
+      <g font-family="monospace" font-size="15">
+        <text x="18" y="76" fill="#8fc7d8">&lt;h1&gt;Kitaplar&lt;/h1&gt;</text>
+        <text x="18" y="106" fill="#e8a05c">@foreach (var k in Model)</text>
+        <text x="18" y="136" fill="#e8a05c">{</text>
+        <text x="34" y="166" fill="#8fc7d8">&lt;li&gt;</text>
+        <text x="74" y="166" fill="#e8a05c">@k.Baslik</text>
+        <text x="158" y="166" fill="#8fc7d8">&lt;/li&gt;</text>
+        <text x="18" y="196" fill="#e8a05c">}</text>
+      </g>
+      <g opacity=".85">
+        <rect x="18" y="230" width="264" height="36" rx="8" fill="rgba(232,160,92,.18)"/>
+        <text x="150" y="254" text-anchor="middle" font-size="15" font-weight="700" fill="#e8a05c">sunucuda çalışır</text>
+      </g>
+      <path d="M150 280V320" stroke="#e8a05c" stroke-width="3" marker-end="url(#okb)"/>
+    </g>
+    <g transform="translate(900,580)">
+      <rect x="0" y="0" width="300" height="150" rx="16" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.26)"/>
+      <text x="18" y="32" font-size="14" font-weight="700" fill="#9fd8c8" font-family="monospace">tarayıcıya giden</text>
+      <g font-family="monospace" font-size="15" fill="#d8e8e2">
+        <text x="18" y="66">&lt;h1&gt;Kitaplar&lt;/h1&gt;</text>
+        <text x="18" y="94">&lt;li&gt;Suç ve Ceza&lt;/li&gt;</text>
+        <text x="18" y="122">&lt;li&gt;Tutunamayanlar&lt;/li&gt;</text>
+      </g>
+    </g>
+    <text x="1050" y="782" text-anchor="middle" font-size="17" fill="rgba(255,255,255,.6)">Tarayıcı hiçbir zaman bir <tspan font-family="monospace" fill="#e8a05c">@</tspan> görmez.</text>
+    
+  </svg>
+  <div class="ct">
+    <div class="kicker">Web Programlama · Hafta 3</div>
+    <h1>Razor, Layout ve <em>View Component</em></h1>
+    <p class="sl">Sunucuda HTML üretmenin mekanizması — ve tekrar eden arayüzü tek yerden yönetmek.</p>
+  </div>
+  <div class="meta"><span>3 × 50 dakika</span><span><kbd>→</kbd> sonraki adım</span><span><kbd>O</kbd> tüm slaytlar</span><span><kbd>?</kbd> kısayollar</span></div>
+
+</section>
+
+<!-- ========== 2 · YOL HARİTASI ========== -->
+<section class="slide sec0" id="s-yol" data-title="Bugünün yolu">
+  <header class="s-head">
+    <div class="kicker">Hafta 3 · Genel bakış</div>
+    <h2>Üç durak, tek soru: <span style="color:var(--accent)">bu parçanın sahibi kim?</span></h2>
+    <p class="sub">Bir durağa tıklayarak doğrudan oraya gidebilirsiniz.</p>
+  </header>
+  <div class="s-body">
+    <div class="road">
+      <div class="durak secA" data-goto="s-nerede"><div class="d">A</div><div class="t">Razor sözdizimi</div><div class="q">HTML'i <b>kim</b>, <b>nerede</b> üretiyor?</div></div>
+      <div class="durak secB" data-goto="s-layout"><div class="d">B</div><div class="t">Layout</div><div class="q">Sayfanın <b>çerçevesi</b> kimin?</div></div>
+      <div class="durak secC" data-goto="s-partial"><div class="d">C</div><div class="t">Partial &amp; View Component</div><div class="q">Sayfanın <b>parçası</b> kimin?</div></div>
+    </div>
+    <div class="f" data-step="1" style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
+      <div class="card" style="display:flex;gap:18px;align-items:center">
+        <div class="big" style="color:var(--accent)">🧩</div>
+        <div>
+          <h3>Haftanın ilkesi — Tek doğruluk kaynağı</h3>
+          <p class="lead" style="margin:0;font-size:20px">Aynı arayüz parçası <b>iki yerde</b> duruyorsa, er ya da geç ikisi <b>farklılaşır</b>. Üçüncü kopyada bunu fark etmek aylar alır.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Hafta 2'den devralınan</h3>
+        <table class="tbl" style="font-size:17px;box-shadow:none">
+          <tr><td>Controller ve action</td><td>bu hafta <b>View()</b> döndürecek</td></tr>
+          <tr><td>Convention (sözleşme)</td><td>bu hafta <b>klasör adı</b> sözleşmesi</td></tr>
+          <tr><td>Dependency Injection</td><td>bu hafta <b>View Component</b> içinde</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 3 · RAZOR NEREDE ÇALIŞIR (AKIŞ) ========== -->
+<section class="slide secA" id="s-nerede" data-title="Razor nerede çalışır?" data-module="akis" data-steps="7">
+  <header class="s-head">
+    <div class="kicker">A · Razor sözdizimi</div>
+    <h2>Bir isteğin yolculuğu: <code style="font-family:var(--mono);font-size:36px">@</code> nerede kayboluyor?</h2>
+  </header>
+  <div class="s-body">
+    <svg class="akis-svg" viewBox="0 0 1450 400" width="1450" height="400">
+      
+      <!-- sunucu kutusu -->
+      <rect x="286" y="40" width="880" height="300" rx="18" fill="#f4f1ea" stroke="#ddd6ca" stroke-width="2"/>
+      <text x="306" y="68" font-size="15" font-weight="800" fill="#8a8377" letter-spacing="2">SUNUCU</text>
+      <!-- tarayıcılar -->
+      <g class="tr1"><rect x="20" y="130" width="210" height="140" rx="12" fill="#fff" stroke="#ddd6ca" stroke-width="2"/>
+        <rect x="20" y="130" width="210" height="28" rx="12" fill="#f4f1ea"/><rect x="20" y="146" width="210" height="12" fill="#f4f1ea"/>
+        <circle cx="38" cy="144" r="5" fill="#ddd6ca"/><circle cx="54" cy="144" r="5" fill="#ddd6ca"/>
+        <text x="125" y="200" text-anchor="middle" font-size="18" font-weight="800" fill="#1c1a17">Tarayıcı</text>
+        <text x="125" y="226" text-anchor="middle" font-size="14" font-family="monospace" fill="#5d574e">/Kitap</text></g>
+      <g class="tr2"><rect x="1222" y="130" width="210" height="140" rx="12" fill="#fff" stroke="#ddd6ca" stroke-width="2"/>
+        <rect x="1222" y="130" width="210" height="28" rx="12" fill="#f4f1ea"/><rect x="1222" y="146" width="210" height="12" fill="#f4f1ea"/>
+        <circle cx="1240" cy="144" r="5" fill="#ddd6ca"/><circle cx="1256" cy="144" r="5" fill="#ddd6ca"/>
+        <text x="1327" y="200" text-anchor="middle" font-size="18" font-weight="800" fill="#1c1a17">Tarayıcı</text>
+        <text x="1327" y="226" text-anchor="middle" font-size="14" fill="#5d574e">çizer</text></g>
+      <!-- aşamalar -->
+      <g class="as" data-i="0"><rect x="312" y="150" width="180" height="110" rx="12" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="402" y="196" text-anchor="middle" font-size="17" font-weight="800" fill="#1c1a17">Middleware</text>
+        <text x="402" y="220" text-anchor="middle" font-size="15" fill="#5d574e">Pipeline</text>
+        <text x="402" y="244" text-anchor="middle" font-size="13" fill="#8a8377">Hafta 2</text></g>
+      <g class="as" data-i="1"><rect x="520" y="150" width="180" height="110" rx="12" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="610" y="196" text-anchor="middle" font-size="17" font-weight="800" fill="#1c1a17">Routing</text>
+        <text x="610" y="220" text-anchor="middle" font-size="14" font-family="monospace" fill="#5d574e">{controller}/</text>
+        <text x="610" y="240" text-anchor="middle" font-size="14" font-family="monospace" fill="#5d574e">{action}</text></g>
+      <g class="as" data-i="2"><rect x="728" y="150" width="180" height="110" rx="12" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="818" y="190" text-anchor="middle" font-size="17" font-weight="800" fill="#1c1a17">Controller</text>
+        <text x="818" y="216" text-anchor="middle" font-size="14" font-family="monospace" fill="#8a3d0f">return View(k)</text>
+        <text x="818" y="240" text-anchor="middle" font-size="13" fill="#8a8377">action çalıştı</text></g>
+      <g class="as" data-i="3"><rect x="936" y="150" width="210" height="110" rx="12" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="1041" y="186" text-anchor="middle" font-size="17" font-weight="800" fill="#1c1a17">Razor motoru</text>
+        <text x="1041" y="210" text-anchor="middle" font-size="14" font-family="monospace" fill="#5d574e">Index.cshtml</text>
+        <text x="1041" y="234" text-anchor="middle" font-size="13" fill="#8a8377">derlenmiş C# sınıfı</text>
+        <g class="cs-rozet"><rect x="966" y="246" width="150" height="22" rx="11" fill="#fbeadf"/>
+          <text x="1041" y="262" text-anchor="middle" font-size="13" font-weight="700" fill="#8a3d0f">@ ifadeleri burada</text></g></g>
+      <!-- oklar -->
+      <path class="ara" data-i="0" d="M234 196H306" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <path class="ara" data-i="1" d="M496 205H514" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <path class="ara" data-i="2" d="M704 205H722" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <path class="ara" data-i="3" d="M912 205H930" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <path class="ara" data-i="4" d="M1150 300H1200V196H1218" stroke="#2f6b2a" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <!-- geri dönen yanıt etiketi -->
+      <g class="yanit" opacity="0"><rect x="1000" y="286" width="150" height="30" rx="8" fill="#e6f1e4" stroke="#2f6b2a" stroke-width="2"/>
+        <text x="1075" y="306" text-anchor="middle" font-size="14" font-weight="800" fill="#2f6b2a">yalnızca HTML</text></g>
+      <!-- hareketli paket -->
+      <g class="paket" opacity="0"><circle r="13" fill="#8a3d0f"/><circle r="22" fill="#8a3d0f" opacity=".16"/></g>
+      <!-- alt açıklama -->
+      <text class="aciklama" x="725" y="382" text-anchor="middle" font-size="19" font-weight="700" fill="#3a352e"></text>
+    </svg>
+    <div class="f" data-step="7" style="margin-top:14px">
+      <div class="kutu ok" style="font-size:21px"><b>JavaScript tarayıcıda çalışır, Razor sunucuda.</b>
+        İkisi aynı dosyada yan yana yazılabilir ama <b>farklı makinelerde, farklı zamanlarda</b> çalışırlar —
+        bu yüzden Razor’ı tarayıcının geliştirici konsolunda hata ayıklayamazsınız.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 4 · CTRL+U KANITI ========== -->
+<section class="slide secA" id="s-kanit" data-title="Ctrl+U kanıtı" data-module="kanit">
+  <header class="s-head">
+    <div class="kicker">A · Kanıt</div>
+    <h2>Söylemek yetmez — <kbd style="font:inherit;font-weight:800">Ctrl+U</kbd> ile bakalım</h2>
+    <p class="sub">Soldaki yazdığımız dosya, sağdaki tarayıcıya <i>gerçekten</i> giden metin.</p>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div>
+        <span class="dosya">Views/Kitap/Index.cshtml</span>
+        <div class="kod sm"><span class="s">@model</span> List&lt;Kitap&gt;
+
+<span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>
+<span class="h">&lt;ul&gt;</span>
+    <span class="s">@foreach (var k in Model)</span>
+    <span class="s">{</span>
+        <span class="h">&lt;li&gt;&lt;strong&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/strong&gt;</span> — <span class="s">@k.Fiyat</span> TL<span class="h">&lt;/li&gt;</span>
+    <span class="s">}</span>
+<span class="h">&lt;/ul&gt;</span></div>
+      </div>
+      <div>
+        <div class="seg kanit-seg" style="margin-bottom:10px"><button data-m="0" class="on">Tahmin: ne göreceğiz?</button><button data-m="1">Ctrl+U — gerçek kaynak</button></div>
+        <div class="kanit-kutu"></div>
+      </div>
+    </div>
+    <div class="f" data-step="1" style="margin-top:26px">
+      <div class="kutu ok" style="font-size:20px"><b>Üç pratik sonuç:</b>
+        ① Razor'ı tarayıcı konsolunda <b>hata ayıklayamazsınız</b> — orada yok. &nbsp;
+        ② Razor sunucunun kaynaklarına erişir (ama erişmemelidir — slayt 23). &nbsp;
+        ③ Kullanıcı tıklayınca Razor <b>yeniden çalışmaz</b>; yeni bir istek gerekir.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 5 · TOKENIZER: @ TEK KURAL ========== -->
+<section class="slide secA" id="s-token" data-title="@ — tek kural" data-module="token" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">A · Sözdizimi</div>
+    <h2>Ezberlenecek tek kural: <code style="font-family:var(--mono);color:var(--accent)">@</code> = "buradan sonrası C#"</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:28px">
+      <div>
+        <div class="tok-kod kod" style="font-size:19px;line-height:1.9"></div>
+        <div class="tok-leg" style="margin-top:16px;display:flex;gap:22px;align-items:center;font-size:17px">
+          <span style="display:flex;align-items:center;gap:8px"><i style="width:16px;height:16px;border-radius:4px;background:var(--accent2-s);border:2px solid var(--accent2);display:block"></i> HTML kipi</span>
+          <span style="display:flex;align-items:center;gap:8px"><i style="width:16px;height:16px;border-radius:4px;background:var(--accent-s);border:2px solid var(--accent);display:block"></i> C# kipi</span>
+          <span class="hint">Razor, ifadenin nerede bittiğini kendi anlar.</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card f" data-step="1"><h3>Açık ifade — parantez</h3>
+          <div class="kod sm"><span class="s">@(kitap.Fiyat * 0.82m)</span> TL
+<span class="s">@(kitap.Baslik)</span>-indirimli.pdf</div>
+          <p class="muted" style="margin:8px 0 0;font-size:17px">Parantez olmasaydı <code>-indirimli.pdf</code> C# sanılırdı.</p></div>
+        <div class="card f" data-step="2"><h3>Gerçek bir <code>@</code> yazmak</h3>
+          <div class="kod sm"><span class="h">&lt;p&gt;</span>baran.kaynak<span class="s">@@</span>ornek.edu.tr<span class="h">&lt;/p&gt;</span></div></div>
+        <div class="card f" data-step="3"><h3>İki yorum — ikisi aynı değil</h3>
+          <div class="kod sm"><span class="s">@* tarayıcıya HİÇ gitmez *@</span>
+<span class="c">&lt;!-- kullanıcı Ctrl+U ile GÖRÜR --&gt;</span></div>
+          <p class="muted" style="margin:8px 0 0;font-size:17px">İç notu, "TODO"yu, parolayı <b>asla</b> HTML yorumuna yazmayın.</p></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 6 · KOD BLOKLARI VE DENETİM YAPILARI ========== -->
+<section class="slide secA" id="s-syntax" data-title="Kod blokları ve denetim yapıları" data-module="syntax">
+  <header class="s-head">
+    <div class="kicker">A · Sözdizimi</div>
+    <h2>Blok mu, ifade mi? Dördünü yan yana görelim</h2>
+    <p class="sub">Bir yapıya tıklayın: solda kod, sağda tarayıcıya giden sonuç.</p>
+  </header>
+  <div class="s-body">
+    <div class="chips syntax-sec" style="margin-bottom:16px"></div>
+    <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:26px;align-items:start">
+      <div><span class="dosya syntax-ad"></span><div class="kod syntax-kod" style="min-height:230px"></div></div>
+      <div class="col">
+        <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>sonuç</span></div><div class="ic syntax-cikti" style="min-height:120px"></div></div>
+        <div class="kutu syntax-not" style="font-size:18px"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 7 · UYGULAMA A ========== -->
+<section class="slide secA" id="s-uygA" data-title="Uygulama A — Content()'ten View()'a" data-module="uygA" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama A · 12 dk · canlı kodlama</div>
+    <h2><code style="font-family:var(--mono);font-size:34px">Content()</code> → <code style="font-family:var(--mono);font-size:34px">View()</code></h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:420px 1fr;gap:26px;height:100%">
+      <div class="col" style="gap:11px">
+        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b>Hafta 2'nin hâli</b><span><code>return Content("Kitap listesi")</code> — düz metin</span></div></div>
+        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b><code>View()</code>'a çevir ve <u>hata al</u></b><span>Dosya yok — çatı nerede aradığını <b>söyler</b></span></div></div>
+        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b>Görünümü yaz</b><span><code>Views/Kitap/Index.cshtml</code> — listenin birinci yolu</span></div></div>
+        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b>⭐ Kanıt: Ctrl+U</b><span>Kaynakta <code>@foreach</code> <b>yok</b></span></div></div>
+        <div class="kutu warn f" data-step="2" style="margin-top:8px;font-size:17px"><b>Sık hata:</b> <code>View()</code> deyip modeli göndermemek → görünümde <code>Model</code> <code>null</code> olur. Bunu <b>bilerek bir kez</b> yapın.</div>
+      </div>
+      <div class="col">
+        <div class="f" data-step="2"><span class="dosya">tarayıcı · hata ekranı</span>
+          <div class="kod sm" style="border-radius:0 12px 12px 12px;background:var(--warn-s);border-color:#e7b5b0"><span style="color:var(--warn);font-weight:700">InvalidOperationException: The view 'Index' was not found.</span>
+The following locations were searched:
+   <span class="y">/Views/Kitap/Index.cshtml</span>
+   <span class="y">/Views/Shared/Index.cshtml</span></div>
+          <div class="kutu gold" style="margin-top:12px;font-size:19px">⛔ <b>Bu ekranı atlamayın.</b> Hatanın çözümü hatanın içinde yazıyor — slayt 13'ün tamamı bu liste.</div>
+        </div>
+        <div class="f" data-step="3"><span class="dosya">Views/Kitap/Index.cshtml</span>
+          <div class="kod sm"><span class="s">@model</span> List&lt;Kitap&gt;
+<span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>
+<span class="s">@if (Model.Count == 0) {</span> <span class="h">&lt;p&gt;</span>Hiç kitap yok.<span class="h">&lt;/p&gt;</span> <span class="s">}</span>
+<span class="s">else {</span>
+  <span class="h">&lt;ul&gt;</span><span class="s">@foreach (var k in Model) {</span>
+    <span class="h">&lt;li&gt;&lt;strong&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/strong&gt;</span> — <span class="s">@k.Yazar</span><span class="h">&lt;/li&gt;</span>
+  <span class="s">} }</span><span class="h">&lt;/ul&gt;</span></div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 8 · @model / @Model ========== -->
+<section class="slide secA" id="s-model" data-title="@model ve @Model" data-module="mdl" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">A · Güçlü tipli görünüm</div>
+    <h2>Küçük <code style="font-family:var(--mono);color:var(--accent)">@model</code> tipi bildirir, büyük <code style="font-family:var(--mono);color:var(--accent2)">@Model</code> veriyi taşır</h2>
+  </header>
+  <div class="s-body">
+    <svg class="mdl-svg" viewBox="0 0 1440 300" width="1440" height="300">
+      
+      <g class="f fs" data-step="1"><rect x="10" y="60" width="330" height="150" rx="13" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="28" y="90" font-size="14" font-weight="800" fill="#8a8377" font-family="monospace">KitapController.cs</text>
+        <text x="28" y="124" font-size="16" font-family="monospace" fill="#3a352e">var kitap = _depo.Bul(id);</text>
+        <text x="28" y="152" font-size="16" font-family="monospace" fill="#8a3d0f" font-weight="700">return View(kitap);</text>
+        <text x="28" y="186" font-size="14" fill="#5d574e">model nesnesi hazırlanır</text></g>
+      <path class="f fo draw" data-step="2" pathLength="1" d="M344 135H470" stroke="#8a3d0f" stroke-width="3.5" fill="none" marker-end="url(#ok2)"/>
+      <g class="f fs" data-step="2"><rect x="476" y="40" width="440" height="190" rx="13" fill="#fff" stroke="#14607a" stroke-width="2.5"/>
+        <text x="496" y="70" font-size="14" font-weight="800" fill="#8a8377" font-family="monospace">Views/Kitap/Detay.cshtml</text>
+        <rect x="492" y="84" width="408" height="34" rx="7" fill="#fbeadf"/>
+        <text x="504" y="107" font-size="17" font-family="monospace" fill="#8a3d0f" font-weight="700">@model KampusKitap.Models.Kitap</text>
+        <text x="504" y="134" font-size="13" fill="#8a8377">↑ YÖNERGE — tipi bildirir, dosyada bir kez</text>
+        <rect x="492" y="150" width="408" height="34" rx="7" fill="#e0eff4"/>
+        <text x="504" y="173" font-size="17" font-family="monospace" fill="#14607a" font-weight="700">&lt;h1&gt;@Model.Baslik&lt;/h1&gt;</text>
+        <text x="504" y="200" font-size="13" fill="#8a8377">↑ NESNE — gerçek veri</text></g>
+      <path class="f fo draw" data-step="3" pathLength="1" d="M920 135H1046" stroke="#2f6b2a" stroke-width="3.5" fill="none" marker-end="url(#ok2)"/>
+      <g class="f fs" data-step="3"><rect x="1052" y="60" width="330" height="150" rx="13" fill="#fff" stroke="#2f6b2a" stroke-width="2.5"/>
+        <text x="1070" y="90" font-size="14" font-weight="800" fill="#8a8377">tarayıcı</text>
+        <text x="1070" y="128" font-size="22" font-weight="800" fill="#1c1a17">Suç ve Ceza</text>
+        <text x="1070" y="158" font-size="17" fill="#5d574e">Dostoyevski — 120 TL</text>
+        <text x="1070" y="190" font-size="13" font-family="monospace" fill="#8a8377">&lt;h1&gt;Suç ve Ceza&lt;/h1&gt;</text></g>
+    </svg>
+    <div class="f" data-step="4" style="display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:4px">
+      <div class="card"><h3 style="color:var(--ok)">✓ Güçlü tipli — derlemede yakalanır</h3>
+        <div class="kod sm"><span class="s">@Model.</span><span class="sil">Bashlik</span>  <span class="c">→ derleme hatası, sayfa hiç açılmaz</span></div></div>
+      <div class="card"><h3 style="color:var(--warn)">✗ <code>dynamic</code> — sessizce null</h3>
+        <div class="kod sm"><span class="s">@ViewBag.</span>Bashlik  <span class="c">→ hata yok, ekranda hiçbir şey</span></div>
+        <p class="muted" style="margin:8px 0 0;font-size:16px"><code>ViewBag</code>/<code>ViewData</code>/<code>TempData</code> → <b>Hafta 7</b>.</p></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 9 · XSS ========== -->
+<section class="slide secA" id="s-xss" data-title="Otomatik HTML kodlaması ve Html.Raw" data-module="xss">
+  <header class="s-head">
+    <div class="kicker">A · Güvenlik</div>
+    <h2>Razor her değeri <b>kodlar</b> — <code style="font-family:var(--mono);color:var(--warn)">@Html.Raw</code> bu korumayı kaldırır</h2>
+    <p class="sub">Kullanıcı kitap başlığına bunu yazdı: <code style="font-family:var(--mono)">&lt;script&gt;alert('ele geçirildi')&lt;/script&gt;</code></p>
+  </header>
+  <div class="s-body">
+    <div class="seg xss-seg" style="margin-bottom:18px"><button data-m="0" class="on">@Model.Baslik — varsayılan</button><button data-m="1">@Html.Raw(Model.Baslik)</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 360px;gap:22px;align-items:start">
+      <div><span class="dosya">görünümde yazdığınız</span><div class="kod xss-kod" style="font-size:18px"></div></div>
+      <div><span class="dosya">tarayıcıya giden HTML</span><div class="kod sm xss-html" style="font-size:16px"></div></div>
+      <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>ekran</span></div><div class="ic xss-ekran" style="min-height:150px"></div></div>
+    </div>
+    <div class="xss-not kutu" style="margin-top:22px;font-size:20px"></div>
+  </div>
+
+</section>
+
+<!-- ========== 10 · TEKRAR EDEN ARAYÜZ ========== -->
+<section class="slide secB" id="s-layout" data-title="Problem: tekrar eden arayüz" data-module="tekrar" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">B · Layout</div>
+    <h2>Menüye bir bağlantı eklemek kaç dosya açtırır?</h2>
+  </header>
+  <div class="s-body">
+    <svg class="tek-svg" viewBox="0 0 1440 400" width="1440" height="400">
+      <g class="sayfa" data-i="0" transform="translate(40,20)"></g>
+      <g class="sayfa" data-i="1" transform="translate(420,20)"></g>
+      <g class="sayfa" data-i="2" transform="translate(800,20)"></g>
+      <g class="f fs" data-step="3" transform="translate(1180,20)">
+        <rect x="0" y="40" width="230" height="250" rx="13" fill="#e0eff4" stroke="#14607a" stroke-width="3"/>
+        <text x="115" y="80" text-anchor="middle" font-size="16" font-weight="800" fill="#14607a" font-family="monospace">_Layout.cshtml</text>
+        <text x="115" y="140" text-anchor="middle" font-size="46">🔒</text>
+        <text x="115" y="186" text-anchor="middle" font-size="19" font-weight="800" fill="#14607a">tek sahip</text>
+        <text x="115" y="216" text-anchor="middle" font-size="16" fill="#3a352e">bir dosya değişti,</text>
+        <text x="115" y="240" text-anchor="middle" font-size="16" fill="#3a352e">üç sayfa değişti</text>
+      </g>
+      <text class="tek-not" x="610" y="368" text-anchor="middle" font-size="20" font-weight="700" fill="#3a352e"></text>
+    </svg>
+    <div class="f" data-step="2" style="margin-top:6px">
+      <div class="kutu warn" style="font-size:20px"><b>Asıl tehlike unutmak değil, sessizce tutarsızlaşmak.</b> Üç kopyadan birini güncellemeyi unutursanız uygulama <b>hata vermez</b>; yalnızca bir sayfada menü eksik kalır ve kimse aylarca fark etmez.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 11 · LAYOUT MONTAJI (FLAGSHIP) ========== -->
+<section class="slide secB" id="s-montaj" data-title="Layout montajı ve @RenderBody()" data-module="montaj" data-steps="5">
+  <header class="s-head">
+    <div class="kicker">B · Layout · <b>her sınavda çıkar</b></div>
+    <h2><code style="font-family:var(--mono);color:var(--accent2)">@RenderBody()</code> sayfanın kendisi değil — sayfanın <u>gireceği delik</u></h2>
+  </header>
+  <div class="s-body">
+    <svg class="mon-svg" viewBox="0 0 1440 470" width="1440" height="470">
+      <!-- layout çerçevesi -->
+      <g class="cerceve f fs" data-step="2">
+        <rect x="520" y="14" width="860" height="430" rx="15" fill="#fff" stroke="#14607a" stroke-width="3"/>
+        <text x="540" y="42" font-size="14" font-weight="800" fill="#8a8377" font-family="monospace">Views/Shared/_Layout.cshtml</text>
+        <rect x="546" y="56" width="808" height="42" rx="8" fill="#f4f1ea"/>
+        <text x="562" y="83" font-size="16" font-family="monospace" fill="#5d574e">&lt;head&gt; … &lt;title&gt;@ViewData["Title"]&lt;/title&gt;</text>
+        <rect x="546" y="108" width="808" height="42" rx="8" fill="#e0eff4"/>
+        <text x="562" y="135" font-size="16" font-weight="700" fill="#14607a">üst menü — Ana sayfa · Kitaplar · Kategoriler</text>
+        <rect x="546" y="356" width="808" height="36" rx="8" fill="#f4f1ea"/>
+        <text x="562" y="380" font-size="15" fill="#5d574e">© 2026 KampusKitap</text>
+      </g>
+      <!-- gövde yuvası -->
+      <g class="yuva-b f fs" data-step="2">
+        <rect x="546" y="160" width="808" height="186" rx="10" fill="none" stroke="#14607a" stroke-width="3" stroke-dasharray="9 7"/>
+        <text class="yuva-b-et" x="950" y="258" text-anchor="middle" font-size="22" font-weight="800" fill="#14607a" font-family="monospace">@RenderBody()</text>
+      </g>
+      <!-- script yuvası -->
+      <g class="yuva-s f fs" data-step="2">
+        <rect x="546" y="400" width="808" height="34" rx="8" fill="none" stroke="#5c3f78" stroke-width="2.5" stroke-dasharray="7 6"/>
+        <text class="yuva-s-et" x="950" y="423" text-anchor="middle" font-size="15" font-weight="800" fill="#5c3f78" font-family="monospace">@await RenderSectionAsync("Scripts", required: false)</text>
+      </g>
+      <!-- uçan içerik -->
+      <g class="icerik f fs" data-step="1">
+        <rect x="26" y="60" width="440" height="170" rx="11" fill="#fbeadf" stroke="#8a3d0f" stroke-width="3"/>
+        <text x="44" y="88" font-size="14" font-weight="800" fill="#8a8377" font-family="monospace">Views/Kitap/Index.cshtml</text>
+        <text x="44" y="124" font-size="20" font-weight="800" fill="#1c1a17">Kitaplar</text>
+        <text x="44" y="156" font-size="16" fill="#3a352e">• Suç ve Ceza — 120 TL</text>
+        <text x="44" y="184" font-size="16" fill="#3a352e">• Tutunamayanlar — 180 TL</text>
+        <text x="44" y="214" font-size="13" font-weight="700" fill="#8a3d0f">1. ÖNCE BU ÇALIŞIR</text>
+      </g>
+      <!-- uçan section -->
+      <g class="bolum f fs" data-step="1">
+        <rect x="26" y="258" width="440" height="80" rx="11" fill="#eee8f5" stroke="#5c3f78" stroke-width="3"/>
+        <text x="44" y="286" font-size="15" font-family="monospace" font-weight="700" fill="#5c3f78">@section Scripts {</text>
+        <text x="60" y="310" font-size="14" font-family="monospace" fill="#3a352e">&lt;script src="~/js/kitap.js"&gt;&lt;/script&gt;</text>
+        <text x="44" y="330" font-size="15" font-family="monospace" font-weight="700" fill="#5c3f78">}</text>
+      </g>
+      <text class="mon-not" x="260" y="400" text-anchor="middle" font-size="18" font-weight="700" fill="#3a352e"></text>
+    </svg>
+    <div class="f" data-step="5" style="margin-top:12px">
+      <div class="kutu ok" style="font-size:20px"><b>Sıra çoğu kişinin beklediğinin tersidir:</b>
+        ① görünüm çalışır ② layout çalışır ③ görünümün çıktısı <code>@RenderBody()</code> yuvasına yerleşir.
+        <code>@section</code>’ların çalışmasının sebebi budur — görünüm, parçasını layout’a <b>önceden</b> bırakır.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 12 · _ViewStart / _ViewImports ========== -->
+<section class="slide secB" id="s-viewstart" data-title="_ViewStart ve _ViewImports" data-module="vs" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">B · Paylaşılan yapı</div>
+    <h2>Biri <b>kod</b> çalıştırır, diğeri <b>yönerge</b> paylaştırır</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
+      <div class="card f fx" data-step="1" style="border-top:5px solid var(--accent2)">
+        <h3><code style="font-family:var(--mono)">_ViewStart.cshtml</code> — <span style="color:var(--accent2)">kod</span></h3>
+        <p class="muted" style="font-size:18px;margin:4px 0 10px">Her görünümden <b>önce</b> çalışır.</p>
+        <div class="kod sm"><span class="s">@{
+    Layout = "_Layout";
+}</span></div>
+        <table class="tbl" style="margin-top:12px;font-size:16px;box-shadow:none">
+          <tr><td><code>Views/</code> kökünde</td><td><b>tüm</b> görünümler</td></tr>
+          <tr><td><code>Views/Kitap/</code> içinde</td><td>ek olarak yalnız o klasör</td></tr>
+          <tr><td>Tek sayfada iptal</td><td><code>Layout = null;</code></td></tr>
+        </table>
+      </div>
+      <div class="card f fx" data-step="2" style="border-top:5px solid var(--plum)">
+        <h3><code style="font-family:var(--mono)">_ViewImports.cshtml</code> — <span style="color:var(--plum)">yönerge</span></h3>
+        <p class="muted" style="font-size:18px;margin:4px 0 10px">Kod çalıştırmaz; <b>yönergeleri</b> tüm görünümlere açar.</p>
+        <div class="kod sm"><span class="s">@using</span> KampusKitap.Models
+<span class="s">@addTagHelper</span> *, Microsoft.AspNetCore.Mvc.TagHelpers</div>
+        <table class="tbl" style="margin-top:12px;font-size:16px;box-shadow:none">
+          <tr><td><code>@using</code></td><td><code>@model Kitap</code> kısa yazılır</td></tr>
+          <tr><td><code>@addTagHelper</code></td><td><code>&lt;partial&gt;</code>, <code>&lt;vc:…&gt;</code> çalışır → <b>Hafta 5</b></td></tr>
+          <tr><td><code>@inject</code></td><td>servis enjeksiyonu (dikkatli — slayt 23)</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="f" data-step="3" style="margin-top:22px">
+      <div class="kutu warn" style="font-size:20px"><b>İkisini karıştırmayın.</b> <code>_ViewStart</code> <b>kod</b> çalıştırır (<code>Layout = …</code>). <code>_ViewImports</code> <b>yönerge</b> paylaştırır (<code>@using</code>, <code>@addTagHelper</code>). Birinin işini diğerine yazarsanız <b>çalışmaz</b> — ve sebebi aramak uzun sürer.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 13 · GÖRÜNÜM ARAMA SIRASI (FLAGSHIP) ========== -->
+<section class="slide secB" id="s-arama" data-title="Görünüm arama sırası" data-module="arama" data-steps="5">
+  <header class="s-head">
+    <div class="kicker">B · 🐛 Hata Köşesi</div>
+    <h2><code style="font-family:var(--mono);font-size:34px">return View();</code> — çatı dosyayı <u>nerede</u> arar?</h2>
+    <p class="sub">Bu listeyi okumak, bu haftanın en pratik becerisidir. Hatanın çözümü hatanın içinde yazıyor.</p>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:600px 1fr;gap:28px;align-items:start">
+      <div class="col" style="gap:14px">
+        <div><span class="dosya">Controllers/KitapController.cs</span>
+          <div class="kod sm"><span class="s">public class</span> KitapController : Controller
+{
+    <span class="s">public</span> IActionResult <span class="y">Index</span>()
+    {
+        <span class="s">return</span> View();   <span class="c">// ad verilmedi → metot adı</span>
+    }
+}</div></div>
+        <div class="seg arama-seg"><button data-m="0" class="on">Dosya YOK</button><button data-m="1">Dosya VAR</button></div>
+        <div class="kutu arama-not" style="font-size:18px"></div>
+      </div>
+      <div class="col" style="gap:12px">
+        <div style="font-size:16px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">arama sırası</div>
+        <div class="arama-yol" data-i="0"><span class="mono">/Views/Kitap/Index.cshtml</span><span class="dr"></span></div>
+        <div class="arama-yol" data-i="1"><span class="mono">/Views/Shared/Index.cshtml</span><span class="dr"></span></div>
+        <div class="arama-sonuc"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 14 · UYGULAMA B ========== -->
+<section class="slide secB" id="s-uygB" data-title="Uygulama B — Layout ve section" data-module="uygB" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama B · 14 dk · canlı kodlama</div>
+    <h2>Layout'u <u>bozarak</u> anlamak</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
+      <div class="col" style="gap:11px">
+        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b><code>@RenderBody()</code>'yi sil</b><span>İçerik gider, menü kalır, <b>hata yok</b></span></div></div>
+        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b>Menüye bağlantı ekle</b><span>Tek dosya → <b>üç sayfa</b> birden değişir</span></div></div>
+        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b><code>_ViewStart</code>'ı kapat</b><span>Çıplak HTML kalır — kim yazıyormuş belli olur</span></div></div>
+        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b><code>@section Scripts</code> ekle</b><span><code>/Kitap</code>'ta konsolda mesaj var, <code>/Kategori</code>'de <b>yok</b></span></div></div>
+      </div>
+      <div class="col">
+        <div class="f" data-step="1"><span class="dosya">_Layout.cshtml — adım 1</span>
+          <div class="kod sm"><span class="h">&lt;main&gt;</span>
+    <span class="sil">@RenderBody()</span>
+<span class="h">&lt;/main&gt;</span></div>
+          <div class="tarayici" style="margin-top:10px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+            <div class="ic"><div style="color:var(--accent2);font-weight:700">Ana sayfa · Kitaplar · Kategoriler</div>
+              <div style="height:34px;border:2px dashed var(--line);border-radius:8px;margin:10px 0;display:grid;place-items:center;color:var(--faint);font-size:15px">içerik yok — ama hata da yok</div>
+              <div style="color:var(--muted);font-size:15px">© 2026 KampusKitap</div></div></div></div>
+        <div class="f" data-step="4"><span class="dosya">Views/Kitap/Index.cshtml — adım 4</span>
+          <div class="kod sm"><span class="s">@section Scripts {</span>
+    <span class="h">&lt;script&gt;</span>console.log("yalnızca kitap listesinde")<span class="h">&lt;/script&gt;</span>
+<span class="s">}</span></div>
+          <div class="kutu warn" style="margin-top:10px;font-size:17px"><b>Sık hata:</b> bölüm adı <b>büyük/küçük harfe duyarlıdır</b>. <code>@section scripts</code> yazarsanız layout'taki <code>"Scripts"</code> ile eşleşmez.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 15 · @section / @RenderSection ========== -->
+<section class="slide secB" id="s-section" data-title="@section ve @RenderSection" data-module="bol" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">B · Bölümler (section)</div>
+    <h2>Sayfaya özel bir parçayı layout'un <u>başka bir yerine</u> göndermek</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div class="col">
+        <div class="f fx" data-step="1"><span class="dosya">_Layout.cshtml — yer ayrılır</span>
+          <div class="kod sm"><span class="h">&lt;script src="~/js/site.js"&gt;&lt;/script&gt;</span>
+<span class="s">@await RenderSectionAsync("Scripts", required: false)</span>
+<span class="h">&lt;/body&gt;</span></div></div>
+        <div class="f fx" data-step="2"><span class="dosya">Views/Kitap/Detay.cshtml — doldurulur</span>
+          <div class="kod sm"><span class="s">@section Scripts {</span>
+    <span class="h">&lt;script src="~/js/kitap-detay.js"&gt;&lt;/script&gt;</span>
+<span class="s">}</span></div></div>
+      </div>
+      <div class="col">
+        <table class="tbl f" data-step="2">
+          <thead><tr><th style="width:230px">Yazım</th><th>Anlamı</th></tr></thead>
+          <tbody>
+            <tr><td><code>required: false</code></td><td>Bölüm doldurulmazsa <b>sorun yok</b>, boş geçilir</td></tr>
+            <tr><td><code>required: true</code></td><td>Bölümü doldurmayan <b>her</b> görünüm hata verir</td></tr>
+            <tr><td><code>@RenderSection("X", false)</code></td><td>Eş anlamlı eski (senkron) yazım</td></tr>
+          </tbody>
+        </table>
+        <div class="kutu warn f" data-step="3" style="font-size:18px"><b>🐛 Tersi de olur:</b> görünümde <code>@section Scripts</code> var ama layout'ta <code>RenderSection</code> yok →
+          <br><code style="font-size:16px">The following sections have been defined but have not been rendered: 'Scripts'</code>
+          <br>Bölüm adları <b>büyük/küçük harfe duyarlıdır</b>.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 16 · BİRDEN FAZLA LAYOUT ========== -->
+<section class="slide secB" id="s-coklu" data-title="Birden fazla layout" data-module="coklu" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">B · Layout seçimi</div>
+    <h2>Bir projede birden fazla çerçeve — ve hiç çerçeve olmaması</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+      <div class="card f fs" data-step="1" style="border-top:5px solid var(--accent2)">
+        <h3>Site çerçevesi</h3>
+        <div class="kod sm"><span class="c">// _ViewStart.cshtml</span>
+<span class="s">@{ Layout = "_Layout"; }</span></div>
+        <p class="muted" style="font-size:17px;margin:10px 0 0">Varsayılan. Hiçbir şey yazmazsanız bu gelir.</p>
+      </div>
+      <div class="card f fs" data-step="2" style="border-top:5px solid var(--plum)">
+        <h3>Yönetim çerçevesi</h3>
+        <div class="kod sm"><span class="c">// görünümün başında</span>
+<span class="s">@{ Layout = "_AdminLayout"; }</span></div>
+        <p class="muted" style="font-size:17px;margin:10px 0 0">Yalnızca o görünüm için. <code>_ViewStart</code>'ın değerini <b>ezer</b>.</p>
+      </div>
+      <div class="card f fs" data-step="3" style="border-top:5px solid var(--warn)">
+        <h3>Hiç çerçeve yok</h3>
+        <div class="kod sm"><span class="s">@{ Layout = null; }</span></div>
+        <p class="muted" style="font-size:17px;margin:10px 0 0">Yazdırma sayfası, e-posta şablonu, bir parçayı tek başına döndürmek.</p>
+      </div>
+    </div>
+    <div class="f" data-step="3" style="margin-top:26px;display:grid;grid-template-columns:1.1fr 1fr;gap:24px">
+      <div class="kutu ok" style="font-size:19px"><b>Layout'un da layout'u olabilir.</b> <code>_AdminLayout.cshtml</code> kendi başında <code>Layout = "_Layout";</code> diyerek site çerçevesinin <b>içine</b> yerleşir — katmanlı çerçeve.</div>
+      <div class="kutu" style="font-size:19px"><b>Layout veriyi nereden alır?</b> Görünümün modelini bilmez, bilmemelidir. Ortak alan <code>ViewData["Title"]</code>'dır. <br><span class="muted" style="font-size:17px"><code>ViewData</code> / <code>ViewBag</code> / <code>TempData</code> → <b>Hafta 7</b>. Daha sağlamı: <b>View Component</b> — Blok C.</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 17 · PARTIAL VIEW ========== -->
+<section class="slide secC" id="s-partial" data-title="Partial View" data-module="part" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">C · Partial View</div>
+    <h2>Layout <u>çerçeveyi</u> paylaştırdı — peki sayfanın <u>ortasındaki</u> tekrar?</h2>
+  </header>
+  <div class="s-body">
+    <svg class="part-svg" viewBox="0 0 1440 340" width="1440" height="340">
+      <g class="kart" data-i="0" transform="translate(30,16)"></g>
+      <g class="kart" data-i="1" transform="translate(330,16)"></g>
+      <g class="kart" data-i="2" transform="translate(630,16)"></g>
+      <g class="f fs" data-step="3" transform="translate(960,16)">
+        <rect x="0" y="10" width="300" height="190" rx="13" fill="#eee8f5" stroke="#5c3f78" stroke-width="3"/>
+        <text x="150" y="42" text-anchor="middle" font-size="14" font-weight="800" fill="#5c3f78" font-family="monospace">_KitapKart.cshtml</text>
+        <rect x="22" y="56" width="256" height="30" rx="6" fill="#fff"/>
+        <text x="34" y="77" font-size="15" font-family="monospace" fill="#8a3d0f">@model Kitap</text>
+        <rect x="22" y="94" width="256" height="88" rx="6" fill="#fff"/>
+        <text x="34" y="116" font-size="14" font-family="monospace" fill="#14607a">&lt;h3&gt;@Model.Baslik&lt;/h3&gt;</text>
+        <text x="34" y="138" font-size="14" font-family="monospace" fill="#14607a">&lt;p&gt;@Model.Yazar&lt;/p&gt;</text>
+        <text x="34" y="160" font-size="14" font-family="monospace" fill="#14607a">&lt;p&gt;@Model.Fiyat TL&lt;/p&gt;</text>
+        <text x="150" y="228" text-anchor="middle" font-size="18" font-weight="800" fill="#5c3f78">tek sahip</text>
+      </g>
+      <g class="part-ok f fo" data-step="3">
+        <path class="draw" pathLength="1" d="M300 110H940" stroke="#5c3f78" stroke-width="3" fill="none" stroke-dasharray="1" marker-end="url(#ok)"/>
+      </g>
+      <text class="part-not" x="640" y="310" text-anchor="middle" font-size="20" font-weight="700" fill="#3a352e"></text>
+    </svg>
+    <div class="f" data-step="4" style="display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:4px">
+      <div><span class="dosya">kullanımı — Tag Helper yazımı</span>
+        <div class="kod sm"><span class="s">@foreach (var k in Model)</span>
+{
+    <span class="h">&lt;partial name="_KitapKart" model="k" /&gt;</span>
+}</div></div>
+      <div class="kutu" style="font-size:19px"><b>Kritik nokta:</b> partial veriyi <b>kendisi getirmez.</b> Üst görünüm ne verirse onu basar.
+        <br><span class="muted" style="font-size:17px"><code>model="k"</code> yazmazsanız partial üst görünümün modelini alır — tip uyuşmazsa hata verir.</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 18 · UYGULAMA C ========== -->
+<section class="slide secC" id="s-uygC" data-title="Uygulama C — kartı partial'a çıkarmak" data-module="uygC" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama C · 10 dk · canlı kodlama</div>
+    <h2>Kartı partial'a çıkarmak</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
+      <div class="col" style="gap:11px">
+        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b>Tekrarı göster</b><span><code>Index.cshtml</code> ve <code>Ara.cshtml</code> — aynı kart</span></div></div>
+        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b>Partial'a çıkar</b><span><code>Views/Shared/_KitapKart.cshtml</code></span></div></div>
+        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b><code>model="k"</code>'yi sil, hatayı göster</b><span>Partial üst görünümün modelini alır → tip hatası</span></div></div>
+        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b>Tek yerden değiştir</b><span>Karta rozet ekle → iki sayfada birden değişti</span></div></div>
+        <div class="kutu ok f" data-step="4" style="margin-top:8px;font-size:18px">🧩 <b>İlke ikinci kez bağlandı:</b> menü (layout) · kart (partial) · <i>ve birazdan</i> sayaç (view component).</div>
+      </div>
+      <div class="col">
+        <div class="f" data-step="3"><span class="dosya">model="k" silinince</span>
+          <div class="kod sm" style="border-radius:0 12px 12px 12px;background:var(--warn-s);border-color:#e7b5b0;font-size:14px"><span style="color:var(--warn);font-weight:700">InvalidOperationException</span>
+The model item passed into the ViewDataDictionary
+is of type <span class="y">List&lt;Kitap&gt;</span>, but this ViewDataDictionary
+instance requires a model item of type <span class="y">Kitap</span>.</div></div>
+        <div class="f" data-step="4"><span class="dosya">_KitapKart.cshtml — tek satır eklendi</span>
+          <div class="kod sm"><span class="h">&lt;article class="kart"&gt;</span>
+    <span class="h">&lt;h3&gt;</span><span class="s">@Model.Baslik</span><span class="h">&lt;/h3&gt;</span>
+    <span class="ekle">&lt;span class="rozet"&gt;kampüs içi&lt;/span&gt;</span>
+<span class="h">&lt;/article&gt;</span></div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 19 · VIEW COMPONENT NEDEN GEREKLİ ========== -->
+<section class="slide secC" id="s-vcprob" data-title="Partial'ın yetmediği yer" data-module="vcprob" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">C · View Component</div>
+    <h2>Peki parçanın <u>kendi verisi</u> varsa?</h2>
+    <p class="sub">Sepet sayısı · "en çok okunan 5 kitap" · ziyaret sayacı — hiçbiri sayfanın modeliyle ilgili değil.</p>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start">
+      <svg class="vcp-svg" viewBox="0 0 900 360" width="900" height="360">
+        <g class="f fx" data-step="1">
+          <rect x="10" y="20" width="300" height="60" rx="10" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+          <text x="28" y="48" font-size="16" font-weight="700" font-family="monospace" fill="#1c1a17">HomeController</text>
+          <text x="28" y="68" font-size="14" fill="#5d574e">sayacı al → ViewBag'e koy</text>
+        </g>
+        <g class="f fx" data-step="2">
+          <rect x="10" y="96" width="300" height="60" rx="10" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+          <text x="28" y="124" font-size="16" font-weight="700" font-family="monospace" fill="#1c1a17">KitapController</text>
+          <text x="28" y="144" font-size="14" fill="#5d574e">sayacı al → ViewBag'e koy</text>
+        </g>
+        <g class="f fx" data-step="3">
+          <rect x="10" y="172" width="300" height="60" rx="10" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+          <text x="28" y="200" font-size="16" font-weight="700" font-family="monospace" fill="#1c1a17">KategoriController</text>
+          <text x="28" y="220" font-size="14" fill="#5d574e">sayacı al → ViewBag'e koy</text>
+        </g>
+        <g class="f fx" data-step="4">
+          <rect x="10" y="248" width="300" height="60" rx="10" fill="#fae7e5" stroke="#a4231b" stroke-width="2.5" stroke-dasharray="8 6"/>
+          <text x="28" y="276" font-size="16" font-weight="700" font-family="monospace" fill="#a4231b">YeniController</text>
+          <text x="28" y="296" font-size="14" fill="#a4231b">…yazmayı unuttum</text>
+        </g>
+        <g class="f fo" data-step="4">
+          <path d="M320 278H430" stroke="#a4231b" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+          <rect x="440" y="248" width="430" height="60" rx="10" fill="#fae7e5" stroke="#a4231b" stroke-width="2.5"/>
+          <text x="458" y="276" font-size="17" font-weight="800" fill="#a4231b">Rozet o sayfada görünmez</text>
+          <text x="458" y="298" font-size="15" fill="#a4231b">ve HİÇBİR HATA ALMAZSINIZ</text>
+        </g>
+        <g class="f fo" data-step="3">
+          <path d="M320 128H430" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+          <rect x="440" y="60" width="430" height="140" rx="12" fill="#f4f1ea" stroke="#ddd6ca" stroke-width="2"/>
+          <text x="655" y="96" text-anchor="middle" font-size="18" font-weight="800" fill="#3a352e">Aynı kod üç kez</text>
+          <text x="655" y="128" text-anchor="middle" font-size="16" fill="#5d574e">Partial veriyi getiremez;</text>
+          <text x="655" y="152" text-anchor="middle" font-size="16" fill="#5d574e">onu kullanan HER controller</text>
+          <text x="655" y="176" text-anchor="middle" font-size="16" fill="#5d574e">hazırlamak zorunda.</text>
+        </g>
+      </svg>
+      <div class="col">
+        <div class="card f" data-step="4" style="border-top:5px solid var(--plum)">
+          <h3 style="color:var(--plum)">View Component bu sorunu çözer</h3>
+          <p class="lead" style="font-size:20px;margin:6px 0 0">Hem <b>mantığı</b> hem <b>görünümü</b> kendisi taşır.
+            Yeni bir sayfaya koyduğunuzda o sayfanın controller'ında <b>hiçbir şey</b> yazmazsınız.</p>
+        </div>
+        <div class="kutu gold f" data-step="4" style="font-size:19px">Bu, Hafta 2'nin <b>"sessizce yanlış çalışma"</b> temasının aynısı: unutmak hata vermez, yalnızca eksik çalışır.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 20 · İKİ ŞERİT + ANATOMİ ========== -->
+<section class="slide secC" id="s-serit" data-title="Partial ↔ View Component" data-module="serit" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">C · Tek cümlelik fark</div>
+    <h2>Partial veriyi <span style="color:var(--accent)">alır</span>. View Component veriyi <span style="color:var(--plum)">kendi getirir</span>.</h2>
+  </header>
+  <div class="s-body">
+    <svg class="serit-svg" viewBox="0 0 1440 300" width="1440" height="300">
+      <!-- şerit 1: partial -->
+      <g class="ser" data-i="0">
+        <rect x="10" y="6" width="1420" height="128" rx="14" fill="#fbeadf" opacity=".5"/>
+        <text x="30" y="34" font-size="15" font-weight="800" fill="#8a3d0f" letter-spacing="1.5">PARTIAL VIEW</text>
+        <g class="f fo" data-step="1">
+          <g transform="translate(180,48)"><rect width="190" height="62" rx="10" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+            <text x="95" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#1c1a17">Controller</text>
+            <text x="95" y="50" text-anchor="middle" font-size="13" fill="#5d574e">veriyi HAZIRLAR</text></g>
+          <path d="M378 79H436" stroke="#8a3d0f" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+          <g transform="translate(444,48)"><rect width="190" height="62" rx="10" fill="#fff" stroke="#8a3d0f" stroke-width="2.5"/>
+            <text x="95" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#1c1a17">Görünüm</text>
+            <text x="95" y="50" text-anchor="middle" font-size="13" fill="#5d574e">@model ile alır</text></g>
+          <path d="M642 79H700" stroke="#8a3d0f" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+          <g transform="translate(708,48)"><rect width="230" height="62" rx="10" fill="#fbeadf" stroke="#8a3d0f" stroke-width="3"/>
+            <text x="115" y="30" text-anchor="middle" font-size="16" font-weight="700" font-family="monospace" fill="#8a3d0f">&lt;partial model="k"/&gt;</text>
+            <text x="115" y="50" text-anchor="middle" font-size="13" fill="#5d574e">veriyi DIŞARIDAN alır</text></g>
+          <g transform="translate(980,48)"><rect width="200" height="62" rx="10" fill="#fae7e5" stroke="#a4231b" stroke-width="2.5" stroke-dasharray="7 5"/>
+            <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="800" fill="#a4231b">controller ZORUNLU</text>
+            <text x="100" y="50" text-anchor="middle" font-size="13" fill="#a4231b">her sayfada yeniden</text></g>
+        </g>
+      </g>
+      <!-- şerit 2: view component -->
+      <g class="ser" data-i="1">
+        <rect x="10" y="150" width="1420" height="140" rx="14" fill="#eee8f5" opacity=".55"/>
+        <text x="30" y="178" font-size="15" font-weight="800" fill="#5c3f78" letter-spacing="1.5">VIEW COMPONENT</text>
+        <g class="f fo" data-step="2">
+          <g transform="translate(180,196)"><rect width="190" height="62" rx="10" fill="#fff" stroke="#5c3f78" stroke-width="2.5"/>
+            <text x="95" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#1c1a17">Görünüm / Layout</text>
+            <text x="95" y="50" text-anchor="middle" font-size="13" font-family="monospace" fill="#5c3f78">&lt;vc:ziyaret-rozeti /&gt;</text></g>
+          <path d="M378 227H436" stroke="#5c3f78" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+          <g transform="translate(444,196)"><rect width="190" height="62" rx="10" fill="#eee8f5" stroke="#5c3f78" stroke-width="3"/>
+            <text x="95" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#5c3f78">ViewComponent</text>
+            <text x="95" y="48" text-anchor="middle" font-size="13" font-family="monospace" fill="#5d574e">Invoke()</text></g>
+        </g>
+        <g class="f fo" data-step="3">
+          <path d="M642 227H700" stroke="#2f6b2a" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+          <g transform="translate(708,196)"><rect width="230" height="62" rx="10" fill="#e6f1e4" stroke="#2f6b2a" stroke-width="3"/>
+            <text x="115" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#2f6b2a">IZiyaretSayaci</text>
+            <text x="115" y="48" text-anchor="middle" font-size="13" fill="#2f6b2a">DI — Hafta 2'den</text></g>
+          <path d="M823 192V172H520V190" stroke="#2f6b2a" stroke-width="2.5" fill="none" marker-end="url(#ok)" stroke-dasharray="6 5"/>
+          <text x="690" y="166" text-anchor="middle" font-size="13" font-weight="800" fill="#2f6b2a">veriyi KENDİ getirir</text>
+          <g transform="translate(980,196)"><rect width="200" height="62" rx="10" fill="#e6f1e4" stroke="#2f6b2a" stroke-width="2.5"/>
+            <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="800" fill="#2f6b2a">controller GEREKMEZ</text>
+            <text x="100" y="50" text-anchor="middle" font-size="13" fill="#2f6b2a">her sayfada çalışır</text></g>
+        </g>
+      </g>
+    </svg>
+    <div class="f" data-step="4" style="display:grid;grid-template-columns:1.15fr 1fr;gap:24px;margin-top:2px">
+      <div><span class="dosya">ViewComponents/ZiyaretRozetiViewComponent.cs</span>
+        <div class="kod sm" style="font-size:15px"><span class="s">public class</span> ZiyaretRozetiViewComponent : <span class="y">ViewComponent</span>
+{
+    <span class="c">// Hafta 2'nin kurucu enjeksiyonu — hiçbir şey değişmedi</span>
+    <span class="s">public</span> ZiyaretRozetiViewComponent(IZiyaretSayaci sayac) { … }
+
+    <span class="s">public</span> IViewComponentResult <span class="s">Invoke</span>()
+        =&gt; View(_sayac.Arttir());   <span class="c">// → Default.cshtml</span>
+}</div></div>
+      <div class="kutu gold" style="font-size:18px"><b>⚠️ Klasör yolu sözleşmedir, isteğe bağlı değil:</b>
+        <div class="kod sm" style="margin:8px 0 0;background:#fff;font-size:15px">Views/Shared/Components/<span class="y">ZiyaretRozeti</span>/<span class="y">Default.cshtml</span></div>
+        <div style="margin-top:8px;font-size:17px">Sınıf adından <code>ViewComponent</code> soneki <b>atılır</b> · etikette <b>kebab-case</b>: <code>&lt;vc:ziyaret-rozeti /&gt;</code></div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 21 · UYGULAMA D ========== -->
+<section class="slide secC" id="s-uygD" data-title="Uygulama D — View Component" data-module="uygD" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama D · 12 dk · canlı kodlama</div>
+    <h2>Sayacı View Component'e dönüştürmek — ve <u>sıfır</u> controller düzenlemek</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
+      <div class="col" style="gap:11px">
+        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b>Problemi tahtaya kur</b><span>Üç controller aynı üç satırı yazacak</span></div></div>
+        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b>Sınıfı yaz</b><span><code>: ViewComponent</code> + kurucu enjeksiyonu</span></div></div>
+        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b>Görünümü <u>kasten yanlış yere</u> koy</b><span>Hata → doğru yola taşı</span></div></div>
+        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b>⭐ Kanıtla</b><span><code>/</code> · <code>/Kitap</code> · <code>/Kategori</code> — üçünde de rozet var</span></div></div>
+      </div>
+      <div class="col">
+        <div class="f" data-step="3"><span class="dosya">layout'a eklenen tek satır</span>
+          <div class="kod sm"><span class="h">&lt;footer&gt;</span>
+    © 2026 KampusKitap — <span class="ekle">&lt;vc:ziyaret-rozeti /&gt;</span>
+<span class="h">&lt;/footer&gt;</span></div></div>
+        <div class="f fs" data-step="4">
+          <div class="card" style="text-align:center;background:var(--ok-s);border-color:var(--ok)">
+            <div style="font-size:17px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ok)">düzenlenen controller sayısı</div>
+            <div class="big" style="color:var(--ok);margin:10px 0 6px;font-size:84px">0</div>
+            <div style="font-size:19px;color:var(--ink2)">Üç sayfada da rozet var, sayı artıyor.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 22 · KARAR TABLOSU ========== -->
+<section class="slide secC" id="s-karar" data-title="Karar tablosu" data-module="karar">
+  <header class="s-head">
+    <div class="kicker">C · Karar</div>
+    <h2>Hangi araç? Senaryoya tıklayın, önce <u>siz</u> söyleyin</h2>
+  </header>
+  <div class="s-body">
+    <div class="karar-liste" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px"></div>
+    <div style="display:grid;grid-template-columns:1fr 440px;gap:26px;margin-top:24px;align-items:start">
+      <div class="card karar-cevap" style="min-height:188px"></div>
+      <table class="tbl">
+        <thead><tr><th>Durum</th><th>Doğru araç</th></tr></thead>
+        <tbody>
+          <tr data-a="layout"><td>Her sayfada aynı çerçeve</td><td><b>Layout</b></td></tr>
+          <tr data-a="partial"><td>Sayfanın modelinden beslenen tekrar</td><td><b>Partial View</b></td></tr>
+          <tr data-a="vc"><td>Kendi verisini getiren, sayfadan bağımsız parça</td><td><b>View Component</b></td></tr>
+          <tr data-a="sayfa"><td>Kendi adresi (URL) olması gereken içerik</td><td><b>Ayrı action + görünüm</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 23 · KLASİK TUZAK ========== -->
+<section class="slide secC" id="s-tuzak" data-title="Klasik Tuzak — görünümde sorgu" data-module="nplus">
+  <header class="s-head">
+    <div class="kicker">🕳️ Klasik Tuzak</div>
+    <h2>Görünümün içine veri sorgusu yazmak — <u>kod çalışır</u>, bedeli sonra çıkar</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div>
+        <span class="dosya">Views/Kitap/Index.cshtml — "sadece bu sefer"</span>
+        <div class="kod sm"><span class="s">@inject</span> KitapDeposu Depo
+
+<span class="s">@foreach (var k in <span class="y">Depo.Hepsi()</span>)</span>
+{
+    <span class="h">&lt;article&gt;</span>
+        <span class="h">&lt;h3&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/h3&gt;</span>
+        <span class="c">@* ve döngünün içinde ikinci bir sorgu… *@</span>
+        <span class="h">&lt;p&gt;</span><span class="s">@<span class="y">Depo.KategoriAdi(k.KategoriId)</span></span><span class="h">&lt;/p&gt;</span>
+    <span class="h">&lt;/article&gt;</span>
+}</div>
+        <div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+          <button class="btn primary nplus-calistir">Sayfayı aç ▶</button>
+          <span class="hint nplus-ipucu">50 kitaplık liste — kaç sorgu çalışır?</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card" style="text-align:center">
+          <div style="font-size:16px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">çalışan sorgu sayısı</div>
+          <div class="big nplus-sayi" style="color:var(--warn);margin:8px 0 4px">0</div>
+          <div class="nplus-etiket" style="font-size:18px;color:var(--ink2);min-height:26px"></div>
+          <div class="nplus-bar" style="height:14px;border-radius:7px;background:var(--line2);margin-top:14px;overflow:hidden"><i style="display:block;height:100%;width:0;background:var(--warn);transition:width .3s"></i></div>
+        </div>
+        <div class="kutu warn nplus-not" style="font-size:19px;min-height:120px"></div>
+      </div>
+    </div>
+    <div class="f nplus-coz" style="margin-top:20px">
+      <div class="kutu ok" style="font-size:19px"><b>Doğrusu:</b> veri controller'da (ya da servis katmanında) <b>bir kez</b> alınır, görünüme hazır verilir. Görünüm yalnızca <b>gösterir</b>.
+        <code style="display:block;margin-top:8px;font-size:17px">var liste = _depo.HepsiKategoriyleBirlikte();  // tek sorgu
+return View(liste);</code></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 24 · ÖZET VE KAPANIŞ ========== -->
+<section class="slide dark sec0" id="s-ozet" data-title="Özet, ev görevi ve haftaya" data-module="ozet" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">Hafta 3 · Kapanış</div>
+    <h2 style="color:#fff">Tek sayfada Hafta 3</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+      <div class="f fx" data-step="1" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 20px">
+        <div style="font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#e8a05c;margin-bottom:10px">A · Razor</div>
+        <ul style="margin:0;padding-left:20px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88)">
+          <li><b>Sunucuda</b> çalışır; tarayıcı <code>@</code> görmez</li>
+          <li><code>@</code> = "buradan sonrası C#"; <code>@@</code> kaçış</li>
+          <li><code>@model</code> tip · <code>@Model</code> veri</li>
+          <li>Razor <b>otomatik kodlar</b>; <code>@Html.Raw</code> korumayı kaldırır</li>
+        </ul>
+      </div>
+      <div class="f fx" data-step="2" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 20px">
+        <div style="font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6cc6e0;margin-bottom:10px">B · Layout</div>
+        <ul style="margin:0;padding-left:20px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88)">
+          <li><b><code>@RenderBody()</code></b> — içeriğin gireceği delik</li>
+          <li>Görünüm <b>önce</b>, layout <b>sonra</b> çalışır</li>
+          <li><code>_ViewStart</code> = kod · <code>_ViewImports</code> = yönerge</li>
+          <li>Arama: <code>Views/{Controller}/</code> → <code>Views/Shared/</code></li>
+        </ul>
+      </div>
+      <div class="f fx" data-step="3" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 20px">
+        <div style="font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#b89ad6;margin-bottom:10px">C · Parçalar</div>
+        <ul style="margin:0;padding-left:20px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88)">
+          <li>Partial veriyi <b>alır</b></li>
+          <li>View Component veriyi <b>kendi getirir</b></li>
+          <li><code>Views/Shared/Components/{Ad}/Default.cshtml</code></li>
+          <li>🕳️ Görünüme sorgu yazmak → <b>N+1</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f" data-step="4" style="margin-top:24px;display:grid;grid-template-columns:1.25fr 1fr;gap:22px">
+      <div style="background:#fff;color:var(--fg);border-radius:14px;padding:18px 22px">
+        <h3 style="color:var(--accent);font-size:22px;margin-bottom:8px">🏠 Ev görevi</h3>
+        <div style="font-size:18px;line-height:1.55">
+          ① Layout kurun, menüyü oraya taşıyın (3 sayfa kanıtı) &nbsp;·&nbsp;
+          ② Menüyü <code>_Menu.cshtml</code> partial'ına çıkarın &nbsp;·&nbsp;
+          ③ Bilgi kartını partial'a çıkarın (<code>model=</code> ile) &nbsp;·&nbsp;
+          ④ <b>Bir View Component yazın</b> — hiçbir controller'a dokunmadan iki sayfada &nbsp;·&nbsp;
+          ⑤ <code>@RenderBody()</code>'yi silip ekran görüntüsü alın &nbsp;·&nbsp;
+          ⑥ <code>@Model.X</code> ↔ <code>@Html.Raw(Model.X)</code> farkını gösterin
+          <div style="margin-top:10px;font-size:17px;color:var(--muted)"><b>Teslim:</b> proje + ekran görüntüleri + <i>"4. maddede neden partial değil View Component?"</i> sorusuna iki cümle.</div>
+        </div>
+      </div>
+      <div style="background:rgba(232,160,92,.14);border:1px solid rgba(232,160,92,.4);border-radius:14px;padding:18px 22px">
+        <h3 style="color:#e8a05c;font-size:22px;margin-bottom:8px">🔜 Hafta 4 — Web Formlar</h3>
+        <p style="font-size:19px;line-height:1.5;margin:0;color:rgba(255,255,255,.9)">Bu hafta <b>tek yön</b> vardı: sunucudan kullanıcıya. Haftaya <b>ters yöne</b> geçiyoruz.</p>
+        <p style="font-size:18px;line-height:1.5;margin:10px 0 0;color:#e8a05c"><b>Düşünerek gelin:</b> Bir form "Gönder" dendiğinde tarayıcı isteğin gövdesine tam olarak ne koyar? Sunucu o metni nasıl bir <code>Kitap</code> nesnesine çeviriyor?</p>
+      </div>
+    </div>
+  </div>
+  <div class="src" style="color:rgba(255,255,255,.45)">Kaynaklar ve her iddianın dayanağı: <b>H03-Ders-Notu.pdf · 📑 Kaynakça</b> · learn.microsoft.com/aspnet/core — <b>?view=aspnetcore-10.0</b></div>
+
+</section>
+
+<div id="bar"><span class="sn"></span><span class="ctr"></span></div>
+<div id="nokta"></div>
+<div id="ilerleme"></div>
+<div id="gez">
+  <button data-g="geri" title="Önceki (←)">‹</button>
+  <button data-g="ileri" title="Sonraki (→)">›</button>
+
+  <button data-g="kus" title="Tüm slaytlar (O)">▦</button>
+</div>
+
+</div><!-- /stage -->
+
+<div id="kus"><h3>Tüm slaytlar — tıklayın · Esc kapatır</h3><div class="g"></div></div>
+<div id="yardim"><div class="b"><h3>Klavye kısayolları</h3><table>
+<tr><td><kbd>→</kbd> <kbd>Boşluk</kbd></td><td>sonraki adım / slayt</td></tr>
+<tr><td><kbd>←</kbd></td><td>önceki adım / slayt</td></tr>
+<tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>ilk / son slayt</td></tr>
+<tr><td>sayı + <kbd>Enter</kbd></td><td>o slayda atla</td></tr>
+
+<tr><td><kbd>O</kbd></td><td>tüm slaytlar</td></tr>
+<tr><td><kbd>F</kbd></td><td>tam ekran</td></tr>
+<tr><td><kbd>B</kbd> veya <kbd>.</kbd></td><td>ekranı karart</td></tr>
+<tr><td><kbd>R</kbd></td><td>bu slayttaki etkileşimi sıfırla</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>açık katmanı kapat</td></tr>
+</table></div></div>
+<div id="kara"></div>
+<div id="atla"></div>
+
+<style>
+/* ---- slayt içi küçük bileşenler ---- */
+.uyg-ad{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 15px;box-shadow:var(--shadow)}
+.uyg-ad b{display:block;font-size:19px;line-height:1.3}
+.uyg-ad > div > span{font-size:16px;color:var(--muted);line-height:1.4;display:block;margin-top:2px}
+.arama-yol{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--card);
+  border:2px solid var(--line);border-radius:11px;padding:13px 16px;transition:.35s;opacity:.4}
+.arama-yol.gor{opacity:1}
+.arama-yol.ara{border-color:var(--gold);background:var(--gold-s)}
+.arama-yol.yok{border-color:var(--warn);background:var(--warn-s)}
+.arama-yol.var{border-color:var(--ok);background:var(--ok-s)}
+.arama-yol .mono{font-family:var(--mono);font-size:19px;font-weight:700}
+.arama-yol .dr{font-size:16px;font-weight:800;white-space:nowrap}
+.arama-yol.ara .dr{color:var(--gold)} .arama-yol.yok .dr{color:var(--warn)} .arama-yol.var .dr{color:var(--ok)}
+.arama-sonuc{min-height:150px}
+.ksen{background:var(--card);border:2px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;
+  font-size:17px;line-height:1.38;transition:.25s;box-shadow:var(--shadow);text-align:left;color:var(--fg);font-family:inherit}
+.ksen:hover{border-color:var(--plum)}
+.ksen.cur{border-color:var(--plum);background:var(--plum-s)}
+.ksen b{display:block;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.karar-cevap .et{font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--plum)}
+.karar-cevap h3{font-size:30px;margin:6px 0 10px}
+.karar-cevap p{font-size:20px;line-height:1.5;margin:0;color:var(--ink2)}
+.syntax-sec .chip{cursor:pointer;background:var(--card2);color:var(--ink2);border:2px solid transparent;transition:.2s}
+.syntax-sec .chip.cur{background:var(--accent-s);color:var(--accent);border-color:var(--accent)}
+.kanit-kutu .fark{background:var(--ok-s);border-radius:3px}
+</style>
+<script>
+(function(){
+'use strict';
+const NS='http://www.w3.org/2000/svg';
+const DURGUN=/[?&]durgun/.test(location.search);
+if(DURGUN)document.documentElement.classList.add('durgun');
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+function S(tag,attrs,parent){const e=document.createElementNS(NS,tag);
+  if(attrs)for(const k in attrs){if(k==='text')e.textContent=attrs[k];else e.setAttribute(k,attrs[k]);}
+  if(parent)parent.appendChild(e);return e;}
+function tazele(el){el.style.animation='none';void el.offsetWidth;el.style.animation='';}
+
+/* ===================== MOTOR ===================== */
+const stage=$('#stage');
+const slaytlar=$$('.slide',stage);
+const BOLUM={sec0:'Web Programlama · Hafta 3',secA:'A · Razor sözdizimi',
+  secB:'B · Layout ve paylaşılan yapı',secC:'C · Partial View ve View Component'};
+const M={};
+const HOOK=[];                 /* slayt/adım değişince çağrılan işlevler */
+const KAPAT=[];                /* Esc ile kapatılacak ek katmanlar */
+let i=0,adim=0,acildi=false;
+
+function bolumOf(s){for(const c of s.classList)if(BOLUM[c])return c;return'sec0';}
+function enBuyuk(s){if(s._mx==null){let m=+(s.dataset.steps||0);
+  $$('[data-step]',s).forEach(e=>{m=Math.max(m,+e.dataset.step);});s._mx=m;}return s._mx;}
+function uygula(s,k){
+  $$('[data-step]',s).forEach(e=>e.classList.toggle('on',+e.dataset.step<=k));
+  const m=M[s.dataset.module];if(m&&m.step)m.step(s,k);}
+function git(j,k,zorla){
+  j=Math.max(0,Math.min(slaytlar.length-1,j));
+  const onceki=slaytlar[i],s=slaytlar[j],degisti=zorla||j!==i;
+  if(degisti&&acildi&&onceki!==s){const pm=M[onceki.dataset.module];if(pm&&pm.leave)pm.leave(onceki);}
+  slaytlar.forEach((x,n)=>{x.classList.toggle('active',n===j);x.classList.toggle('past',n<j);});
+  i=j;adim=Math.max(0,Math.min(enBuyuk(s),k||0));
+  if(degisti){const m=M[s.dataset.module];if(m&&m.enter)m.enter(s);}
+  uygula(s,adim);cizim();}
+function ileri(){const s=slaytlar[i];
+  if(adim<enBuyuk(s)){adim++;uygula(s,adim);cizim();}else if(i<slaytlar.length-1)git(i+1,0);}
+function geri(){const s=slaytlar[i];
+  if(adim>0){adim--;uygula(s,adim);cizim();}else if(i>0)git(i-1,enBuyuk(slaytlar[i-1]));}
+function sifirla(){const s=slaytlar[i],m=M[s.dataset.module];
+  if(m&&m.reset)m.reset(s);if(m&&m.enter)m.enter(s);adim=0;uygula(s,0);cizim();}
+function cizim(){
+  const s=slaytlar[i];
+  stage.classList.toggle('dk',s.classList.contains('dark'));
+  stage.style.setProperty('--sec',getComputedStyle(s).getPropertyValue('--sec').trim()||'#8a3d0f');
+  $('#bar .sn').textContent=BOLUM[bolumOf(s)];
+  $('#bar .ctr').innerHTML='<b>'+(i+1)+'</b> / '+slaytlar.length;
+  $('#ilerleme').style.width=((i+1)/slaytlar.length*100)+'%';
+  const n=enBuyuk(s);let h='';for(let j=0;j<n;j++)h+='<i class="'+(j<adim?'on':'')+'"></i>';
+  $('#nokta').innerHTML=n>0?h:'';
+  try{history.replaceState(null,'','#'+(i+1)+(adim?'.'+adim:''));}catch(e){}
+  $$('#kus .k').forEach((c,j)=>c.classList.toggle('cur',j===i));
+  HOOK.forEach(f=>{try{f(s,i,adim,n);}catch(e){}});}
+function olcekle(){const sc=Math.min(window.innerWidth/1600,window.innerHeight/900);
+  stage.style.transform='translate(-50%,-50%) scale('+sc+')';}
+window.addEventListener('resize',olcekle);
+
+/* --- katmanlar --- */
+function kusBak(zorla){const o=$('#kus');
+  o.classList.toggle('open',zorla!=null?zorla:!o.classList.contains('open'));}
+function tamEkran(){if(!document.fullscreenElement)
+  document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen&&document.exitFullscreen();}
+(function kusKur(){const g=$('#kus .g');
+  slaytlar.forEach((s,j)=>{const c=document.createElement('div');c.className='k';
+    c.innerHTML='<b>'+(j+1)+' · '+BOLUM[bolumOf(s)].split(' · ')[0]+'</b><span>'+(s.dataset.title||'')+'</span>';
+    c.addEventListener('click',()=>{kusBak(false);git(j,0);});g.appendChild(c);});})();
+
+/* --- klavye --- */
+let tampon='',zaman=null;
+function tus(e){
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const t=e.target,tag=(t&&t.tagName)||'';
+  const yon=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','PageUp','PageDown',' ','Home','End'];
+  if((tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')&&yon.includes(e.key))return;
+  if(tag==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){tampon+=k;const a=$('#atla');a.textContent='→ '+tampon;a.style.display='block';
+    clearTimeout(zaman);zaman=setTimeout(()=>{tampon='';a.style.display='none';},1700);return;}
+  if(k==='Enter'&&tampon){const n=parseInt(tampon,10);tampon='';$('#atla').style.display='none';
+    if(n>=1&&n<=slaytlar.length)git(n-1,0);e.preventDefault();return;}
+  switch(k){
+    case'ArrowRight':case'ArrowDown':case'PageDown':case' ':ileri();e.preventDefault();break;
+    case'ArrowLeft':case'ArrowUp':case'PageUp':geri();e.preventDefault();break;
+    case'Home':git(0,0);e.preventDefault();break;
+    case'End':git(slaytlar.length-1,0);e.preventDefault();break;
+    case'o':case'O':kusBak();break;
+    case'f':case'F':tamEkran();break;
+    case'b':case'B':case'.':$('#kara').classList.toggle('open');break;
+    case'r':case'R':sifirla();break;
+    case'?':case'h':case'H':$('#yardim').classList.toggle('open');break;
+    case'Escape':['#kus','#yardim','#kara'].forEach(x=>$(x).classList.remove('open'));
+      KAPAT.forEach(f=>{try{f();}catch(e){}});break;
+  }}
+document.addEventListener('keydown',tus);
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(b)setTimeout(()=>b.blur(),0);
+  const g=e.target.closest('[data-goto]');
+  if(g&&stage.contains(g)){const j=slaytlar.findIndex(x=>x.id===g.dataset.goto);if(j>=0)git(j,0);}
+  const n=e.target.closest('[data-g]');
+  if(n){const f={geri:geri,ileri:ileri,kus:()=>kusBak()}[n.dataset.g];
+    if(f)f();}   /* data-g="not" düğmesi anlatım bloğunda kendi dinleyicisini kurar */
+  if(e.target.closest('#yardim')||e.target.closest('#kara')){
+    $('#yardim').classList.remove('open');$('#kara').classList.remove('open');}});
+let dx0=null,dy0=null;
+stage.addEventListener('touchstart',e=>{if(e.target.closest('input,button'))return;
+  dx0=e.touches[0].clientX;dy0=e.touches[0].clientY;},{passive:true});
+stage.addEventListener('touchend',e=>{if(dx0==null)return;
+  const dx=e.changedTouches[0].clientX-dx0,dy=e.changedTouches[0].clientY-dy0;dx0=null;
+  if(Math.abs(dx)>60&&Math.abs(dy)<60){dx<0?ileri():geri();}},{passive:true});
+
+/* ===================== MODÜLLER ===================== */
+
+/* --- 3 · istek akışı --- */
+const AK=[
+  {},
+  {p:[260,196],ara:[0],t:'1 · Tarayıcı GET /Kitap isteğini gönderir.'},
+  {p:[402,205],as:0,t:'2 · İstek Middleware Pipeline’dan geçer. (Hafta 2)'},
+  {p:[610,205],as:1,ara:[1],t:'3 · Routing adresi çözer: Kitap controller, Index action.'},
+  {p:[818,205],as:2,ara:[2],t:'4 · Action çalışır ve return View(k) der — görünüm henüz çalışmadı.'},
+  {p:[1041,205],as:3,ara:[3],t:'5 · Razor motoru devreye girer: @ ifadeleri DEĞERLENDİRİLİR.'},
+  {p:[1180,250],ara:[4],t:'6 · Geriye yalnızca düz HTML metni kaldı. Ağa çıkan budur.'},
+  {p:[1327,256],t:'7 · Tarayıcı HTML’i çizer. Hiçbir zaman bir @ görmedi.'}
+];
+M.akis={
+ enter(s){this.step(s,0);},
+ step(s,k){
+  const pk=$('.paket',s);
+  const c=AK[k]||{};
+  pk.style.transition='transform .62s cubic-bezier(.2,.7,.2,1),opacity .3s';
+  if(c.p){pk.setAttribute('opacity',1);pk.setAttribute('transform','translate('+c.p[0]+','+c.p[1]+')');}
+  else pk.setAttribute('opacity',0);
+  $$('.as',s).forEach(g=>{const n=+g.dataset.i;
+    g.classList.toggle('dim',k>0&&k<6&&AK[k].as!==undefined&&AK[k].as!==n);
+    const r=$('rect',g);r.setAttribute('fill',(AK[k]&&AK[k].as===n)?'#fbeadf':'#fff');
+    r.setAttribute('stroke-width',(AK[k]&&AK[k].as===n)?4:2.5);});
+  $$('.ara',s).forEach(p=>{const n=+p.dataset.i;let gor=false;
+    for(let j=1;j<=k;j++)if(AK[j].ara&&AK[j].ara.includes(n))gor=true;
+    p.setAttribute('opacity',gor?1:.14);});
+  const roz=$('.cs-rozet',s);roz.style.transition='opacity .5s';
+  roz.setAttribute('opacity',k>=6?.12:(k>=5?1:.4));
+  $('.yanit',s).style.transition='opacity .5s';
+  $('.yanit',s).setAttribute('opacity',k>=6?1:0);
+  $('.tr2',s).setAttribute('opacity',k>=7?1:.45);
+  $('.tr1',s).setAttribute('opacity',k>=1?1:.9);
+  const a=$('.aciklama',s);a.textContent=c.t||'→ tuşuna basarak isteğin yolculuğunu adım adım izleyin.';
+  tazele(a);}
+};
+
+/* --- 4 · Ctrl+U kanıtı --- */
+const KANIT={
+ 0:'<div class="kod sm" style="min-height:214px"><span class="c">// Sınıfın tahmini…</span>\n\n'+
+   '<span class="s">@model</span> List&lt;Kitap&gt;   <span class="c">← görecek miyiz?</span>\n'+
+   '<span class="s">@foreach (var k in Model)</span>  <span class="c">← görecek miyiz?</span>\n'+
+   '<span class="s">@k.Baslik</span>  <span class="c">← görecek miyiz?</span>\n\n'+
+   '<span class="c">Tahmin ettirin. Sonra sağdaki düğmeye basın.</span></div>',
+ 1:'<div class="kod sm" style="min-height:214px"><span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>\n'+
+   '<span class="h">&lt;ul&gt;</span>\n'+
+   '    <span class="h">&lt;li&gt;&lt;strong&gt;</span>Suç ve Ceza<span class="h">&lt;/strong&gt;</span> — 120 TL<span class="h">&lt;/li&gt;</span>\n'+
+   '    <span class="h">&lt;li&gt;&lt;strong&gt;</span>Tutunamayanlar<span class="h">&lt;/strong&gt;</span> — 180 TL<span class="h">&lt;/li&gt;</span>\n'+
+   '<span class="h">&lt;/ul&gt;</span>\n\n'+
+   '<span class="c">@model YOK · @foreach YOK · @if YOK</span>\n'+
+   '<span class="c">Yalnızca sonuç var.</span></div>'
+};
+M.kanit={
+ init(s){$$('.kanit-seg button',s).forEach(b=>b.addEventListener('click',()=>this.mod(s,+b.dataset.m)));},
+ enter(s){this.mod(s,0);},
+ reset(s){this.mod(s,0);},
+ mod(s,m){$$('.kanit-seg button',s).forEach(b=>b.classList.toggle('on',+b.dataset.m===m));
+  const k=$('.kanit-kutu',s);k.innerHTML=KANIT[m];tazele(k);}
+};
+
+/* --- 5 · tokenizer --- */
+const TOK=[
+ [['h','&lt;h1&gt;'],['t','Kitaplar'],['h','&lt;/h1&gt;']],
+ [['h','&lt;ul&gt;']],
+ [['s','    @foreach (var k in Model)']],
+ [['s','    {']],
+ [['h','        &lt;li&gt;'],['s','@k.Baslik'],['h','&lt;/li&gt;']],
+ [['s','    }']],
+ [['h','&lt;/ul&gt;']]
+];
+M.token={
+ init(s){const k=$('.tok-kod',s);k.innerHTML=TOK.map((satir,n)=>
+   '<span class="tsat" data-n="'+n+'">'+satir.map(([t,v])=>
+     t==='t'?v:'<span class="tp '+t+'" style="padding:2px 3px;border-radius:4px;transition:background .45s,box-shadow .45s">'+v+'</span>'
+   ).join('')+'</span>').join('\n');},
+ enter(s){this.oynat(s);},
+ reset(s){this.durdur(s);$$('.tp',s).forEach(e=>{e.style.background='';e.style.boxShadow='';});},
+ leave(s){this.durdur(s);},
+ durdur(s){(s._z||[]).forEach(clearTimeout);s._z=[];},
+ oynat(s){this.durdur(s);$$('.tp',s).forEach(e=>{e.style.background='';e.style.boxShadow='';});
+  const hepsi=$$('.tp',s);s._z=hepsi.map((e,n)=>setTimeout(()=>{
+    const html=e.classList.contains('h');
+    e.style.background=html?'var(--accent2-s)':'var(--accent-s)';
+    e.style.boxShadow='inset 0 -2px 0 '+(html?'var(--accent2)':'var(--accent)');
+  },260+n*210));},
+ step(s,k){}
+};
+
+/* --- 6 · sözdizimi seçici --- */
+const SYN=[
+ {ad:'@{ } kod bloğu',dosya:'Index.cshtml',
+  kod:'<span class="s">@{\n    var indirimli = kitap.Fiyat * 0.9m;\n    var etiket = indirimli &lt; 50 ? "ucuz" : "normal";\n}</span>\n<span class="h">&lt;p class="</span><span class="s">@etiket</span><span class="h">"&gt;</span><span class="s">@indirimli</span> TL<span class="h">&lt;/p&gt;</span>',
+  cikti:'<p style="color:var(--ok);font-weight:700">108 TL</p><p class="muted" style="font-size:15px;margin:6px 0 0">(class="normal")</p>',
+  not:'<b>Blok kendisi hiçbir şey yazdırmaz.</b> Yalnızca çalışır. Ekrana çıkan şey son satırdaki <code>@etiket</code> ve <code>@indirimli</code> ifadeleridir.'},
+ {ad:'@if / else',dosya:'Index.cshtml',
+  kod:'<span class="s">@if (Model.Count == 0)\n{</span>\n    <span class="h">&lt;p class="bos"&gt;</span>Hiç kitap yok.<span class="h">&lt;/p&gt;</span>\n<span class="s">}\nelse\n{</span>\n    <span class="h">&lt;p&gt;</span><span class="s">@Model.Count</span> kitap bulundu.<span class="h">&lt;/p&gt;</span>\n<span class="s">}</span>',
+  cikti:'<p>2 kitap bulundu.</p>',
+  not:'<b>Dikkat:</b> <code>@if</code>’ten sonra gelen <code>else</code> ve <code>else if</code> <b><code>@</code> ALMAZ</b>. Razor zaten C# kipindedir.'},
+ {ad:'@foreach',dosya:'Index.cshtml',
+  kod:'<span class="h">&lt;ul&gt;</span>\n<span class="s">@foreach (var k in Model)\n{</span>\n    <span class="h">&lt;li&gt;</span><span class="s">@k.Baslik</span> — <span class="s">@k.Fiyat</span> TL<span class="h">&lt;/li&gt;</span>\n<span class="s">}</span>\n<span class="h">&lt;/ul&gt;</span>',
+  cikti:'<ul style="margin:0;padding-left:20px"><li>Suç ve Ceza — 120 TL</li><li>Tutunamayanlar — 180 TL</li></ul>',
+  not:'Blok içinde <b>HTML etiketi açıp kapatmak serbesttir</b>. Razor, <code>&lt;li&gt;</code> görünce HTML kipine geçer.'},
+ {ad:'Etiketsiz metin: @: ve &lt;text&gt;',dosya:'Index.cshtml',
+  kod:'<span class="s">@foreach (var k in Model)\n{</span>\n    <span class="s">@:</span>— <span class="s">@k.Baslik</span>          <span class="c">@* tek satır *@</span>\n    <span class="h">&lt;text&gt;</span><span class="s">@k.Fiyat</span> TL<span class="h">&lt;/text&gt;</span>   <span class="c">@* çok satırlı blok *@</span>\n<span class="s">}</span>',
+  cikti:'— Suç ve Ceza 120 TL<br>— Tutunamayanlar 180 TL',
+  not:'Etiketsiz düz metin yazacaksanız <code>@:</code> ya da <code>&lt;text&gt;</code> <b>gerekir</b> — yoksa Razor o metni C# sanır ve derleme hatası verir.'}
+];
+M.syntax={
+ init(s){const c=$('.syntax-sec',s);
+  c.innerHTML=SYN.map((x,n)=>'<button class="chip" data-n="'+n+'">'+x.ad+'</button>').join('');
+  $$('.syntax-sec .chip',s).forEach(b=>b.addEventListener('click',()=>this.sec(s,+b.dataset.n)));},
+ enter(s){this.sec(s,0);},
+ reset(s){this.sec(s,0);},
+ sec(s,n){const x=SYN[n];
+  $$('.syntax-sec .chip',s).forEach(b=>b.classList.toggle('cur',+b.dataset.n===n));
+  $('.syntax-ad',s).textContent=x.dosya;
+  $('.syntax-kod',s).innerHTML=x.kod;
+  $('.syntax-cikti',s).innerHTML=x.cikti;
+  $('.syntax-not',s).innerHTML=x.not;
+  tazele($('.syntax-kod',s));tazele($('.syntax-cikti',s));}
+};
+
+/* --- 8 · model (yalnız parça) --- */
+/* --- 9 · XSS --- */
+const XSS={
+ 0:{kod:'<span class="h">&lt;h1&gt;</span><span class="s">@Model.Baslik</span><span class="h">&lt;/h1&gt;</span>',
+    html:'<span class="h">&lt;h1&gt;</span>&amp;lt;script&amp;gt;alert(’ele geçirildi’)&amp;lt;/script&amp;gt;<span class="h">&lt;/h1&gt;</span>',
+    ekran:'<h4 style="font-size:17px;word-break:break-all">&lt;script&gt;alert(’ele geçirildi’)&lt;/script&gt;</h4><p class="muted" style="font-size:15px;margin-top:10px">Metin olarak göründü. <b style="color:var(--ok)">Script ÇALIŞMADI.</b></p>',
+    not:'ok|<b>Razor <code>&lt;</code> karakterini <code>&amp;lt;</code> yaptı.</b> Bu bir kolaylık değil, <b>güvenlik önlemidir</b> — ve varsayılandır. Hiçbir şey yazmanıza gerek yok.'},
+ 1:{kod:'<span class="h">&lt;h1&gt;</span><span class="s">@Html.Raw(Model.Baslik)</span><span class="h">&lt;/h1&gt;</span>',
+    html:'<span class="h">&lt;h1&gt;&lt;script&gt;</span>alert(’ele geçirildi’)<span class="h">&lt;/script&gt;&lt;/h1&gt;</span>',
+    ekran:'<div style="border:2px solid var(--warn);border-radius:8px;padding:12px;background:var(--warn-s)">'+
+          '<div style="font-weight:800;color:var(--warn);font-size:16px">⚠ localhost diyor ki</div>'+
+          '<div style="font-size:19px;margin:8px 0 10px">ele geçirildi</div>'+
+          '<div style="text-align:right"><span style="background:var(--warn);color:#fff;padding:4px 14px;border-radius:6px;font-size:15px;font-weight:700">Tamam</span></div></div>'+
+          '<p class="muted" style="font-size:15px;margin-top:10px"><b style="color:var(--warn)">Script ÇALIŞTI.</b></p>',
+    not:'warn|<b>XSS — Cross-Site Scripting (siteler arası betik çalıştırma).</b> Saldırgan sizin sayfanızda kendi kodunu çalıştırır: oturum çerezini okur, form gönderir, sayfayı değiştirir. <br><b>Kural:</b> <code>@Html.Raw</code> yazmak <i>“bu HTML’i ben ürettim”</i> demektir. Kullanıcı verisinde <b>asla</b>.'}
+};
+M.xss={
+ init(s){$$('.xss-seg button',s).forEach(b=>b.addEventListener('click',()=>this.mod(s,+b.dataset.m)));},
+ enter(s){this.mod(s,0);},
+ reset(s){this.mod(s,0);},
+ mod(s,m){const x=XSS[m];
+  $$('.xss-seg button',s).forEach(b=>b.classList.toggle('on',+b.dataset.m===m));
+  $('.xss-kod',s).innerHTML=x.kod;$('.xss-html',s).innerHTML=x.html;$('.xss-ekran',s).innerHTML=x.ekran;
+  const p=x.not.split('|');const n=$('.xss-not',s);n.className='xss-not kutu '+p[0];n.innerHTML=p[1];
+  tazele($('.xss-ekran',s));tazele(n);}
+};
+
+/* --- 10 · tekrar eden arayüz --- */
+const SAYFA=['Views/Home/Index.cshtml','Views/Kitap/Index.cshtml','Views/Kategori/Index.cshtml'];
+M.tekrar={
+ init(s){$$('.sayfa',s).forEach((g,n)=>{
+   S('rect',{x:0,y:40,width:270,height:250,rx:13,fill:'#fff',stroke:'#ddd6ca','stroke-width':2.5},g);
+   S('text',{x:135,y:32,'text-anchor':'middle','font-size':13,'font-weight':800,fill:'#8a8377',
+     'font-family':'monospace',text:SAYFA[n]},g);
+   S('rect',{x:16,y:56,width:238,height:26,rx:6,fill:'#f4f1ea'},g);
+   S('text',{x:28,y:74,'font-size':12,fill:'#8a8377','font-family':'monospace',text:'&lt;head&gt; … CSS'},g);
+   const mn=S('rect',{class:'mn',x:16,y:90,width:238,height:34,rx:6,fill:'#e0eff4'},g);
+   S('text',{class:'mt',x:135,y:112,'text-anchor':'middle','font-size':13,'font-weight':700,fill:'#14607a',
+     text:'menü · menü · menü'},g);
+   S('rect',{x:16,y:134,width:238,height:104,rx:6,fill:'#fbfaf7',stroke:'#ece7dd'},g);
+   S('text',{x:135,y:190,'text-anchor':'middle','font-size':15,'font-weight':700,fill:'#3a352e',text:'sayfaya özel içerik'},g);
+   S('rect',{x:16,y:248,width:238,height:26,rx:6,fill:'#f4f1ea'},g);
+   S('text',{x:28,y:266,'font-size':12,fill:'#8a8377',text:'© 2026 KampusKitap'},g);
+   const ek=S('g',{class:'ek',opacity:0},g);
+   S('rect',{x:16,y:90,width:238,height:34,rx:6,fill:'none',stroke:'#a4231b','stroke-width':3,'stroke-dasharray':'7 5'},ek);
+   S('text',{x:135,y:142,'text-anchor':'middle','font-size':13,'font-weight':800,fill:'#a4231b',text:'+ yeni bağlantı eklenmeli'},ek);
+   g.style.opacity=0;g.style.transition='opacity .5s';});},
+ enter(s){this.step(s,0);},
+ step(s,k){
+  $$('.sayfa',s).forEach((g,n)=>{g.style.opacity=(k>=1&&n===0)||k>=2?1:(k>=1?.25:0);
+    $('.ek',g).setAttribute('opacity',k>=2?1:0);
+    $('.mn',g).setAttribute('fill',k>=3?'#ece7dd':'#e0eff4');
+    $('.mt',g).setAttribute('fill',k>=3?'#8a8377':'#14607a');});
+  const t=$('.tek-not',s);
+  t.textContent=k>=3?'Menü artık bir kez yazılıyor; üç sayfa onu kullanıyor.':
+    (k>=2?'Üç dosya · üç kez aynı düzenleme · birini unutmak hata vermez':
+    (k>=1?'Üç ayrı sayfa — aynı head, aynı menü, aynı footer':''));
+  tazele(t);}
+};
+
+/* --- 11 · layout montajı --- */
+M.montaj={
+ init(s){['.icerik','.bolum'].forEach(sel=>{const g=$(sel,s);
+   g.classList.remove('f','fs');g.style.transition='transform .85s cubic-bezier(.2,.7,.2,1),opacity .45s';
+   g.style.opacity=0;});},
+ enter(s){this.step(s,0);},
+ step(s,k){
+  const ic=$('.icerik',s),bo=$('.bolum',s);
+  ic.style.opacity=k>=1?1:0;bo.style.opacity=k>=1?1:0;
+  ic.setAttribute('transform',k>=3?'translate(540,115)':'translate(0,0)');
+  bo.setAttribute('transform',k>=4?'translate(545.7,256.1) scale(0.55)':'translate(0,0)');
+  const eb=$('.yuva-b-et',s),es=$('.yuva-s-et',s);
+  eb.setAttribute('x',k>=3?1190:950);eb.setAttribute('opacity',k>=3?.4:1);
+  es.setAttribute('opacity',k>=4?0:1);
+  $$('.yuva-b rect,.yuva-s rect',s).forEach(r=>
+    r.setAttribute('stroke-dasharray',k>=5?'0':(r.parentNode.classList.contains('yuva-s')?'7 6':'9 7')));
+  const n=$('.mon-not',s);
+  n.textContent=k>=5?'Sonuç: tek bir HTML belgesi':
+    (k>=4?'4 · @section Scripts kendi yuvasına gider':
+    (k>=3?'3 · İçerik @RenderBody() yuvasına yerleşir':
+    (k>=2?'2 · Layout çalışır — yuvalar henüz BOŞ':
+    (k>=1?'1 · ÖNCE görünüm çalışır':'→ tuşuyla montajı izleyin'))));
+  tazele(n);}
+};
+
+/* --- 13 · görünüm arama sırası --- */
+M.arama={
+ init(s){s._m=0;
+  $$('.arama-seg button',s).forEach(b=>b.addEventListener('click',()=>{s._m=+b.dataset.m;
+    $$('.arama-seg button',s).forEach(x=>x.classList.toggle('on',+x.dataset.m===s._m));
+    this.step(s,Math.max(1,adim));}));},
+ enter(s){this.step(s,0);},
+ reset(s){s._m=0;$$('.arama-seg button',s).forEach(x=>x.classList.toggle('on',+x.dataset.m===0));},
+ step(s,k){
+  const varmi=s._m===1;
+  const y=[$('.arama-yol[data-i="0"]',s),$('.arama-yol[data-i="1"]',s)];
+  const dur=(el,c,t)=>{el.className='arama-yol gor '+c;$('.dr',el).textContent=t;};
+  y.forEach(e=>{e.className='arama-yol';$('.dr',e).textContent='';});
+  if(k>=1)dur(y[0],k>=2?(varmi?'var':'yok'):'ara',k>=2?(varmi?'✓ BULUNDU':'✗ yok'):'aranıyor…');
+  if(k>=3){ if(varmi){y[1].className='arama-yol gor';$('.dr',y[1]).textContent='aranmadı — ilkinde bulundu';}
+    else dur(y[1],k>=4?'yok':'ara',k>=4?'✗ yok':'aranıyor…'); }
+  const son=$('.arama-sonuc',s);
+  if(k>=5){
+    son.innerHTML=varmi
+      ? '<div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>'+
+        '<div class="ic"><h4>Kitaplar</h4><ul style="margin:0;padding-left:20px"><li>Suç ve Ceza — 120 TL</li>'+
+        '<li>Tutunamayanlar — 180 TL</li></ul></div></div>'
+      : '<div class="kod sm" style="background:var(--warn-s);border-color:#e7b5b0;font-size:15px">'+
+        '<span style="color:var(--warn);font-weight:700">InvalidOperationException: The view ’Index’ was not found.</span>\n'+
+        'The following locations were searched:\n   <span class="y">/Views/Kitap/Index.cshtml</span>\n'+
+        '   <span class="y">/Views/Shared/Index.cshtml</span></div>';
+    tazele(son);
+  } else son.innerHTML='';
+  const n=$('.arama-not',s);
+  n.className='kutu arama-not '+(k>=5?(varmi?'ok':'warn'):'');
+  n.innerHTML=k>=5
+    ? (varmi?'<b>Birinci yolda bulundu, ikinciye hiç bakılmadı.</b> Arama <b>sırayla</b> yapılır ve ilk eşleşmede durur.'
+            :'<b>Aradığı bütün yolları size söylüyor.</b> Çözüm hatanın içinde yazıyor: dosyanız tam olarak bu yollardan birinde mi?')
+    : (k>=1?'Çatı yolları <b>sırayla</b> tarar; ilk bulduğunda durur.'
+           :'Soldaki düğmeyle dosyanın <b>var</b> ya da <b>yok</b> olduğu iki durumu karşılaştırabilirsiniz.');
+  }
+};
+
+/* --- 17 · partial --- */
+const KLISTE=['Views/Kitap/Index.cshtml','Views/Kitap/Ara.cshtml','Views/Home/Index.cshtml'];
+M.part={
+ init(s){$$('.kart',s).forEach((g,n)=>{
+   S('rect',{x:0,y:16,width:270,height:190,rx:12,fill:'#fff',stroke:'#ddd6ca','stroke-width':2.5},g);
+   S('text',{x:135,y:10,'text-anchor':'middle','font-size':13,'font-weight':800,fill:'#8a8377',
+     'font-family':'monospace',text:KLISTE[n]},g);
+   const kk=S('g',{class:'kk'},g);
+   S('rect',{x:18,y:36,width:234,height:150,rx:8,fill:'#fbeadf',stroke:'#8a3d0f','stroke-width':2},kk);
+   S('text',{x:32,y:62,'font-size':14,'font-family':'monospace',fill:'#14607a',text:'&lt;article class="kart"&gt;'},kk);
+   S('text',{x:46,y:88,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'&lt;h3&gt;@k.Baslik&lt;/h3&gt;'},kk);
+   S('text',{x:46,y:112,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'&lt;p&gt;@k.Yazar&lt;/p&gt;'},kk);
+   S('text',{x:46,y:136,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'&lt;p&gt;@k.Fiyat TL&lt;/p&gt;'},kk);
+   S('text',{x:32,y:162,'font-size':14,'font-family':'monospace',fill:'#14607a',text:'&lt;/article&gt;'},kk);
+   const cg=S('g',{class:'cg',opacity:0},g);
+   S('rect',{x:18,y:92,width:234,height:40,rx:8,fill:'#eee8f5',stroke:'#5c3f78','stroke-width':2.5},cg);
+   S('text',{x:135,y:117,'text-anchor':'middle','font-size':13,'font-weight':700,'font-family':'monospace',
+     fill:'#5c3f78',text:'&lt;partial name="_KitapKart"/&gt;'},cg);
+   g.style.opacity=0;g.style.transition='opacity .5s';});},
+ enter(s){this.step(s,0);},
+ step(s,k){
+  $$('.kart',s).forEach((g,n)=>{
+    g.style.opacity=(k>=2||(k>=1&&n===0))?1:0;
+    $('.kk',g).setAttribute('opacity',k>=3?0:1);
+    $('.cg',g).setAttribute('opacity',k>=3?1:0);});
+  const t=$('.part-not',s);
+  t.textContent=k>=3?'Kart tek bir dosyada; üç sayfa onu çağırıyor.':
+    (k>=2?'Aynı kart üç dosyada — biri değişirse diğerleri sessizce eskir':
+    (k>=1?'Kitap kartı: başlık, yazar, fiyat':''));
+  tazele(t);}
+};
+
+/* --- 22 · karar --- */
+const KARAR=[
+ {s:'Her sayfanın üstünde aynı menü ve altında aynı footer olacak.',a:'layout',ad:'Layout',
+  n:'Değişmeyen <b>çerçeve</b>. Tek dosya, bütün sayfalar. <code>_ViewStart</code> onu otomatik atar.'},
+ {s:'Kitap kartı üç listede görünecek; veri zaten sayfanın modelinde var.',a:'partial',ad:'Partial View',
+  n:'Veri <b>üst görünümden</b> geliyor → partial yeter. <code>&lt;partial name="_KitapKart" model="k" /&gt;</code>'},
+ {s:'Üst menüde sepetteki ürün sayısı yazacak; her sayfada görünecek.',a:'vc',ad:'View Component',
+  n:'Veri sayfanın modeliyle <b>ilgisiz</b>; parça onu <b>kendi getirmeli</b>. Partial seçerseniz her controller aynı kodu yazar.'},
+ {s:'Kullanıcı bir kitabın ayrıntı sayfasını paylaşabilmeli; adresi kopyalayabilmeli.',a:'sayfa',ad:'Ayrı action + görünüm',
+  n:'<b>Paylaşılabilir adres</b> gerekiyorsa o bir sayfadır. Partial ve View Component’in URL’i <b>yoktur</b>.'},
+ {s:'Butona basınca sayfa yenilenmeden yalnızca liste bölümü güncellensin.',a:'sayfa',ad:'Ayrı action + partial döndürme',
+  n:'Action <b>partial</b> döndürür, JavaScript o parçayı yerine koyar. Tam akışı <b>Hafta 12</b>’de (Web API) göreceğiz.'}
+];
+M.karar={
+ init(s){const c=$('.karar-liste',s);
+  c.innerHTML=KARAR.map((x,n)=>'<button class="ksen" data-n="'+n+'"><b>senaryo '+(n+1)+'</b>'+x.s+'</button>').join('');
+  $$('.ksen',s).forEach(b=>b.addEventListener('click',()=>this.sec(s,+b.dataset.n)));},
+ enter(s){this.sec(s,-1);},
+ reset(s){this.sec(s,-1);},
+ sec(s,n){$$('.ksen',s).forEach(b=>b.classList.toggle('cur',+b.dataset.n===n));
+  const c=$('.karar-cevap',s),x=KARAR[n];
+  $$('.tbl tbody tr',s).forEach(r=>r.classList.toggle('hot',!!x&&r.dataset.a===x.a));
+  c.innerHTML=n<0
+    ? '<div class="et">Önce sınıf söylesin</div><h3>Beş senaryo</h3><p>Her senaryoda <b>el kaldırtın</b>, sonra tıklayın. Sağdaki tabloda doğru satır da işaretlenir.</p>'
+    : '<div class="et">senaryo '+(n+1)+' · cevap</div><h3>'+x.ad+'</h3><p>'+x.n+'</p>';
+  tazele(c);}
+};
+
+/* --- 23 · N+1 --- */
+M.nplus={
+ init(s){$('.nplus-calistir',s).addEventListener('click',()=>this.calistir(s));},
+ enter(s){this.reset(s);},
+ leave(s){this.dur(s);},
+ dur(s){if(s._t){clearInterval(s._t);s._t=null;}},
+ reset(s){this.dur(s);$('.nplus-sayi',s).textContent='0';
+  $('.nplus-etiket',s).textContent='';$('.nplus-bar i',s).style.width='0';
+  $('.nplus-coz',s).classList.remove('on');
+  const n=$('.nplus-not',s);n.className='kutu nplus-not';
+  n.innerHTML='Sayfa açıldığında kaç sorgu çalışacağını <b>önce sınıfa tahmin ettirin</b>, sonra düğmeye basın.';
+  $('.nplus-ipucu',s).textContent='50 kitaplık liste — kaç sorgu çalışır?';},
+ calistir(s){this.dur(s);let n=0;
+  const sy=$('.nplus-sayi',s),et=$('.nplus-etiket',s),br=$('.nplus-bar i',s),nt=$('.nplus-not',s);
+  nt.className='kutu nplus-not';nt.innerHTML='Sayfa açılıyor… hata yok, her şey doğru görünüyor.';
+  s._t=setInterval(()=>{
+    n++;sy.textContent=n;br.style.width=Math.min(100,n/51*100)+'%';
+    et.textContent=n===1?'1 · listeyi getiren sorgu':(n-1)+' · satır için kategori sorgusu';
+    if(n>=51){this.dur(s);
+      et.innerHTML='<b>1 liste sorgusu + 50 satır sorgusu</b>';
+      nt.className='kutu nplus-not warn';
+      nt.innerHTML='<b>51 sorgu — ve hiçbir hata yok.</b> Geliştirme makinesinde 50 kayıtla fark edilmez. '+
+        '5.000 kayıtta sayfa <b>8 saniyede</b> açılır ve sebebini aramak günler alır. Adı: <b>N+1 sorgu problemi</b>.';
+      $('.nplus-ipucu',s).textContent='🔜 Hafta 8’de EF Core’da aynısı — orada çözümü Include olacak.';
+      $('.nplus-coz',s).classList.add('on');}
+  },34);}
+};
+
+/* ===================== AÇILIŞ ===================== */
+slaytlar.forEach(s=>{const m=M[s.dataset.module];if(m&&m.init)m.init(s);});
+olcekle();
+let bas=0,basAdim=0;
+const h=(location.hash||'').replace('#','');
+if(h){const p=h.split('.');bas=Math.max(0,(parseInt(p[0],10)||1)-1);basAdim=parseInt(p[1],10)||0;}
+git(bas,basAdim,true);acildi=true;
+window.addEventListener('hashchange',()=>{
+  const x=(location.hash||'').replace('#','').split('.');
+  const j=Math.max(0,(parseInt(x[0],10)||1)-1),k=parseInt(x[1],10)||0;
+  if(j!==i||k!==adim)git(j,k,true);});
+window.sunum={git:git,ileri:ileri,geri:geri,slaytlar:slaytlar};
+
+
+})();
+</script>
+</body>
+</html>

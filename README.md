@@ -25,11 +25,11 @@ Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 |---|---|---|---|---|---|
 | 01 | Web Programlama Temelleri | [PDF](PDF/H01-Ders-Notu.pdf) | [PDF](PDF/H01-Uygulama.pdf) | [PDF](PDF/H01-Detay.pdf) | [Hafta-01](Hafta-01/) |
 | 02 | ASP.NET Core MVC Temelleri ve Mimari Yapısı | [PDF](PDF/H02-Ders-Notu.pdf) | [PDF](PDF/H02-Uygulama.pdf) | [PDF](PDF/H02-Detay.pdf) | [Hafta-02](Hafta-02/) |
+| 03 | Razor Syntax, View Component, Layout | [PDF](PDF/H03-Ders-Notu.pdf) | [PDF](PDF/H03-Uygulama.pdf) | [PDF](PDF/H03-Detay.pdf) | [Hafta-03](Hafta-03/) |
 
 > Haftalar ders ilerledikçe eklenir. Aşağıdaki plan dönem başında duyurulmuştur.
 
-**Planlanan konular:** 03 Razor, View Component, Layout ·
-04 Web formlar · 05 Tag Helper'lar · 06 Model doğrulama · 07 State management ·
+**Planlanan konular:** 04 Web formlar · 05 Tag Helper'lar · 06 Model doğrulama · 07 State management ·
 **ara sınav** · 08 EF Core ve Code First · 09–10 LINQ · 11 Authentication/Authorization ·
 12 Web API ve MCP · 13 Uygulama geliştirme
 
@@ -73,13 +73,19 @@ en sık karşılaşılan hatalar ve çözümleri orada.
 Her haftanın `H0N-etkilesimli.html` dosyası, derste yansıtılan sunumun kendisidir.
 Tek dosyadır, **internetsiz çalışır** — indirip tarayıcıda açabilirsiniz.
 
-| Tuş | İşlev |
-|---|---|
-| <kbd>→</kbd> <kbd>←</kbd> | Bölüm geçişi |
-| <kbd>Home</kbd> / <kbd>End</kbd> | İlk / son bölüm |
-| <kbd>D</kbd> | Koyu tema |
-| <kbd>B</kbd> | Ekranı karart |
-| Sol kenar numaraları | Bölüme atlama |
+**Hafta 3'ten itibaren** sunumlar sabit sahneli slayt biçimindedir ve akışları
+**adım adım** çizer: <kbd>→</kbd> tuşu slayt değil **adım** ilerletir.
+
+| Tuş | Hafta 1–2 | Hafta 3+ |
+|---|---|---|
+| <kbd>→</kbd> <kbd>←</kbd> | bölüm geçişi | **adım** geçişi (adımlar bitince slayt) |
+| <kbd>Home</kbd> / <kbd>End</kbd> | ilk / son bölüm | ilk / son slayt |
+| <kbd>O</kbd> | — | tüm slaytlar (kuş bakışı) |
+| <kbd>F</kbd> | — | tam ekran |
+| <kbd>B</kbd> | ekranı karart | ekranı karart |
+| <kbd>D</kbd> | koyu tema | — |
+| <kbd>?</kbd> | — | bütün kısayollar |
+| sayı + <kbd>Enter</kbd> | — | o slayda atla |
 
 ---
 
