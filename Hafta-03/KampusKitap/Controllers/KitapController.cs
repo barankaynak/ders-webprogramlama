@@ -35,6 +35,12 @@ public class KitapController : Controller
             return NotFound();
 
         ViewData["Title"] = kitap.Baslik;
+
+        // Kategori adını BURADA çözüyoruz, görünümde değil.
+        // Görünümden çağırsaydık kod yine çalışırdı — ve §3.5'teki tuzağa
+        // düşmüş olurduk. Görünümün işi GÖSTERMEK; veri hazırlamak değil.
+        ViewData["Kategori"] = KitapDeposu.KategoriAdi(kitap.KategoriId);
+
         return View(kitap);                // güçlü tipli görünüm: @model Kitap
     }
 
