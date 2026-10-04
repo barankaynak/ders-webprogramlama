@@ -556,14 +556,14 @@ The following locations were searched:
       <g class="sayfa" data-i="0" transform="translate(40,20)"></g>
       <g class="sayfa" data-i="1" transform="translate(420,20)"></g>
       <g class="sayfa" data-i="2" transform="translate(800,20)"></g>
-      <g class="f fs" data-step="3" transform="translate(1180,20)">
+      <g transform="translate(1180,20)"><g class="f fs" data-step="3">
         <rect x="0" y="40" width="230" height="250" rx="13" fill="#e0eff4" stroke="#14607a" stroke-width="3"/>
         <text x="115" y="80" text-anchor="middle" font-size="16" font-weight="800" fill="#14607a" font-family="monospace">_Layout.cshtml</text>
         <text x="115" y="140" text-anchor="middle" font-size="46">🔒</text>
         <text x="115" y="186" text-anchor="middle" font-size="19" font-weight="800" fill="#14607a">tek sahip</text>
         <text x="115" y="216" text-anchor="middle" font-size="16" fill="#3a352e">bir dosya değişti,</text>
         <text x="115" y="240" text-anchor="middle" font-size="16" fill="#3a352e">üç sayfa değişti</text>
-      </g>
+      </g></g>
       <text class="tek-not" x="610" y="368" text-anchor="middle" font-size="20" font-weight="700" fill="#3a352e"></text>
     </svg>
     <div class="f" data-step="2" style="margin-top:6px">
@@ -815,7 +815,7 @@ The following locations were searched:
       <g class="kart" data-i="0" transform="translate(30,16)"></g>
       <g class="kart" data-i="1" transform="translate(330,16)"></g>
       <g class="kart" data-i="2" transform="translate(630,16)"></g>
-      <g class="f fs" data-step="3" transform="translate(960,16)">
+      <g transform="translate(960,16)"><g class="f fs" data-step="3">
         <rect x="0" y="10" width="300" height="190" rx="13" fill="#eee8f5" stroke="#5c3f78" stroke-width="3"/>
         <text x="150" y="42" text-anchor="middle" font-size="14" font-weight="800" fill="#5c3f78" font-family="monospace">_KitapKart.cshtml</text>
         <rect x="22" y="56" width="256" height="30" rx="6" fill="#fff"/>
@@ -825,7 +825,7 @@ The following locations were searched:
         <text x="34" y="138" font-size="14" font-family="monospace" fill="#14607a">&lt;p&gt;@Model.Yazar&lt;/p&gt;</text>
         <text x="34" y="160" font-size="14" font-family="monospace" fill="#14607a">&lt;p&gt;@Model.Fiyat TL&lt;/p&gt;</text>
         <text x="150" y="228" text-anchor="middle" font-size="18" font-weight="800" fill="#5c3f78">tek sahip</text>
-      </g>
+      </g></g>
       <g class="part-ok f fo" data-step="3">
         <path class="draw" pathLength="1" d="M300 110H940" stroke="#5c3f78" stroke-width="3" fill="none" stroke-dasharray="1" marker-end="url(#ok)"/>
       </g>
@@ -1494,7 +1494,7 @@ M.tekrar={
    S('text',{x:135,y:32,'text-anchor':'middle','font-size':13,'font-weight':800,fill:'#8a8377',
      'font-family':'monospace',text:SAYFA[n]},g);
    S('rect',{x:16,y:56,width:238,height:26,rx:6,fill:'#f4f1ea'},g);
-   S('text',{x:28,y:74,'font-size':12,fill:'#8a8377','font-family':'monospace',text:'&lt;head&gt; … CSS'},g);
+   S('text',{x:28,y:74,'font-size':12,fill:'#8a8377','font-family':'monospace',text:'<head> … CSS'},g);
    const mn=S('rect',{class:'mn',x:16,y:90,width:238,height:34,rx:6,fill:'#e0eff4'},g);
    S('text',{class:'mt',x:135,y:112,'text-anchor':'middle','font-size':13,'font-weight':700,fill:'#14607a',
      text:'menü · menü · menü'},g);
@@ -1509,7 +1509,7 @@ M.tekrar={
  enter(s){this.step(s,0);},
  step(s,k){
   $$('.sayfa',s).forEach((g,n)=>{g.style.opacity=(k>=1&&n===0)||k>=2?1:(k>=1?.25:0);
-    $('.ek',g).setAttribute('opacity',k>=2?1:0);
+    $('.ek',g).setAttribute('opacity',k===2?1:0);   /* layout devralınca uyarı kalkar */
     $('.mn',g).setAttribute('fill',k>=3?'#ece7dd':'#e0eff4');
     $('.mt',g).setAttribute('fill',k>=3?'#8a8377':'#14607a');});
   const t=$('.tek-not',s);
@@ -1591,15 +1591,15 @@ M.part={
      'font-family':'monospace',text:KLISTE[n]},g);
    const kk=S('g',{class:'kk'},g);
    S('rect',{x:18,y:36,width:234,height:150,rx:8,fill:'#fbeadf',stroke:'#8a3d0f','stroke-width':2},kk);
-   S('text',{x:32,y:62,'font-size':14,'font-family':'monospace',fill:'#14607a',text:'&lt;article class="kart"&gt;'},kk);
-   S('text',{x:46,y:88,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'&lt;h3&gt;@k.Baslik&lt;/h3&gt;'},kk);
-   S('text',{x:46,y:112,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'&lt;p&gt;@k.Yazar&lt;/p&gt;'},kk);
-   S('text',{x:46,y:136,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'&lt;p&gt;@k.Fiyat TL&lt;/p&gt;'},kk);
-   S('text',{x:32,y:162,'font-size':14,'font-family':'monospace',fill:'#14607a',text:'&lt;/article&gt;'},kk);
+   S('text',{x:32,y:62,'font-size':14,'font-family':'monospace',fill:'#14607a',text:'<article class="kart">'},kk);
+   S('text',{x:46,y:88,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'<h3>@k.Baslik</h3>'},kk);
+   S('text',{x:46,y:112,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'<p>@k.Yazar</p>'},kk);
+   S('text',{x:46,y:136,'font-size':14,'font-family':'monospace',fill:'#8a3d0f',text:'<p>@k.Fiyat TL</p>'},kk);
+   S('text',{x:32,y:162,'font-size':14,'font-family':'monospace',fill:'#14607a',text:'</article>'},kk);
    const cg=S('g',{class:'cg',opacity:0},g);
    S('rect',{x:18,y:92,width:234,height:40,rx:8,fill:'#eee8f5',stroke:'#5c3f78','stroke-width':2.5},cg);
    S('text',{x:135,y:117,'text-anchor':'middle','font-size':13,'font-weight':700,'font-family':'monospace',
-     fill:'#5c3f78',text:'&lt;partial name="_KitapKart"/&gt;'},cg);
+     fill:'#5c3f78',text:'<partial name="_KitapKart"/>'},cg);
    g.style.opacity=0;g.style.transition='opacity .5s';});},
  enter(s){this.step(s,0);},
  step(s,k){
