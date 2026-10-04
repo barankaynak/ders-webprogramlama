@@ -294,7 +294,88 @@ table.tbl tr.hot td{background:var(--sec-s)}
 
 </section>
 
-<!-- ========== 3 · RAZOR NEREDE ÇALIŞIR (AKIŞ) ========== -->
+<!-- ========== 3 · NEDEN RAZOR ========== -->
+<section class="slide secA" id="s-neden" data-title="Neden Razor?" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">A · Razor nedir, neden var</div>
+    <h2>Sayfa HTML ister — peki HTML’i <u>kim</u> yazacak?</h2>
+    <p class="sub">Hafta 2’de <code>Content()</code> ile düz metin döndürdük. Şimdi gerçek bir sayfa üretmemiz gerekiyor.</p>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="1">
+          <div class="pill" style="margin-bottom:6px;background:var(--warn-s);color:var(--warn)">① Akla ilk gelen: C# içinde metin birleştirmek</div>
+          <div class="kod sm" style="font-size:14.5px"><span class="s">var</span> html = <span class="y">"&lt;h1&gt;"</span> + kitap.Baslik + <span class="y">"&lt;/h1&gt;"</span>;
+html += <span class="y">"&lt;ul&gt;"</span>;
+<span class="s">foreach</span> (<span class="s">var</span> k <span class="s">in</span> kitaplar)
+    html += <span class="y">"&lt;li&gt;"</span> + k.Baslik + <span class="y">" — "</span>
+          + k.Fiyat + <span class="y">" TL&lt;/li&gt;"</span>;
+html += <span class="y">"&lt;/ul&gt;"</span>;
+<span class="s">return</span> Content(html, <span class="y">"text/html"</span>);</div>
+        </div>
+
+        <div class="f fx" data-step="2">
+          <div style="font-size:16px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);margin-bottom:6px">bedeli</div>
+          <table class="tbl" style="font-size:17px">
+            <tr><td style="width:190px">Okunmaz</td><td>HTML, tırnak ve <code>+</code> yığınının altında kaybolur</td></tr>
+            <tr><td>Editör yardım etmez</td><td>Metnin içi C# için de HTML için de “sadece string”</td></tr>
+            <tr><td>Kapanış etiketi</td><td>Unutursanız hata vermez; sayfa <b>sessizce bozulur</b></td></tr>
+            <tr><td>Güvenlik</td><td>Kullanıcı verisi doğrudan HTML’e karışır → <b>XSS</b></td></tr>
+            <tr><td>İş bölümü</td><td>Arayüzü düzeltmek için C# bilmek gerekir</td></tr>
+          </table>
+          <div class="kutu warn" style="margin-top:10px;font-size:17px">Hafta 2’nin <b>“şişman controller”</b> belirtisi: HTML üretimi controller’ın işi değil.</div>
+        </div>
+      </div>
+
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="3">
+          <div class="pill" style="margin-bottom:8px">② Asıl gözlem: oran ters</div>
+          <div class="card" style="padding:16px 20px">
+            <div style="display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--line)">
+              <div style="flex:30;background:var(--accent2-s);display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--accent2)">sabit HTML</div>
+              <div style="flex:2;background:var(--accent)"></div>
+              <div style="flex:22;background:var(--accent2-s)"></div>
+              <div style="flex:2;background:var(--accent)"></div>
+              <div style="flex:14;background:var(--accent2-s)"></div>
+              <div style="flex:2;background:var(--accent)"></div>
+              <div style="flex:10;background:var(--accent2-s)"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:16px">
+              <span style="color:var(--accent2);font-weight:700">■ sayfanın büyük kısmı sabittir</span>
+              <span style="color:var(--accent);font-weight:700">■ değişen yerler azdır</span>
+            </div>
+            <p class="lead" style="font-size:19px;margin:12px 0 0">Bir sayfanın <b>çoğu</b> hiç değişmeyen HTML’dir; yalnızca birkaç yeri veriye göre değişir.
+            C# içinde metin birleştirmek bu oranı <b>tersine çevirir</b>: çoğunluğu tırnak içine hapseder.</p>
+          </div>
+        </div>
+
+        <div class="f fx" data-step="4">
+          <div class="pill" style="margin-bottom:6px;background:var(--ok-s);color:var(--ok)">③ Çözüm: şablon motoru</div>
+          <div class="card" style="padding:16px 20px;border-left:5px solid var(--ok)">
+            <p class="lead" style="font-size:20px;margin:0 0 10px"><b>HTML’i HTML olarak yaz; yalnızca <u>değişen yerleri</u> işaretle.</b></p>
+            <div class="kod sm" style="font-size:14.5px"><span class="h">&lt;h1&gt;</span><span class="s">@kitap.Baslik</span><span class="h">&lt;/h1&gt;</span>
+<span class="h">&lt;ul&gt;</span>
+<span class="s">@foreach (var k in kitaplar)</span>
+{
+    <span class="h">&lt;li&gt;</span><span class="s">@k.Baslik</span> — <span class="s">@k.Fiyat</span> TL<span class="h">&lt;/li&gt;</span>
+}
+<span class="h">&lt;/ul&gt;</span></div>
+            <table class="tbl" style="margin-top:12px;font-size:17px;box-shadow:none">
+              <tr><td style="width:150px"><b>Razor</b></td><td>ASP.NET Core’un <b>şablon motoru</b> (template engine)</td></tr>
+              <tr><td><code>.cshtml</code></td><td><b>c</b>s + <b>html</b> — aynı dosyada C# ve HTML</td></tr>
+              <tr><td>Görevi</td><td>Şablon + veri → <b>düz HTML metni</b></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 4 · RAZOR NEREDE ÇALIŞIR (AKIŞ) ========== -->
 <section class="slide secA" id="s-nerede" data-title="Razor nerede çalışır?" data-module="akis" data-steps="7">
   <header class="s-head">
     <div class="kicker">A · Razor sözdizimi</div>
@@ -388,7 +469,7 @@ table.tbl tr.hot td{background:var(--sec-s)}
     <div class="f" data-step="1" style="margin-top:26px">
       <div class="kutu ok" style="font-size:20px"><b>Üç pratik sonuç:</b>
         ① Razor'ı tarayıcı konsolunda <b>hata ayıklayamazsınız</b> — orada yok. &nbsp;
-        ② Razor sunucunun kaynaklarına erişir (ama erişmemelidir — slayt 23). &nbsp;
+        ② Razor sunucunun kaynaklarına erişir (ama erişmemelidir — slayt 24). &nbsp;
         ③ Kullanıcı tıklayınca Razor <b>yeniden çalışmaz</b>; yeni bir istek gerekir.</div>
     </div>
   </div>
@@ -466,34 +547,58 @@ table.tbl tr.hot td{background:var(--sec-s)}
 <section class="slide secA" id="s-uygA" data-title="Uygulama A — Content()'ten View()'a" data-module="uygA" data-steps="4">
   <header class="s-head">
     <div class="kicker">🔧 Uygulama A · 12 dk · canlı kodlama</div>
-    <h2><code style="font-family:var(--mono);font-size:34px">Content()</code> → <code style="font-family:var(--mono);font-size:34px">View()</code></h2>
+    <h2>Düz metinden HTML’e: <code style="font-family:var(--mono);font-size:32px">Content()</code> → <code style="font-family:var(--mono);font-size:32px">View()</code></h2>
   </header>
   <div class="s-body">
-    <div style="display:grid;grid-template-columns:420px 1fr;gap:26px;height:100%">
-      <div class="col" style="gap:11px">
-        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b>Hafta 2'nin hâli</b><span><code>return Content("Kitap listesi")</code> — düz metin</span></div></div>
-        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b><code>View()</code>'a çevir ve <u>hata al</u></b><span>Dosya yok — çatı nerede aradığını <b>söyler</b></span></div></div>
-        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b>Görünümü yaz</b><span><code>Views/Kitap/Index.cshtml</code> — listenin birinci yolu</span></div></div>
-        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b>⭐ Kanıt: Ctrl+U</b><span>Kaynakta <code>@foreach</code> <b>yok</b></span></div></div>
-        <div class="kutu warn f" data-step="2" style="margin-top:8px;font-size:17px"><b>Sık hata:</b> <code>View()</code> deyip modeli göndermemek → görünümde <code>Model</code> <code>null</code> olur. Bunu <b>bilerek bir kez</b> yapın.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start">
+
+      <div class="f fx" data-step="1">
+        <div class="pill gri" style="margin-bottom:8px">① Hafta 2’nin hâli</div>
+        <div class="kod sm" style="font-size:15px"><span class="s">public</span> IActionResult Index()
+{
+    <span class="s">return</span> Content(<span class="y">"Kitap listesi"</span>);
+}</div>
+        <div class="tarayici" style="margin-top:10px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+          <div class="ic" style="font-family:var(--mono);font-size:15px;color:var(--muted)">Kitap listesi</div></div>
+        <div class="muted" style="font-size:16px;margin-top:8px">HTTP olarak sayfa, HTML olarak değil.</div>
       </div>
-      <div class="col">
-        <div class="f" data-step="2"><span class="dosya">tarayıcı · hata ekranı</span>
-          <div class="kod sm" style="border-radius:0 12px 12px 12px;background:var(--warn-s);border-color:#e7b5b0"><span style="color:var(--warn);font-weight:700">InvalidOperationException: The view 'Index' was not found.</span>
+
+      <div class="f fx" data-step="2">
+        <div class="pill" style="margin-bottom:8px;background:var(--warn-s);color:var(--warn)">② <code>View()</code> — dosya yok</div>
+        <div class="kod sm" style="font-size:15px"><span class="s">public</span> IActionResult Index()
+{
+    <span class="s">return</span> <span class="ekle">View()</span>;
+}</div>
+        <div class="kod sm" style="margin-top:10px;background:var(--warn-s);border-color:#e7b5b0;font-size:13.5px"><span style="color:var(--warn);font-weight:700">InvalidOperationException:</span>
+The view <span class="y">'Index'</span> was not found.
 The following locations were searched:
-   <span class="y">/Views/Kitap/Index.cshtml</span>
-   <span class="y">/Views/Shared/Index.cshtml</span></div>
-          <div class="kutu gold" style="margin-top:12px;font-size:19px">⛔ <b>Bu ekranı atlamayın.</b> Hatanın çözümü hatanın içinde yazıyor — slayt 13'ün tamamı bu liste.</div>
-        </div>
-        <div class="f" data-step="3"><span class="dosya">Views/Kitap/Index.cshtml</span>
-          <div class="kod sm"><span class="s">@model</span> List&lt;Kitap&gt;
-<span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>
-<span class="s">@if (Model.Count == 0) {</span> <span class="h">&lt;p&gt;</span>Hiç kitap yok.<span class="h">&lt;/p&gt;</span> <span class="s">}</span>
-<span class="s">else {</span>
-  <span class="h">&lt;ul&gt;</span><span class="s">@foreach (var k in Model) {</span>
-    <span class="h">&lt;li&gt;&lt;strong&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/strong&gt;</span> — <span class="s">@k.Yazar</span><span class="h">&lt;/li&gt;</span>
-  <span class="s">} }</span><span class="h">&lt;/ul&gt;</span></div></div>
+  <span class="y">/Views/Kitap/Index.cshtml</span>
+  <span class="y">/Views/Shared/Index.cshtml</span></div>
+        <div class="muted" style="font-size:16px;margin-top:8px"><b style="color:var(--warn)">Çatı nerede aradığını söylüyor.</b></div>
       </div>
+
+      <div class="f fx" data-step="3">
+        <div class="pill" style="margin-bottom:8px;background:var(--ok-s);color:var(--ok)">③ listedeki birinci yol</div>
+        <span class="dosya">Views/Kitap/Index.cshtml</span>
+        <div class="kod sm" style="font-size:14.5px"><span class="s">@model</span> List&lt;Kitap&gt;
+<span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>
+<span class="h">&lt;ul&gt;</span><span class="s">@foreach (var k in Model)</span>
+{
+  <span class="h">&lt;li&gt;&lt;b&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/b&gt;</span> — <span class="s">@k.Yazar</span><span class="h">&lt;/li&gt;</span>
+}<span class="h">&lt;/ul&gt;</span></div>
+        <div class="tarayici" style="margin-top:10px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+          <div class="ic" style="font-size:15px"><b style="font-size:17px">Kitaplar</b>
+            <ul style="margin:4px 0 0;padding-left:18px"><li><b>Suç ve Ceza</b> — Dostoyevski</li><li><b>Tutunamayanlar</b> — Oğuz Atay</li></ul></div></div>
+      </div>
+    </div>
+
+    <div class="f" data-step="4" style="margin-top:16px;display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:center">
+      <div>
+        <span class="dosya">④ Ctrl+U — tarayıcıya gerçekte giden metin</span>
+        <div class="kod sm" style="font-size:15px"><span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>
+<span class="h">&lt;ul&gt;&lt;li&gt;&lt;b&gt;</span>Suç ve Ceza<span class="h">&lt;/b&gt;</span> — Dostoyevski<span class="h">&lt;/li&gt;</span> … <span class="h">&lt;/ul&gt;</span></div>
+      </div>
+      <div class="kutu ok" style="font-size:19px"><b>Kaynakta tek bir <code>@</code> yok.</b> Razor sunucuda çalıştı, işi bitti, ortadan kayboldu.</div>
     </div>
   </div>
 
@@ -671,7 +776,7 @@ The following locations were searched:
         <table class="tbl" style="margin-top:12px;font-size:16px;box-shadow:none">
           <tr><td><code>@using</code></td><td><code>@model Kitap</code> kısa yazılır</td></tr>
           <tr><td><code>@addTagHelper</code></td><td><code>&lt;partial&gt;</code>, <code>&lt;vc:…&gt;</code> çalışır → <b>Hafta 5</b></td></tr>
-          <tr><td><code>@inject</code></td><td>servis enjeksiyonu (dikkatli — slayt 23)</td></tr>
+          <tr><td><code>@inject</code></td><td>servis enjeksiyonu (dikkatli — slayt 24)</td></tr>
         </table>
       </div>
     </div>
@@ -718,30 +823,57 @@ The following locations were searched:
 <section class="slide secB" id="s-uygB" data-title="Uygulama B — Layout ve section" data-module="uygB" data-steps="4">
   <header class="s-head">
     <div class="kicker">🔧 Uygulama B · 14 dk · canlı kodlama</div>
-    <h2>Layout'u <u>bozarak</u> anlamak</h2>
+    <h2>Layout’u <u>bozarak</u> anlamak — dört müdahale, dört sonuç</h2>
   </header>
   <div class="s-body">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
-      <div class="col" style="gap:11px">
-        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b><code>@RenderBody()</code>'yi sil</b><span>İçerik gider, menü kalır, <b>hata yok</b></span></div></div>
-        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b>Menüye bağlantı ekle</b><span>Tek dosya → <b>üç sayfa</b> birden değişir</span></div></div>
-        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b><code>_ViewStart</code>'ı kapat</b><span>Çıplak HTML kalır — kim yazıyormuş belli olur</span></div></div>
-        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b><code>@section Scripts</code> ekle</b><span><code>/Kitap</code>'ta konsolda mesaj var, <code>/Kategori</code>'de <b>yok</b></span></div></div>
-      </div>
-      <div class="col">
-        <div class="f" data-step="1"><span class="dosya">_Layout.cshtml — adım 1</span>
-          <div class="kod sm"><span class="h">&lt;main&gt;</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+
+      <div class="card f fs" data-step="1" style="padding:14px 18px;display:flex;gap:16px;align-items:center">
+        <div style="flex:1">
+          <div class="pill" style="margin-bottom:6px">① <code>@RenderBody()</code> silinirse</div>
+          <div class="kod sm" style="font-size:14.5px"><span class="h">&lt;main&gt;</span>
     <span class="sil">@RenderBody()</span>
 <span class="h">&lt;/main&gt;</span></div>
-          <div class="tarayici" style="margin-top:10px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
-            <div class="ic"><div style="color:var(--accent2);font-weight:700">Ana sayfa · Kitaplar · Kategoriler</div>
-              <div style="height:34px;border:2px dashed var(--line);border-radius:8px;margin:10px 0;display:grid;place-items:center;color:var(--faint);font-size:15px">içerik yok — ama hata da yok</div>
-              <div style="color:var(--muted);font-size:15px">© 2026 KampusKitap</div></div></div></div>
-        <div class="f" data-step="4"><span class="dosya">Views/Kitap/Index.cshtml — adım 4</span>
-          <div class="kod sm"><span class="s">@section Scripts {</span>
-    <span class="h">&lt;script&gt;</span>console.log("yalnızca kitap listesinde")<span class="h">&lt;/script&gt;</span>
-<span class="s">}</span></div>
-          <div class="kutu warn" style="margin-top:10px;font-size:17px"><b>Sık hata:</b> bölüm adı <b>büyük/küçük harfe duyarlıdır</b>. <code>@section scripts</code> yazarsanız layout'taki <code>"Scripts"</code> ile eşleşmez.</div></div>
+        </div>
+        <div class="tarayici" style="width:260px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+          <div class="ic" style="padding:8px 10px">
+            <div style="color:var(--accent2);font-weight:700;font-size:13px">Ana sayfa · Kitaplar · Kategoriler</div>
+            <div style="height:30px;border:2px dashed var(--line);border-radius:6px;margin:6px 0;display:grid;place-items:center;color:var(--faint);font-size:12px">içerik yok</div>
+            <div style="color:var(--muted);font-size:12px">© 2026 KampusKitap</div></div></div>
+        <div style="width:118px;font-size:16px;line-height:1.3"><b style="color:var(--warn)">Hata yok.</b><br><span class="muted" style="font-size:15px">Sayfa çalışmaya devam etti.</span></div>
+      </div>
+
+      <div class="card f fs" data-step="2" style="padding:14px 18px">
+        <div class="pill" style="margin-bottom:8px">② Menüye bir bağlantı eklenirse</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="tarayici"><div class="ub"><i></i> <span>/</span></div><div class="ic" style="padding:7px 9px;font-size:12px;color:var(--accent2);font-weight:700">… · <span class="ekle">Gizlilik</span></div></div>
+          <div class="tarayici"><div class="ub"><i></i> <span>/Kitap</span></div><div class="ic" style="padding:7px 9px;font-size:12px;color:var(--accent2);font-weight:700">… · <span class="ekle">Gizlilik</span></div></div>
+          <div class="tarayici"><div class="ub"><i></i> <span>/Kategori</span></div><div class="ic" style="padding:7px 9px;font-size:12px;color:var(--accent2);font-weight:700">… · <span class="ekle">Gizlilik</span></div></div>
+        </div>
+        <div style="font-size:18px;margin-top:10px"><b>Tek dosya değişti, üç sayfa değişti.</b> <span class="muted" style="font-size:16px">🧩 Tek doğruluk kaynağı.</span></div>
+      </div>
+
+      <div class="card f fs" data-step="3" style="padding:14px 18px;display:flex;gap:16px;align-items:center">
+        <div style="flex:1">
+          <div class="pill" style="margin-bottom:6px">③ <code>_ViewStart.cshtml</code> kapatılırsa</div>
+          <div class="kod sm" style="font-size:14.5px"><span class="sil">@{ Layout = "_Layout"; }</span></div>
+        </div>
+        <div class="tarayici" style="width:250px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+          <div class="ic" style="padding:8px 10px;font-family:Times,serif">
+            <div style="font-size:17px;font-weight:700">Kitaplar</div>
+            <div style="font-size:12px">• Suç ve Ceza • Tutunamayanlar</div>
+            <div style="font-size:11px;color:var(--faint);margin-top:4px">menü yok · CSS yok · footer yok</div></div></div>
+        <div style="width:118px;font-size:16px;line-height:1.3">Layout’u <b>hiçbir görünümde</b> yazmamıştık.</div>
+      </div>
+
+      <div class="card f fs" data-step="4" style="padding:14px 18px">
+        <div class="pill" style="margin-bottom:8px">④ <code>@section Scripts</code> eklenirse</div>
+        <div class="kod sm" style="font-size:14px"><span class="s">@section Scripts {</span> <span class="h">&lt;script&gt;</span>console.log("yalnızca kitap listesinde")<span class="h">&lt;/script&gt;</span> <span class="s">}</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div style="background:#1c1a17;border-radius:8px;padding:8px 11px;font-family:var(--mono);font-size:13px;color:#9fd8c8">&gt; /Kitap<br>yalnızca kitap listesinde</div>
+          <div style="background:#1c1a17;border-radius:8px;padding:8px 11px;font-family:var(--mono);font-size:13px;color:#8a8377">&gt; /Kategori<br><i>(boş)</i></div>
+        </div>
+        <div class="muted" style="font-size:16px;margin-top:8px">Bölüm adı <b>büyük/küçük harfe duyarlı</b>.</div>
       </div>
     </div>
   </div>
@@ -862,28 +994,61 @@ The following locations were searched:
 <section class="slide secC" id="s-uygC" data-title="Uygulama C — kartı partial'a çıkarmak" data-module="uygC" data-steps="4">
   <header class="s-head">
     <div class="kicker">🔧 Uygulama C · 10 dk · canlı kodlama</div>
-    <h2>Kartı partial'a çıkarmak</h2>
+    <h2>Kartı partial’a çıkarmak — ve iki sonucu görmek</h2>
   </header>
   <div class="s-body">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
-      <div class="col" style="gap:11px">
-        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b>Tekrarı göster</b><span><code>Index.cshtml</code> ve <code>Ara.cshtml</code> — aynı kart</span></div></div>
-        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b>Partial'a çıkar</b><span><code>Views/Shared/_KitapKart.cshtml</code></span></div></div>
-        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b><code>model="k"</code>'yi sil, hatayı göster</b><span>Partial üst görünümün modelini alır → tip hatası</span></div></div>
-        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b>Tek yerden değiştir</b><span>Karta rozet ekle → iki sayfada birden değişti</span></div></div>
-        <div class="kutu ok f" data-step="4" style="margin-top:8px;font-size:18px">🧩 <b>İlke ikinci kez bağlandı:</b> menü (layout) · kart (partial) · <i>ve birazdan</i> sayaç (view component).</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="1">
+          <div class="pill gri" style="margin-bottom:6px">① aynı kart, iki dosyada</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><span class="dosya" style="font-size:12px">Kitap/Index.cshtml</span>
+              <div class="kod sm" style="font-size:13px"><span class="h">&lt;article class="kart"&gt;</span>
+  <span class="h">&lt;h3&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/h3&gt;</span>
+  <span class="h">&lt;p&gt;</span><span class="s">@k.Yazar</span><span class="h">&lt;/p&gt;</span>
+<span class="h">&lt;/article&gt;</span></div></div>
+            <div><span class="dosya" style="font-size:12px">Kitap/Ara.cshtml</span>
+              <div class="kod sm" style="font-size:13px"><span class="h">&lt;article class="kart"&gt;</span>
+  <span class="h">&lt;h3&gt;</span><span class="s">@k.Baslik</span><span class="h">&lt;/h3&gt;</span>
+  <span class="h">&lt;p&gt;</span><span class="s">@k.Yazar</span><span class="h">&lt;/p&gt;</span>
+<span class="h">&lt;/article&gt;</span></div></div>
+          </div>
+        </div>
+
+        <div class="f fx" data-step="2">
+          <div class="pill" style="margin-bottom:6px">② tek sahibe taşınır</div>
+          <span class="dosya">Views/Shared/_KitapKart.cshtml</span>
+          <div class="kod sm" style="font-size:14.5px"><span class="s">@model</span> Kitap
+<span class="h">&lt;article class="kart"&gt;</span>
+  <span class="h">&lt;h3&gt;</span><span class="s">@Model.Baslik</span><span class="h">&lt;/h3&gt;</span>
+  <span class="h">&lt;p&gt;</span><span class="s">@Model.Yazar</span><span class="h">&lt;/p&gt;</span>
+<span class="h">&lt;/article&gt;</span></div>
+          <div class="kod sm" style="margin-top:8px;font-size:14.5px"><span class="s">@foreach (var k in Model)</span> { <span class="h">&lt;partial name="_KitapKart" <span class="y">model="k"</span> /&gt;</span> }</div>
+        </div>
       </div>
-      <div class="col">
-        <div class="f" data-step="3"><span class="dosya">model="k" silinince</span>
-          <div class="kod sm" style="border-radius:0 12px 12px 12px;background:var(--warn-s);border-color:#e7b5b0;font-size:14px"><span style="color:var(--warn);font-weight:700">InvalidOperationException</span>
+
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="3">
+          <div class="pill" style="margin-bottom:6px;background:var(--warn-s);color:var(--warn)">③ <code>model="k"</code> silinirse</div>
+          <div class="kod sm" style="background:var(--warn-s);border-color:#e7b5b0;font-size:13.5px"><span style="color:var(--warn);font-weight:700">InvalidOperationException</span>
 The model item passed into the ViewDataDictionary
 is of type <span class="y">List&lt;Kitap&gt;</span>, but this ViewDataDictionary
-instance requires a model item of type <span class="y">Kitap</span>.</div></div>
-        <div class="f" data-step="4"><span class="dosya">_KitapKart.cshtml — tek satır eklendi</span>
-          <div class="kod sm"><span class="h">&lt;article class="kart"&gt;</span>
-    <span class="h">&lt;h3&gt;</span><span class="s">@Model.Baslik</span><span class="h">&lt;/h3&gt;</span>
-    <span class="ekle">&lt;span class="rozet"&gt;kampüs içi&lt;/span&gt;</span>
-<span class="h">&lt;/article&gt;</span></div></div>
+instance requires a model item of type <span class="y">Kitap</span>.</div>
+          <div class="kutu" style="margin-top:8px;font-size:17px">Partial, model verilmezse <b>üst görünümün</b> modelini alır. Kanıtı bu mesaj: <b>partial veriyi dışarıdan alır.</b></div>
+        </div>
+
+        <div class="f fx" data-step="4">
+          <div class="pill" style="margin-bottom:6px;background:var(--ok-s);color:var(--ok)">④ karta tek satır eklenirse</div>
+          <div class="kod sm" style="font-size:14.5px"><span class="ekle">&lt;span class="rozet"&gt;kampüs içi&lt;/span&gt;</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+            <div class="tarayici"><div class="ub"><i></i> <span>/Kitap</span></div>
+              <div class="ic" style="padding:8px 10px;font-size:13px"><b>Suç ve Ceza</b><br><span class="pill" style="font-size:12px">kampüs içi</span></div></div>
+            <div class="tarayici"><div class="ub"><i></i> <span>/Kitap/Ara</span></div>
+              <div class="ic" style="padding:8px 10px;font-size:13px"><b>Suç ve Ceza</b><br><span class="pill" style="font-size:12px">kampüs içi</span></div></div>
+          </div>
+          <div style="font-size:17px;margin-top:8px"><b>Bir dosya, iki sayfa.</b> 🧩 İlke ikinci kez bağlandı.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1028,25 +1193,59 @@ instance requires a model item of type <span class="y">Kitap</span>.</div></div>
     <h2>Sayacı View Component'e dönüştürmek — ve <u>sıfır</u> controller düzenlemek</h2>
   </header>
   <div class="s-body">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
-      <div class="col" style="gap:11px">
-        <div class="uyg-ad f fx" data-step="1"><span class="num">1</span><div><b>Problemi tahtaya kur</b><span>Üç controller aynı üç satırı yazacak</span></div></div>
-        <div class="uyg-ad f fx" data-step="2"><span class="num">2</span><div><b>Sınıfı yaz</b><span><code>: ViewComponent</code> + kurucu enjeksiyonu</span></div></div>
-        <div class="uyg-ad f fx" data-step="3"><span class="num">3</span><div><b>Görünümü <u>kasten yanlış yere</u> koy</b><span>Hata → doğru yola taşı</span></div></div>
-        <div class="uyg-ad f fx" data-step="4"><span class="num">4</span><div><b>⭐ Kanıtla</b><span><code>/</code> · <code>/Kitap</code> · <code>/Kategori</code> — üçünde de rozet var</span></div></div>
+    <div style="display:grid;grid-template-columns:660px 1fr;gap:26px;align-items:start">
+
+      <div class="f fx" data-step="1">
+        <span class="dosya">ViewComponents/ZiyaretRozetiViewComponent.cs</span>
+        <div class="kod sm" style="font-size:15.5px"><span class="s">public class</span> ZiyaretRozeti<span class="y">ViewComponent</span> : <span class="s">ViewComponent</span>
+{
+    <span class="s">private readonly</span> IZiyaretSayaci _sayac;
+
+    <span class="c">// Hafta 2’nin kurucu enjeksiyonu — değişen hiçbir şey yok</span>
+    <span class="s">public</span> ZiyaretRozetiViewComponent(IZiyaretSayaci sayac)
+        =&gt; _sayac = sayac;
+
+    <span class="s">public</span> IViewComponentResult <span class="s">Invoke</span>()
+        =&gt; View(<span class="ekle">_sayac.Arttir()</span>);   <span class="c">// veriyi KENDİ getiriyor</span>
+}</div>
+        <div class="kutu f fo" data-step="1" style="margin-top:12px;font-size:17px">
+          Taban sınıf <code>Controller</code> değil <b><code>ViewComponent</code></b>:
+          route’lanmaz, adresi yoktur, HTTP isteği almaz. <b>Ama DI aynı DI.</b>
+        </div>
       </div>
-      <div class="col">
-        <div class="f" data-step="3"><span class="dosya">layout'a eklenen tek satır</span>
+
+      <div class="col" style="gap:14px">
+        <div class="f" data-step="2">
+          <div style="font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">ad nereden geliyor?</div>
+          <div class="card" style="padding:16px 20px">
+            <div class="mono" style="font-size:20px;font-weight:700">ZiyaretRozeti<span style="text-decoration:line-through;color:var(--faint)">ViewComponent</span></div>
+            <div style="font-size:15px;color:var(--muted);margin:6px 0 2px">↓ sonek atılır</div>
+            <div class="mono" style="font-size:19px">Views/Shared/Components/<b style="background:var(--plum-s);color:var(--plum);padding:1px 5px;border-radius:4px">ZiyaretRozeti</b>/<b>Default.cshtml</b></div>
+            <div style="font-size:15px;color:var(--muted);margin:8px 0 2px">↓ etikette kebab-case</div>
+            <div class="mono" style="font-size:19px;font-weight:700">&lt;vc:<b style="background:var(--plum-s);color:var(--plum);padding:1px 5px;border-radius:4px">ziyaret-rozeti</b> /&gt;</div>
+          </div>
+          <div class="kutu gold" style="margin-top:10px;font-size:17px">Bu bir öneri değil <b>sözleşme</b> — Hafta 2’deki <code>Controller</code> soneki sözleşmesiyle aynı mantık. Yol yanlışsa çatı aradığı yerleri listeleyip hata verir.</div>
+        </div>
+
+        <div class="f" data-step="3">
+          <span class="dosya">Views/Shared/_Layout.cshtml — eklenen tek satır</span>
           <div class="kod sm"><span class="h">&lt;footer&gt;</span>
     © 2026 KampusKitap — <span class="ekle">&lt;vc:ziyaret-rozeti /&gt;</span>
-<span class="h">&lt;/footer&gt;</span></div></div>
-        <div class="f fs" data-step="4">
-          <div class="card" style="text-align:center;background:var(--ok-s);border-color:var(--ok)">
-            <div style="font-size:17px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ok)">düzenlenen controller sayısı</div>
-            <div class="big" style="color:var(--ok);margin:10px 0 6px;font-size:84px">0</div>
-            <div style="font-size:19px;color:var(--ink2)">Üç sayfada da rozet var, sayı artıyor.</div>
-          </div>
+<span class="h">&lt;/footer&gt;</span></div>
         </div>
+      </div>
+    </div>
+
+    <div class="f" data-step="4" style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr 1fr 300px;gap:16px;align-items:stretch">
+      <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>/</span></div>
+        <div class="ic" style="padding:10px 14px;font-size:15px"><span style="color:var(--muted)">© 2026 KampusKitap —</span> <span class="pill" style="background:var(--plum-s);color:var(--plum);font-size:14px">bu sayfa 7 kez gösterildi</span></div></div>
+      <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+        <div class="ic" style="padding:10px 14px;font-size:15px"><span style="color:var(--muted)">© 2026 KampusKitap —</span> <span class="pill" style="background:var(--plum-s);color:var(--plum);font-size:14px">bu sayfa 8 kez gösterildi</span></div></div>
+      <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>/Kategori</span></div>
+        <div class="ic" style="padding:10px 14px;font-size:15px"><span style="color:var(--muted)">© 2026 KampusKitap —</span> <span class="pill" style="background:var(--plum-s);color:var(--plum);font-size:14px">bu sayfa 9 kez gösterildi</span></div></div>
+      <div class="card" style="text-align:center;background:var(--ok-s);border-color:var(--ok);display:flex;flex-direction:column;justify-content:center;padding:10px">
+        <div style="font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ok)">düzenlenen controller</div>
+        <div class="big" style="color:var(--ok);font-size:62px;margin:2px 0 0">0</div>
       </div>
     </div>
   </div>
@@ -1472,7 +1671,7 @@ const SYN=[
  {ad:'@try / catch',dosya:'Index.cshtml',
   kod:'<span class="s">@try\n{</span>\n    <span class="h">&lt;p&gt;</span><span class="s">@(10 / bolen)</span><span class="h">&lt;/p&gt;</span>\n<span class="s">}\ncatch (DivideByZeroException)\n{</span>\n    <span class="h">&lt;p class="bos"&gt;</span>Hesaplanamadı.<span class="h">&lt;/p&gt;</span>\n<span class="s">}</span>',
   cikti:'<code>&lt;p class="bos"&gt;Hesaplanamadı.&lt;/p&gt;</code>',
-  not:'Çalışır — ama <b>son çare</b>. Görünüm hata yönetecek duruma geldiyse veri zaten yanlış yerde hazırlanıyordur (slayt 23). Sayfanın yarısı gönderildikten sonra oluşan hatayı burada kurtaramazsınız.'}
+  not:'Çalışır — ama <b>son çare</b>. Görünüm hata yönetecek duruma geldiyse veri zaten yanlış yerde hazırlanıyordur (slayt 24). Sayfanın yarısı gönderildikten sonra oluşan hatayı burada kurtaramazsınız.'}
 ];
 M.syntax={
  init(s){const c=$('.syntax-sec',s);

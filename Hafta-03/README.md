@@ -16,6 +16,7 @@
 
 ## Bu haftanın konusu
 
+- **Razor nedir, neden var** — HTML’i C# içinde metin birleştirerek üretmenin bedeli; şablon motoru fikri
 - **Razor sözdizimi** — `@` ifadeleri, `@{ }` blokları, `@if`/`@switch`/`@for`/`@foreach`/`@while`/`@try`, `@@` kaçışı
 - **Parantez ne zaman zorunlu** — boşluk ve generic; ve ne zaman **gereksiz**
 - **Öznitelik üretimi** — `null` değerli öznitelik hiç yazılmaz; `bool` özniteliklerin davranışı
