@@ -270,7 +270,7 @@ table.tbl tr.hot td{background:var(--sec-s)}
   <div class="s-body">
     <div class="road">
       <div class="durak secA" data-goto="s-nerede"><div class="d">A</div><div class="t">Razor sözdizimi</div><div class="q">HTML'i <b>kim</b>, <b>nerede</b> üretiyor?</div></div>
-      <div class="durak secB" data-goto="s-layout"><div class="d">B</div><div class="t">Layout</div><div class="q">Sayfanın <b>çerçevesi</b> kimin?</div></div>
+      <div class="durak secB" data-goto="s-layout"><div class="d">B</div><div class="t">Layout</div><div class="q">Sayfanın <b>layout</b>’u kimin?</div></div>
       <div class="durak secC" data-goto="s-partial"><div class="d">C</div><div class="t">Partial &amp; View Component</div><div class="q">Sayfanın <b>parçası</b> kimin?</div></div>
     </div>
     <div class="f" data-step="1" style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
@@ -581,7 +581,7 @@ The following locations were searched:
   </header>
   <div class="s-body">
     <svg class="mon-svg" viewBox="0 0 1440 470" width="1440" height="470">
-      <!-- layout çerçevesi -->
+      <!-- layout -->
       <g class="cerceve f fs" data-step="2">
         <rect x="520" y="14" width="860" height="430" rx="15" fill="#fff" stroke="#14607a" stroke-width="3"/>
         <text x="540" y="42" font-size="14" font-weight="800" fill="#8a8377" font-family="monospace">Views/Shared/_Layout.cshtml</text>
@@ -774,30 +774,30 @@ The following locations were searched:
 <section class="slide secB" id="s-coklu" data-title="Birden fazla layout" data-module="coklu" data-steps="3">
   <header class="s-head">
     <div class="kicker">B · Layout seçimi</div>
-    <h2>Bir projede birden fazla çerçeve — ve hiç çerçeve olmaması</h2>
+    <h2>Bir projede birden fazla <u>layout</u> — ve hiç layout olmaması</h2>
   </header>
   <div class="s-body">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
       <div class="card f fs" data-step="1" style="border-top:5px solid var(--accent2)">
-        <h3>Site çerçevesi</h3>
+        <h3>Site layout’u</h3>
         <div class="kod sm"><span class="c">// _ViewStart.cshtml</span>
 <span class="s">@{ Layout = "_Layout"; }</span></div>
         <p class="muted" style="font-size:17px;margin:10px 0 0">Varsayılan. Hiçbir şey yazmazsanız bu gelir.</p>
       </div>
       <div class="card f fs" data-step="2" style="border-top:5px solid var(--plum)">
-        <h3>Yönetim çerçevesi</h3>
+        <h3>Yönetim layout’u</h3>
         <div class="kod sm"><span class="c">// görünümün başında</span>
 <span class="s">@{ Layout = "_AdminLayout"; }</span></div>
         <p class="muted" style="font-size:17px;margin:10px 0 0">Yalnızca o görünüm için. <code>_ViewStart</code>'ın değerini <b>ezer</b>.</p>
       </div>
       <div class="card f fs" data-step="3" style="border-top:5px solid var(--warn)">
-        <h3>Hiç çerçeve yok</h3>
+        <h3>Hiç layout yok</h3>
         <div class="kod sm"><span class="s">@{ Layout = null; }</span></div>
         <p class="muted" style="font-size:17px;margin:10px 0 0">Yazdırma sayfası, e-posta şablonu, bir parçayı tek başına döndürmek.</p>
       </div>
     </div>
     <div class="f" data-step="3" style="margin-top:26px;display:grid;grid-template-columns:1.1fr 1fr;gap:24px">
-      <div class="kutu ok" style="font-size:19px"><b>Layout'un da layout'u olabilir.</b> <code>_AdminLayout.cshtml</code> kendi başında <code>Layout = "_Layout";</code> diyerek site çerçevesinin <b>içine</b> yerleşir — katmanlı çerçeve.</div>
+      <div class="kutu ok" style="font-size:19px"><b>Layout'un da layout'u olabilir.</b> <code>_AdminLayout.cshtml</code> kendi başında <code>Layout = "_Layout";</code> diyerek site layout’unun <b>içine</b> yerleşir — katmanlı layout.</div>
       <div class="kutu" style="font-size:19px"><b>Layout veriyi nereden alır?</b> Görünümün modelini bilmez, bilmemelidir. Ortak alan <code>ViewData["Title"]</code>'dır. <br><span class="muted" style="font-size:17px"><code>ViewData</code> / <code>ViewBag</code> / <code>TempData</code> → <b>Hafta 7</b>. Daha sağlamı: <b>View Component</b> — Blok C.</span></div>
     </div>
   </div>
@@ -808,7 +808,7 @@ The following locations were searched:
 <section class="slide secC" id="s-partial" data-title="Partial View" data-module="part" data-steps="4">
   <header class="s-head">
     <div class="kicker">C · Partial View</div>
-    <h2>Layout <u>çerçeveyi</u> paylaştırdı — peki sayfanın <u>ortasındaki</u> tekrar?</h2>
+    <h2>Layout sayfanın <u>değişmeyen bölümünü</u> paylaştırdı — peki <u>ortasındaki</u> tekrar?</h2>
   </header>
   <div class="s-body">
     <svg class="part-svg" viewBox="0 0 1440 340" width="1440" height="340">
@@ -1052,7 +1052,7 @@ instance requires a model item of type <span class="y">Kitap</span>.</div></div>
       <table class="tbl">
         <thead><tr><th>Durum</th><th>Doğru araç</th></tr></thead>
         <tbody>
-          <tr data-a="layout"><td>Her sayfada aynı çerçeve</td><td><b>Layout</b></td></tr>
+          <tr data-a="layout"><td>Her sayfada aynı menü ve footer</td><td><b>Layout</b></td></tr>
           <tr data-a="partial"><td>Sayfanın modelinden beslenen tekrar</td><td><b>Partial View</b></td></tr>
           <tr data-a="vc"><td>Kendi verisini getiren, sayfadan bağımsız parça</td><td><b>View Component</b></td></tr>
           <tr data-a="sayfa"><td>Kendi adresi (URL) olması gereken içerik</td><td><b>Ayrı action + görünüm</b></td></tr>
@@ -1617,7 +1617,7 @@ M.part={
 /* --- 22 · karar --- */
 const KARAR=[
  {s:'Her sayfanın üstünde aynı menü ve altında aynı footer olacak.',a:'layout',ad:'Layout',
-  n:'Değişmeyen <b>çerçeve</b>. Tek dosya, bütün sayfalar. <code>_ViewStart</code> onu otomatik atar.'},
+  n:'Sayfanın değişmeyen bölümü — <b>layout</b>. Tek dosya, bütün sayfalar. <code>_ViewStart</code> onu otomatik atar.'},
  {s:'Kitap kartı üç listede görünecek; veri zaten sayfanın modelinde var.',a:'partial',ad:'Partial View',
   n:'Veri <b>üst görünümden</b> geliyor → partial yeter. <code>&lt;partial name="_KitapKart" model="k" /&gt;</code>'},
  {s:'Üst menüde sepetteki ürün sayısı yazacak; her sayfada görünecek.',a:'vc',ad:'View Component',
