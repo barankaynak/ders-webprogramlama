@@ -16,7 +16,10 @@
 
 ## Bu haftanın konusu
 
-- **Razor sözdizimi** — `@` ifadeleri, `@{ }` blokları, `@if`, `@foreach`, `@@` kaçışı
+- **Razor sözdizimi** — `@` ifadeleri, `@{ }` blokları, `@if`/`@switch`/`@for`/`@foreach`/`@while`/`@try`, `@@` kaçışı
+- **Parantez ne zaman zorunlu** — boşluk ve generic; ve ne zaman **gereksiz**
+- **Öznitelik üretimi** — `null` değerli öznitelik hiç yazılmaz; `bool` özniteliklerin davranışı
+- **Razor yönergeleri** — `@model`, `@using`, `@addTagHelper`, `@inject`, `@section`, `@functions`
 - **`@model`** ve güçlü tipli (strongly typed) görünüm
 - **Otomatik HTML kodlaması** ve `@Html.Raw` — XSS'e açılan kapı
 - **Layout** — `@RenderBody()`, `@section` / `@RenderSection`, `_ViewStart`, `_ViewImports`
@@ -47,6 +50,7 @@ Ana sayfada **denenecek adreslerin listesi** var. Her satır ders notundaki bir 
 |---|---|
 | `Models/Kitap.cs` + `Data/KitapDeposu.cs` | Görünümlere taşınacak veri (bellekte) |
 | `Views/Kitap/*.cshtml` | Güçlü tipli görünümler, `@section`, açık ifade, HTML kodlaması |
+| `Views/Kitap/Sozdizimi.cshtml` | **Sözdizimi kılavuzu** — 10 yapı, çalışır hâlde |
 | `Views/Shared/_KitapKart.cshtml` | **Partial View** — veriyi dışarıdan alır |
 | `ViewComponents/ZiyaretRozetiViewComponent.cs` | **View Component** — veriyi kendi getirir |
 | `Views/Shared/Components/ZiyaretRozeti/Default.cshtml` | View Component'in görünümü (**yol sözleşmedir**) |
@@ -63,6 +67,7 @@ Ana sayfada **denenecek adreslerin listesi** var. Her satır ders notundaki bir 
 | `/Kitap/Detay/999` | `NotFound()` → 404 |
 | `/Kitap/Ara?kelime=a` | **Aynı partial**, ikinci sayfada |
 | `/Kategori` | `@section Scripts` **yok** — `required: false` sayesinde sorun yok |
+| `/Kitap/Sozdizimi` | **Razor sözdizimi kılavuzu** — 10 yapı ve ürettikleri HTML yan yana |
 | `/Kitap/Tuzak` | 🕳️ Görünümün içinde sorgu — çalışır ama yanlış |
 
 > Sayfanın altındaki **"bu sayfa N kez gösterildi"** rozeti bir View Component'tir.

@@ -412,16 +412,30 @@ table.tbl tr.hot td{background:var(--sec-s)}
         </div>
       </div>
       <div class="col">
-        <div class="card f" data-step="1"><h3>Açık ifade — parantez</h3>
-          <div class="kod sm"><span class="s">@(kitap.Fiyat * 0.82m)</span> TL
-<span class="s">@(kitap.Baslik)</span>-indirimli.pdf</div>
-          <p class="muted" style="margin:8px 0 0;font-size:17px">Parantez olmasaydı <code>-indirimli.pdf</code> C# sanılırdı.</p></div>
-        <div class="card f" data-step="2"><h3>Gerçek bir <code>@</code> yazmak</h3>
-          <div class="kod sm"><span class="h">&lt;p&gt;</span>baran.kaynak<span class="s">@@</span>ornek.edu.tr<span class="h">&lt;/p&gt;</span></div></div>
-        <div class="card f" data-step="3"><h3>İki yorum — ikisi aynı değil</h3>
-          <div class="kod sm"><span class="s">@* tarayıcıya HİÇ gitmez *@</span>
+        <div class="card f" data-step="1" style="border-left:5px solid var(--warn);padding:14px 18px">
+          <h3 style="font-size:21px">Parantez ne zaman <u>zorunlu</u>? — iki durum</h3>
+          <div class="kod sm" style="font-size:15px;line-height:1.5"><span class="c">1 · ifadede BOŞLUK varsa</span>
+<span class="s">@kitap.Fiyat * 0.82m</span>    <span class="c">→ "95 * 0.82m"</span>
+<span class="s">@(kitap.Fiyat * 0.82m)</span>  <span class="c">→ "77,90" ✓</span>
+<span class="c">2 · generic varsa — &lt;int&gt; HTML etiketi sanılır</span>
+<span class="s">@Yardimci&lt;int&gt;()</span>     <span class="c">→ DERLENMEZ</span>
+<span class="s">@(Yardimci&lt;int&gt;())</span>   <span class="c">→ doğru ✓</span></div>
+          <p class="muted" style="margin:6px 0 0;font-size:15px">Tek istisna <code>await</code> — boşluğa rağmen parantezsiz çalışır.</p>
+        </div>
+        <div class="card f" data-step="2" style="background:var(--ok-s);border-color:#b9d4b4;padding:14px 18px">
+          <h3 style="font-size:21px;color:var(--ok)">Peki ne zaman <u>gerekmez</u>?</h3>
+          <div class="kod sm" style="background:#fff;font-size:15px;line-height:1.5"><span class="s">@kitap.Baslik</span>-indirimli.pdf   <span class="c">✓</span>
+<span class="s">@kitap.Yazar</span>’in kitabi        <span class="c">✓</span>
+<span class="s">@kitap.Fiyat.ToString("0.00")</span>  <span class="c">✓</span></div>
+          <p class="muted" style="margin:6px 0 0;font-size:15px">Tire, kesme işareti, nokta zinciri, metot çağrısı — hiçbiri ifadeyi bozmaz. <b>Gereksiz parantez yazmayın.</b></p>
+        </div>
+        <div class="card f" data-step="3" style="padding:14px 18px">
+          <h3 style="font-size:21px">Kaçış ve yorum</h3>
+          <div class="kod sm" style="font-size:15px;line-height:1.5"><span class="h">&lt;p&gt;</span>baran.kaynak<span class="s">@@</span>ornek.edu.tr<span class="h">&lt;/p&gt;</span>
+<span class="s">@* tarayıcıya HİÇ gitmez *@</span>
 <span class="c">&lt;!-- kullanıcı Ctrl+U ile GÖRÜR --&gt;</span></div>
-          <p class="muted" style="margin:8px 0 0;font-size:17px">İç notu, "TODO"yu, parolayı <b>asla</b> HTML yorumuna yazmayın.</p></div>
+          <p class="muted f fo" data-step="4" style="margin:6px 0 0;font-size:15px"><b style="color:var(--warn)">İç notu, "TODO"yu, parolayı asla HTML yorumuna yazmayın.</b></p>
+        </div>
       </div>
     </div>
   </div>
@@ -432,8 +446,8 @@ table.tbl tr.hot td{background:var(--sec-s)}
 <section class="slide secA" id="s-syntax" data-title="Kod blokları ve denetim yapıları" data-module="syntax">
   <header class="s-head">
     <div class="kicker">A · Sözdizimi</div>
-    <h2>Blok mu, ifade mi? Dördünü yan yana görelim</h2>
-    <p class="sub">Bir yapıya tıklayın: solda kod, sağda tarayıcıya giden sonuç.</p>
+    <h2>Blok mu, ifade mi? Sekiz yapı, yan yana</h2>
+    <p class="sub">Bir yapıya tıklayın: solda yazdığınız kod, sağda <b>ürettiği HTML</b>. Derste ilk dördü yeter; kalanlar başvuru içindir.</p>
   </header>
   <div class="s-body">
     <div class="chips syntax-sec" style="margin-bottom:16px"></div>
@@ -1429,20 +1443,36 @@ M.token={
 const SYN=[
  {ad:'@{ } kod bloğu',dosya:'Index.cshtml',
   kod:'<span class="s">@{\n    var indirimli = kitap.Fiyat * 0.9m;\n    var etiket = indirimli &lt; 50 ? "ucuz" : "normal";\n}</span>\n<span class="h">&lt;p class="</span><span class="s">@etiket</span><span class="h">"&gt;</span><span class="s">@indirimli</span> TL<span class="h">&lt;/p&gt;</span>',
-  cikti:'<p style="color:var(--ok);font-weight:700">108 TL</p><p class="muted" style="font-size:15px;margin:6px 0 0">(class="normal")</p>',
+  cikti:'<code>&lt;p class="normal"&gt;108 TL&lt;/p&gt;</code>',
   not:'<b>Blok kendisi hiçbir şey yazdırmaz.</b> Yalnızca çalışır. Ekrana çıkan şey son satırdaki <code>@etiket</code> ve <code>@indirimli</code> ifadeleridir.'},
  {ad:'@if / else',dosya:'Index.cshtml',
   kod:'<span class="s">@if (Model.Count == 0)\n{</span>\n    <span class="h">&lt;p class="bos"&gt;</span>Hiç kitap yok.<span class="h">&lt;/p&gt;</span>\n<span class="s">}\nelse\n{</span>\n    <span class="h">&lt;p&gt;</span><span class="s">@Model.Count</span> kitap bulundu.<span class="h">&lt;/p&gt;</span>\n<span class="s">}</span>',
-  cikti:'<p>2 kitap bulundu.</p>',
+  cikti:'<code>&lt;p&gt;2 kitap bulundu.&lt;/p&gt;</code>',
   not:'<b>Dikkat:</b> <code>@if</code>’ten sonra gelen <code>else</code> ve <code>else if</code> <b><code>@</code> ALMAZ</b>. Razor zaten C# kipindedir.'},
  {ad:'@foreach',dosya:'Index.cshtml',
   kod:'<span class="h">&lt;ul&gt;</span>\n<span class="s">@foreach (var k in Model)\n{</span>\n    <span class="h">&lt;li&gt;</span><span class="s">@k.Baslik</span> — <span class="s">@k.Fiyat</span> TL<span class="h">&lt;/li&gt;</span>\n<span class="s">}</span>\n<span class="h">&lt;/ul&gt;</span>',
   cikti:'<ul style="margin:0;padding-left:20px"><li>Suç ve Ceza — 120 TL</li><li>Tutunamayanlar — 180 TL</li></ul>',
   not:'Blok içinde <b>HTML etiketi açıp kapatmak serbesttir</b>. Razor, <code>&lt;li&gt;</code> görünce HTML kipine geçer.'},
+ {ad:'@for / @while',dosya:'Index.cshtml',
+  kod:'<span class="s">@for (var i = 0; i &lt; 3; i++)\n{</span>\n    <span class="h">&lt;li&gt;</span>for: <span class="s">@i</span><span class="h">&lt;/li&gt;</span>\n<span class="s">}</span>\n\n<span class="s">@{ var j = 0; }\n@while (j &lt; 2)\n{</span>\n    <span class="h">&lt;li&gt;</span>while: <span class="s">@j</span><span class="h">&lt;/li&gt;</span>\n    <span class="s">j++;</span>\n<span class="s">}</span>',
+  cikti:'<ul style="margin:0;padding-left:20px"><li>for: 0</li><li>for: 1</li><li>for: 2</li><li>while: 0</li><li>while: 1</li></ul>',
+  not:'<code>@foreach</code> dışındaki döngüler de aynı kuralla çalışır. <code>j++;</code> gibi <b>yazdırmayan</b> satırlar bloğun içinde düz C# olarak durur.'},
+ {ad:'@switch',dosya:'Index.cshtml',
+  kod:'<span class="s">@switch (durum)\n{\n    case "hazir":</span>\n        <span class="h">&lt;p&gt;</span>Stokta var.<span class="h">&lt;/p&gt;</span>\n        <span class="s">break;\n    default:</span>\n        <span class="h">&lt;p&gt;</span>Bilinmiyor.<span class="h">&lt;/p&gt;</span>\n        <span class="s">break;\n}</span>',
+  cikti:'<code>&lt;p&gt;Stokta var.&lt;/p&gt;</code>',
+  not:'<code>case</code> ve <code>break</code> <b><code>@</code> almaz</b> — hepsi tek bir C# bloğunun içindedir. Çok dallı durumlarda <code>@if</code> zincirinden okunaklıdır.'},
  {ad:'Etiketsiz metin: @: ve &lt;text&gt;',dosya:'Index.cshtml',
-  kod:'<span class="s">@foreach (var k in Model)\n{</span>\n    <span class="s">@:</span>— <span class="s">@k.Baslik</span>          <span class="c">@* tek satır *@</span>\n    <span class="h">&lt;text&gt;</span><span class="s">@k.Fiyat</span> TL<span class="h">&lt;/text&gt;</span>   <span class="c">@* çok satırlı blok *@</span>\n<span class="s">}</span>',
-  cikti:'— Suç ve Ceza 120 TL<br>— Tutunamayanlar 180 TL',
-  not:'Etiketsiz düz metin yazacaksanız <code>@:</code> ya da <code>&lt;text&gt;</code> <b>gerekir</b> — yoksa Razor o metni C# sanır ve derleme hatası verir.'}
+  kod:'<span class="s">@foreach (var s in sayilar)\n{</span>\n    <span class="s">@:</span>— tek satır: <span class="s">@s</span>       <span class="c">@* tek satır *@</span>\n    <span class="h">&lt;text&gt;</span>çok satırlı: <span class="s">@s</span><span class="h">&lt;/text&gt;</span>  <span class="c">@* blok *@</span>\n<span class="s">}</span>',
+  cikti:'— tek satır: 3<br>çok satırlı: 3<br>— tek satır: 7<br>çok satırlı: 7',
+  not:'Etiketsiz düz metin yazacaksanız <code>@:</code> ya da <code>&lt;text&gt;</code> <b>gerekir</b> — yoksa Razor o metni C# sanır ve derleme hatası verir.'},
+ {ad:'Öznitelik ve null',dosya:'Index.cshtml',
+  kod:'<span class="c">@* durum = "hazir" · bosEtiket = null · secili = true *@</span>\n<span class="h">&lt;p class="</span><span class="s">@durum</span><span class="h">"&gt;</span>…<span class="h">&lt;/p&gt;</span>\n<span class="h">&lt;p title="</span><span class="s">@bosEtiket</span><span class="h">"&gt;</span>…<span class="h">&lt;/p&gt;</span>\n<span class="h">&lt;input checked="</span><span class="s">@secili</span><span class="h">" /&gt;</span>\n<span class="h">&lt;input checked="</span><span class="s">@(!secili)</span><span class="h">" /&gt;</span>',
+  cikti:'<div style="font-family:var(--mono);font-size:15px;line-height:1.75">&lt;p class="hazir"&gt;…&lt;/p&gt;<br><span style="background:var(--ok-s)">&lt;p&gt;…&lt;/p&gt;</span> <b style="color:var(--ok)">← title YOK</b><br>&lt;input checked="checked" /&gt;<br><span style="background:var(--ok-s)">&lt;input /&gt;</span> <b style="color:var(--ok)">← checked YOK</b></div>',
+  not:'<b>Razor boş öznitelik üretmez.</b> Değer <code>null</code> ise öznitelik kaynağa <b>hiç yazılmaz</b> — <code>title=""</code> bile çıkmaz. <code>bool</code> değerde <code>true</code> → <code>checked="checked"</code>, <code>false</code> → öznitelik yok.'},
+ {ad:'@try / catch',dosya:'Index.cshtml',
+  kod:'<span class="s">@try\n{</span>\n    <span class="h">&lt;p&gt;</span><span class="s">@(10 / bolen)</span><span class="h">&lt;/p&gt;</span>\n<span class="s">}\ncatch (DivideByZeroException)\n{</span>\n    <span class="h">&lt;p class="bos"&gt;</span>Hesaplanamadı.<span class="h">&lt;/p&gt;</span>\n<span class="s">}</span>',
+  cikti:'<code>&lt;p class="bos"&gt;Hesaplanamadı.&lt;/p&gt;</code>',
+  not:'Çalışır — ama <b>son çare</b>. Görünüm hata yönetecek duruma geldiyse veri zaten yanlış yerde hazırlanıyordur (slayt 23). Sayfanın yarısı gönderildikten sonra oluşan hatayı burada kurtaramazsınız.'}
 ];
 M.syntax={
  init(s){const c=$('.syntax-sec',s);

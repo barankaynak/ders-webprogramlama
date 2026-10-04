@@ -55,6 +55,10 @@ public class KitapController : Controller
             : KitapDeposu.Ara(kelime));
     }
 
+    // GET /Kitap/Sozdizimi — Razor sözdizimi kılavuzu (ders notu §1)
+    // Görünüm veri almaz; amacı sözdizimini ve ürettiği HTML'i göstermektir.
+    public IActionResult Sozdizimi() => View();
+
     // GET /Kitap/Tuzak  — 🕳️ KLASİK TUZAK (ders notu §3.5)
     // Bu action BİLEREK eksiktir: görünüme hiç veri göndermiyor.
     // Views/Kitap/Tuzak.cshtml veriyi @inject ile KENDİ çekiyor.
