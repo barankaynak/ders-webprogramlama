@@ -7,6 +7,12 @@
 | 📚 **Detay** | [H03-Detay.pdf](../PDF/H03-Detay.pdf) — *sınav kapsamı DIŞI* |
 | 🖱️ **Sunum** | [H03-etkilesimli.html](H03-etkilesimli.html) — indirip tarayıcıda açın |
 
+> 🌐 **Bu sunumda 3B bir sahne var.** Slayt 25, bir sayfanın hangi beş dosyadan
+> oluştuğunu üç boyutlu olarak gösterir (sürükleyerek çevirebilirsiniz).
+> Sahne `three.js` kütüphanesini internetten çeker; **ağ yoksa ya da tarayıcınız
+> WebGL desteklemiyorsa** aynı yapıyı gösteren 2B şema otomatik devreye girer.
+> Sunumun geri kalanı tamamen internetsiz çalışır.
+
 > 🆕 **Sunum biçimi değişti.** Bu haftadan itibaren sunum, akışları **adım adım
 > çizen** slayt biçimindedir. <kbd>→</kbd> tuşu slayt değil **adım** ilerletir;
 > alt ortadaki noktalar o slaytta kaç adım kaldığını gösterir.

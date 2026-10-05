@@ -1320,7 +1320,39 @@ return View(liste);</code></div>
 
 </section>
 
-<!-- ========== 24 · ÖZET VE KAPANIŞ ========== -->
+<!-- ========== 25 · 3B KATMANLAR ========== -->
+<section class="slide secC" id="s-katman" data-title="Bir sayfa kaç parçadan oluşuyor?" data-module="katman" data-steps="6">
+  <header class="s-head">
+    <div class="kicker">C · Haftanın sentezi</div>
+    <h2>Gördüğünüz tek sayfa — aslında <u>beş ayrı dosyanın</u> üst üste gelmiş hâli</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:stretch">
+      <div style="position:relative">
+        <div class="katman-tuval" style="width:100%;height:520px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#f7f4ed,#ece7dd)"></div>
+        <div class="katman-yedek" style="display:none;position:absolute;inset:0;padding:18px">
+          <div class="kutu warn" style="font-size:17px;margin-bottom:12px">3B sahne açılamadı (WebGL ya da ağ). Aynı yapı aşağıda:</div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div class="card" style="padding:9px 14px;font-size:17px"><b>@section Scripts</b> — sayfaya özel betik</div>
+            <div class="card" style="padding:9px 14px;font-size:17px"><b>&lt;vc:ziyaret-rozeti /&gt;</b> — veriyi kendi getirir</div>
+            <div class="card" style="padding:9px 14px;font-size:17px"><b>_KitapKart.cshtml × 3</b> — veriyi dışarıdan alır</div>
+            <div class="card" style="padding:9px 14px;font-size:17px"><b>Views/Kitap/Index.cshtml</b> — @RenderBody() yuvasına</div>
+            <div class="card" style="padding:9px 14px;font-size:17px"><b>_Layout.cshtml</b> — değişmeyen çerçeve</div>
+          </div>
+        </div>
+        <div class="katman-ipucu hint" style="position:absolute;right:14px;bottom:10px;background:rgba(255,255,255,.85);border-radius:8px;padding:4px 10px">⟲ sürüklenebilir</div>
+      </div>
+
+      <div class="col" style="gap:12px">
+        <div class="card katman-panel" style="min-height:190px;padding:18px 22px"></div>
+        <div class="katman-liste" style="display:flex;flex-direction:column;gap:7px"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 26 · ÖZET VE KAPANIŞ ========== -->
 <section class="slide dark sec0" id="s-ozet" data-title="Özet, ev görevi ve haftaya" data-module="ozet" data-steps="4">
   <header class="s-head">
     <div class="kicker">Hafta 3 · Kapanış</div>
@@ -1436,6 +1468,9 @@ return View(liste);</code></div>
 .syntax-sec .chip.cur{background:var(--accent-s);color:var(--accent);border-color:var(--accent)}
 .kanit-kutu .fark{background:var(--ok-s);border-radius:3px}
 </style>
+<!-- three.js — slayt 25’teki 3B katman sahnesi için.
+     Yüklenemezse sahne kendini kapatır ve yerine 2B şema gösterilir. -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1897,6 +1932,203 @@ M.nplus={
       $('.nplus-ipucu',s).textContent='🔜 Hafta 8’de EF Core’da aynısı — orada çözümü Include olacak.';
       $('.nplus-coz',s).classList.add('on');}
   },34);}
+};
+
+/* --- 25 · three.js ile patlatılmış sayfa katmanları --- */
+const KAT_ADIM=[
+ {b:'Patlatılmış görünüm',m:'Ekranda <b>tek bir sayfa</b> görüyorsunuz. Aslında beş ayrı dosya üst üste gelmiş durumda. Sürükleyerek çevirin.'},
+ {b:'1 · _Layout.cshtml',m:'<b>Değişmeyen çerçeve.</b> Head, menü, footer. Bütün sayfalar aynı dosyayı kullanır; <code>_ViewStart</code> onu otomatik atar.'},
+ {b:'2 · Views/Kitap/Index.cshtml',m:'Görünümün çıktısı <b><code>@RenderBody()</code></b> yuvasına yerleşir. Layout’tan <b>önce</b> çalışmıştı.'},
+ {b:'3 · _KitapKart.cshtml × 3',m:'<b>Partial View.</b> Tek dosya, üç kopya. Veriyi <b>dışarıdan alır</b> — üst görünüm <code>model="k"</code> ile verir.'},
+ {b:'4 · &lt;vc:ziyaret-rozeti /&gt;',m:'<b>View Component.</b> Tek fark: aşağıdaki boruya bakın — veriyi <b>kendi getiriyor</b>. Hiçbir controller bunun için satır yazmadı.'},
+ {b:'5 · @section Scripts',m:'Sayfaya özel betik, layout’ta kendisi için ayrılmış yuvaya gider. <code>required: false</code> olduğu için doldurmayan sayfa sorun çıkarmaz.'},
+ {b:'Tek HTML belgesi',m:'Beş dosya, tek yanıt. Tarayıcıya giden şey bu düzleşmiş hâldir — ve içinde tek bir <code>@</code> yoktur.'}
+];
+const KAT_LISTE=[
+ ['@section Scripts','#5c3f78'],['&lt;vc:ziyaret-rozeti /&gt;','#2f6b2a'],
+ ['_KitapKart.cshtml × 3','#9a6b0c'],['Views/Kitap/Index.cshtml','#8a3d0f'],['_Layout.cshtml','#14607a']
+];
+M.katman={
+ init(s){
+  const l=$('.katman-liste',s);
+  l.innerHTML=KAT_LISTE.map((x,i)=>'<div class="kat-sat" data-i="'+(4-i)+'" style="display:flex;align-items:center;gap:10px;'+
+    'background:var(--card);border:1px solid var(--line);border-left:5px solid '+x[1]+';border-radius:9px;'+
+    'padding:7px 12px;font-size:16px;font-weight:700;transition:.35s;opacity:.4"><span>'+x[0]+'</span></div>').join('');
+ },
+ enter(s){ this.kur(s); this.step(s,0); this.basla(s); },
+ leave(s){ this.dur(s); },
+ reset(s){ if(s._g)s._g.rotation.y=0.18; this.step(s,0); },
+
+ /* --- sahne kurulumu (bir kez) --- */
+ kur(s){
+  if(s._kuruldu)return; s._kuruldu=true;
+  const kutu=$('.katman-tuval',s);
+  let ok=false;
+  try{ const c=document.createElement('canvas');
+       ok=!!(window.THREE&&window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl'))); }
+  catch(e){ ok=false; }
+  if(!ok){ s._yok=true; kutu.style.display='none';
+           $('.katman-yedek',s).style.display='block'; $('.katman-ipucu',s).style.display='none'; return; }
+
+  const G=window.THREE;
+  const w=kutu.clientWidth||980, h=kutu.clientHeight||520;
+  const rnd=new G.WebGLRenderer({antialias:true,alpha:true});
+  rnd.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  rnd.setSize(w,h); kutu.appendChild(rnd.domElement);
+  const sahne=new G.Scene();
+  const kam=new G.PerspectiveCamera(36,w/h,0.1,100);
+  kam.position.set(0.3,5.0,6.4); kam.lookAt(0,1.3,0);
+  const grup=new G.Group(); grup.rotation.y=0.18; sahne.add(grup);
+  s._r=rnd; s._s=sahne; s._k=kam; s._g=grup; s._kat=[];
+
+  /* --- doku yardımcıları --- */
+  function tuval(w,h,ciz){
+    const c=document.createElement('canvas'); c.width=w; c.height=h;
+    const x=c.getContext('2d'); ciz(x,w,h);
+    const t=new G.CanvasTexture(c); t.anisotropy=4; return t;
+  }
+  function yuvarlak(x,X,Y,W,H,R,dolgu,cizgi){
+    x.beginPath(); x.moveTo(X+R,Y); x.arcTo(X+W,Y,X+W,Y+H,R); x.arcTo(X+W,Y+H,X,Y+H,R);
+    x.arcTo(X,Y+H,X,Y,R); x.arcTo(X,Y,X+W,Y,R); x.closePath();
+    if(dolgu){x.fillStyle=dolgu;x.fill();} if(cizgi){x.strokeStyle=cizgi;x.lineWidth=4;x.stroke();}
+  }
+  function yazi(x,m,X,Y,b,r,hiza){ x.fillStyle=r; x.font=b; x.textAlign=hiza||'left'; x.fillText(m,X,Y); }
+
+  const F='600 34px "Source Sans 3",Segoe UI,sans-serif';
+  const FM='600 30px Consolas,monospace';
+
+  /* layout düzlemi */
+  const dLayout=tuval(1100,700,(x,w,h)=>{
+    x.clearRect(0,0,w,h); yuvarlak(x,10,10,w-20,h-20,26,'#ffffff','#ddd6ca');
+    yuvarlak(x,46,44,w-92,64,12,'#f4f1ea',null); yazi(x,'<head> … <title>',70,88,FM,'#8a8377');
+    yuvarlak(x,46,124,w-92,74,12,'#e0eff4',null); yazi(x,'Ana sayfa · Kitaplar · Kategoriler',70,172,F,'#14607a');
+    x.setLineDash([14,10]); x.strokeStyle='#bcd3f5'; x.lineWidth=4;
+    x.strokeRect(46,216,w-92,300); x.setLineDash([]);
+    yazi(x,'@RenderBody()',w/2,380,'700 40px Consolas,monospace','#9fb8d8','center');
+    yuvarlak(x,46,532,w-92,56,12,'#f4f1ea',null); yazi(x,'© 2026 KampusKitap',70,570,'600 28px "Source Sans 3",sans-serif','#8a8377');
+    x.setLineDash([10,8]); x.strokeStyle='#cfc2de'; x.lineWidth=3; x.strokeRect(46,606,w-92,48); x.setLineDash([]);
+    yazi(x,'@section Scripts yuvası',w/2,638,'600 24px Consolas,monospace','#b4a3c9','center');
+  });
+  /* gövde */
+  const dGovde=tuval(1000,330,(x,w,h)=>{
+    x.clearRect(0,0,w,h); yuvarlak(x,6,6,w-12,h-12,18,'#fbeadf','#8a3d0f');
+    yazi(x,'Kitaplar',44,86,'800 54px "Source Sans 3",sans-serif','#1c1a17');
+    yazi(x,'@foreach (var k in Model)',44,150,FM,'#8a3d0f');
+    yazi(x,'<partial name="_KitapKart" model="k" />',80,206,'600 26px Consolas,monospace','#5c3f78');
+    yazi(x,'Views/Kitap/Index.cshtml',44,286,'600 26px Consolas,monospace','#8a8377');
+  });
+  /* kart */
+  const dKart=tuval(460,200,(x,w,h)=>{
+    x.clearRect(0,0,w,h); yuvarlak(x,6,6,w-12,h-12,16,'#fbf0da','#9a6b0c');
+    yazi(x,'Suç ve Ceza',w/2,80,'800 46px "Source Sans 3",sans-serif','#1c1a17','center');
+    yazi(x,'120 TL',w/2,142,'700 40px "Source Sans 3",sans-serif','#9a6b0c','center');
+  });
+  /* rozet */
+  const dRozet=tuval(760,110,(x,w,h)=>{
+    x.clearRect(0,0,w,h); yuvarlak(x,6,6,w-12,h-12,50,'#e6f1e4','#2f6b2a');
+    yazi(x,'bu sayfa 9 kez gösterildi',w/2,72,'700 40px "Source Sans 3",sans-serif','#2f6b2a','center');
+  });
+  /* section */
+  const dSec=tuval(1000,110,(x,w,h)=>{
+    x.clearRect(0,0,w,h); yuvarlak(x,6,6,w-12,h-12,16,'#eee8f5','#5c3f78');
+    yazi(x,'<script src="~/js/kitap.js"></scr'+'ipt>',w/2,70,'600 30px Consolas,monospace','#5c3f78','center');
+  });
+  /* servis */
+  const dServis=tuval(560,160,(x,w,h)=>{
+    x.clearRect(0,0,w,h); yuvarlak(x,6,6,w-12,h-12,18,'#ffffff','#2f6b2a');
+    yazi(x,'IZiyaretSayaci',w/2,70,'700 36px Consolas,monospace','#2f6b2a','center');
+    yazi(x,'DI — Hafta 2’den',w/2,118,'400 28px "Source Sans 3",sans-serif','#5d574e','center');
+  });
+
+  function duzlem(doku,gw,gh,x,y,z){
+    const m=new G.Mesh(new G.PlaneGeometry(gw,gh),
+      new G.MeshBasicMaterial({map:doku,transparent:true,opacity:1,depthWrite:false}));
+    m.rotation.x=-Math.PI/2; m.position.set(x,y,z); grup.add(m); return m;
+  }
+  function kat(mesh,patY,sonY){ mesh.userData={patY:patY,sonY:sonY,hedef:patY,op:1}; s._kat.push(mesh); return mesh; }
+
+  /* katmanlar: patlatılmış Y / yerleşik Y */
+  /* z değerleri layout dokusundaki yuvaların dünya karşılıklarıdır:
+     gövde yuvası z≈0.06 · footer z≈0.84 · section yuvası z≈1.12 */
+  s._L=kat(duzlem(dLayout,4.4,2.8,0,0,0),0,0);
+  s._B=kat(duzlem(dGovde,3.95,1.19,0,1.25,0.06),1.25,0.03);
+  s._K=[-1.3,0,1.3].map((x,i)=>kat(duzlem(dKart,1.22,0.53,x,2.15,0.33),2.15,0.07));
+  s._V=kat(duzlem(dRozet,1.5,0.217,1.05,2.95,0.84),2.95,0.05);
+  s._S=kat(duzlem(dSec,4.0,0.19,0,3.65,1.12),3.65,0.09);
+
+  /* view component’in veri borusu + servis */
+  const srv=duzlem(dServis,1.5,0.43,1.05,-1.15,0.84); srv.material.opacity=0;
+  s._SRV=srv;
+  const bg=new G.BufferGeometry().setFromPoints([new G.Vector3(1.05,0.05,0.84),new G.Vector3(1.05,-1.15,0.84)]);
+  const boru=new G.Line(bg,new G.LineBasicMaterial({color:0x2f6b2a,transparent:true,opacity:0}));
+  grup.add(boru); s._BORU=boru;
+  const top=new G.Mesh(new G.SphereGeometry(0.07,16,16),new G.MeshBasicMaterial({color:0x2f6b2a,transparent:true,opacity:0}));
+  grup.add(top); s._TOP=top;
+
+  /* sürükleyerek çevirme */
+  const el=rnd.domElement; let bas=false,x0=0,r0=0;
+  el.style.cursor='grab';
+  el.addEventListener('pointerdown',e=>{bas=true;x0=e.clientX;r0=grup.rotation.y;el.style.cursor='grabbing';el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointermove',e=>{if(bas)grup.rotation.y=r0+(e.clientX-x0)*0.006;});
+  el.addEventListener('pointerup',e=>{bas=false;el.style.cursor='grab';});
+  s._surukle=()=>bas;
+ },
+
+ /* --- adımlar --- */
+ step(s,k){
+  const p=$('.katman-panel',s), a=KAT_ADIM[k]||KAT_ADIM[0];
+  p.innerHTML='<div style="font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--plum)">'+
+    (k===0?'başlangıç':(k===6?'sonuç':'katman '+k+' / 5'))+'</div>'+
+    '<h3 style="font-size:26px;margin:6px 0 10px">'+a.b+'</h3>'+
+    '<p style="font-size:19px;line-height:1.5;margin:0;color:var(--ink2)">'+a.m+'</p>';
+  tazele(p);
+  $$('.kat-sat',s).forEach(d=>{ const i=+d.dataset.i; d.style.opacity=(k===0||k===6)?1:(i<=k-1?1:.35); });
+  if(s._yok)return;
+  const yer=i=>{ if(k===6)return true; return (k-1)>=i; };
+  s._L.userData.hedef = s._L.userData.sonY;
+  s._B.userData.hedef = yer(1)?s._B.userData.sonY:s._B.userData.patY;
+  s._K.forEach(m=>m.userData.hedef = yer(2)?m.userData.sonY:m.userData.patY);
+  s._V.userData.hedef = yer(3)?s._V.userData.sonY:s._V.userData.patY;
+  s._S.userData.hedef = yer(4)?s._S.userData.sonY:s._S.userData.patY;
+  const vurgu=(m,ac)=>{ m.userData.op = ac?1:0.28; };
+  if(k===0||k===6){ s._kat.forEach(m=>vurgu(m,true)); }
+  else{
+    vurgu(s._L,k===1); vurgu(s._B,k===2); s._K.forEach(m=>vurgu(m,k===3));
+    vurgu(s._V,k===4); vurgu(s._S,k===5);
+    if(k>=2)vurgu(s._L,true);
+  }
+  s._boruAc = (k===4);
+  /* katmanlar indikçe yığının merkezi aşağı iner; grubu yukarı taşıyıp kadrajda tutuyoruz */
+  s._grupY = [0,0.2,0.5,0.8,1.1,1.4,1.5][k] || 0;
+  /* katmanlar oturdukça sayfa küçülür gibi görünüyor; yaklaşarak dengeliyoruz */
+  s._grupS = [1,1,1,1.06,1.12,1.22,1.34][k] || 1;
+ },
+
+ basla(s){
+  if(s._yok||s._dongu)return;
+  const G=window.THREE; let t0=performance.now();
+  const cerceve=(t)=>{
+    if(!s.classList.contains('active')){ s._dongu=null; return; }
+    s._dongu=requestAnimationFrame(cerceve);
+    const dt=Math.min(0.05,(t-t0)/1000); t0=t;
+    s._kat.forEach(m=>{
+      m.position.y += (m.userData.hedef-m.position.y)*Math.min(1,dt*6);
+      m.material.opacity += (m.userData.op-m.material.opacity)*Math.min(1,dt*6);
+    });
+    const bo=s._boruAc?1:0;
+    s._BORU.material.opacity += (bo*0.9-s._BORU.material.opacity)*Math.min(1,dt*6);
+    s._SRV.material.opacity  += (bo-s._SRV.material.opacity)*Math.min(1,dt*6);
+    s._TOP.material.opacity  += (bo-s._TOP.material.opacity)*Math.min(1,dt*6);
+    if(bo){ const f=(t/1000*0.45)%1; s._TOP.position.set(1.05,-1.15+f*1.2,0.84); }
+    s._g.position.y += ((s._grupY||0)-s._g.position.y)*Math.min(1,dt*5);
+    const hs=s._grupS||1, cs=s._g.scale.x + (hs-s._g.scale.x)*Math.min(1,dt*5);
+    s._g.scale.set(cs,cs,cs);
+    if(!s._surukle()) s._g.rotation.y = 0.18 + Math.sin(t/1000*0.16)*0.13;
+    s._r.render(s._s,s._k);
+  };
+  s._dongu=requestAnimationFrame(cerceve);
+ },
+ dur(s){ if(s._dongu){cancelAnimationFrame(s._dongu); s._dongu=null;} }
 };
 
 /* ===================== AÇILIŞ ===================== */
