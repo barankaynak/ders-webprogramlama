@@ -265,7 +265,7 @@ table.tbl tr.hot td{background:var(--sec-s)}
   <header class="s-head">
     <div class="kicker">Hafta 3 · Genel bakış</div>
     <h2>Üç durak, tek soru: <span style="color:var(--accent)">bu parçanın sahibi kim?</span></h2>
-    <p class="sub">Bir durağa tıklayarak doğrudan oraya gidebilirsiniz.</p>
+    <p class="sub">Üçü de aynı soruyu farklı ölçekte soruyor: sayfanın tamamı, çerçevesi, parçası.</p>
   </header>
   <div class="s-body">
     <div class="road">
@@ -528,7 +528,7 @@ html += <span class="y">"&lt;/ul&gt;"</span>;
   <header class="s-head">
     <div class="kicker">A · Sözdizimi</div>
     <h2>Blok mu, ifade mi? Sekiz yapı, yan yana</h2>
-    <p class="sub">Bir yapıya tıklayın: solda yazdığınız kod, sağda <b>ürettiği HTML</b>. Derste ilk dördü yeter; kalanlar başvuru içindir.</p>
+    <p class="sub">Solda yazdığınız kod, sağda <b>ürettiği HTML</b>. Hepsi tek kuralın uygulamasıdır: <code>@</code> ile C#’a geç, süslü parantez içinde kal.</p>
   </header>
   <div class="s-body">
     <div class="chips syntax-sec" style="margin-bottom:16px"></div>
@@ -546,7 +546,7 @@ html += <span class="y">"&lt;/ul&gt;"</span>;
 <!-- ========== 7 · UYGULAMA A ========== -->
 <section class="slide secA" id="s-uygA" data-title="Uygulama A — Content()'ten View()'a" data-module="uygA" data-steps="4">
   <header class="s-head">
-    <div class="kicker">🔧 Uygulama A · 12 dk · canlı kodlama</div>
+    <div class="kicker">🔧 Uygulama A · canlı kodlama</div>
     <h2>Düz metinden HTML’e: <code style="font-family:var(--mono);font-size:32px">Content()</code> → <code style="font-family:var(--mono);font-size:32px">View()</code></h2>
   </header>
   <div class="s-body">
@@ -822,7 +822,7 @@ The following locations were searched:
 <!-- ========== 14 · UYGULAMA B ========== -->
 <section class="slide secB" id="s-uygB" data-title="Uygulama B — Layout ve section" data-module="uygB" data-steps="4">
   <header class="s-head">
-    <div class="kicker">🔧 Uygulama B · 14 dk · canlı kodlama</div>
+    <div class="kicker">🔧 Uygulama B · canlı kodlama</div>
     <h2>Layout’u <u>bozarak</u> anlamak — dört müdahale, dört sonuç</h2>
   </header>
   <div class="s-body">
@@ -993,7 +993,7 @@ The following locations were searched:
 <!-- ========== 18 · UYGULAMA C ========== -->
 <section class="slide secC" id="s-uygC" data-title="Uygulama C — kartı partial'a çıkarmak" data-module="uygC" data-steps="4">
   <header class="s-head">
-    <div class="kicker">🔧 Uygulama C · 10 dk · canlı kodlama</div>
+    <div class="kicker">🔧 Uygulama C · canlı kodlama</div>
     <h2>Kartı partial’a çıkarmak — ve iki sonucu görmek</h2>
   </header>
   <div class="s-body">
@@ -1189,7 +1189,7 @@ instance requires a model item of type <span class="y">Kitap</span>.</div>
 <!-- ========== 21 · UYGULAMA D ========== -->
 <section class="slide secC" id="s-uygD" data-title="Uygulama D — View Component" data-module="uygD" data-steps="4">
   <header class="s-head">
-    <div class="kicker">🔧 Uygulama D · 12 dk · canlı kodlama</div>
+    <div class="kicker">🔧 Uygulama D · canlı kodlama</div>
     <h2>Sayacı View Component'e dönüştürmek — ve <u>sıfır</u> controller düzenlemek</h2>
   </header>
   <div class="s-body">
@@ -1256,7 +1256,7 @@ instance requires a model item of type <span class="y">Kitap</span>.</div>
 <section class="slide secC" id="s-karar" data-title="Karar tablosu" data-module="karar">
   <header class="s-head">
     <div class="kicker">C · Karar</div>
-    <h2>Hangi araç? Senaryoya tıklayın, önce <u>siz</u> söyleyin</h2>
+    <h2>Hangi araç? Beş senaryo, dört seçenek</h2>
   </header>
   <div class="s-body">
     <div class="karar-liste" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px"></div>
@@ -1583,17 +1583,17 @@ M.akis={
   $('.yanit',s).setAttribute('opacity',k>=6?1:0);
   $('.tr2',s).setAttribute('opacity',k>=7?1:.45);
   $('.tr1',s).setAttribute('opacity',k>=1?1:.9);
-  const a=$('.aciklama',s);a.textContent=c.t||'→ tuşuna basarak isteğin yolculuğunu adım adım izleyin.';
+  const a=$('.aciklama',s);a.textContent=c.t||'Bir istek, yedi durak: tarayıcıdan çıkar, sunucuda HTML’e dönüşür, geri döner.';
   tazele(a);}
 };
 
 /* --- 4 · Ctrl+U kanıtı --- */
 const KANIT={
- 0:'<div class="kod sm" style="min-height:214px"><span class="c">// Sınıfın tahmini…</span>\n\n'+
+ 0:'<div class="kod sm" style="min-height:214px"><span class="c">// Soldaki dosya sunucuda çalışıyor.</span>\n<span class="c">// Peki tarayıcıya ne gidiyor?</span>\n\n'+
    '<span class="s">@model</span> List&lt;Kitap&gt;   <span class="c">← görecek miyiz?</span>\n'+
    '<span class="s">@foreach (var k in Model)</span>  <span class="c">← görecek miyiz?</span>\n'+
    '<span class="s">@k.Baslik</span>  <span class="c">← görecek miyiz?</span>\n\n'+
-   '<span class="c">Tahmin ettirin. Sonra sağdaki düğmeye basın.</span></div>',
+   '<span class="c">Üçü de kaynakta görünecek mi?</span></div>',
  1:'<div class="kod sm" style="min-height:214px"><span class="h">&lt;h1&gt;</span>Kitaplar<span class="h">&lt;/h1&gt;</span>\n'+
    '<span class="h">&lt;ul&gt;</span>\n'+
    '    <span class="h">&lt;li&gt;&lt;strong&gt;</span>Suç ve Ceza<span class="h">&lt;/strong&gt;</span> — 120 TL<span class="h">&lt;/li&gt;</span>\n'+
@@ -1769,7 +1769,7 @@ M.montaj={
     (k>=4?'4 · @section Scripts kendi yuvasına gider':
     (k>=3?'3 · İçerik @RenderBody() yuvasına yerleşir':
     (k>=2?'2 · Layout çalışır — yuvalar henüz BOŞ':
-    (k>=1?'1 · ÖNCE görünüm çalışır':'→ tuşuyla montajı izleyin'))));
+    (k>=1?'1 · ÖNCE görünüm çalışır':'Bir sayfa iki parçadan birleşir: layout ve görünüm.'))));
   tazele(n);}
 };
 
@@ -1807,7 +1807,7 @@ M.arama={
     ? (varmi?'<b>Birinci yolda bulundu, ikinciye hiç bakılmadı.</b> Arama <b>sırayla</b> yapılır ve ilk eşleşmede durur.'
             :'<b>Aradığı bütün yolları size söylüyor.</b> Çözüm hatanın içinde yazıyor: dosyanız tam olarak bu yollardan birinde mi?')
     : (k>=1?'Çatı yolları <b>sırayla</b> tarar; ilk bulduğunda durur.'
-           :'Soldaki düğmeyle dosyanın <b>var</b> ya da <b>yok</b> olduğu iki durumu karşılaştırabilirsiniz.');
+           :'Çatı, görünümü <b>tahmin edilebilir</b> yollarda arar. Dosya yoksa aradığı yerleri <b>tek tek yazar</b>.');
   }
 };
 
@@ -1866,7 +1866,7 @@ M.karar={
   const c=$('.karar-cevap',s),x=KARAR[n];
   $$('.tbl tbody tr',s).forEach(r=>r.classList.toggle('hot',!!x&&r.dataset.a===x.a));
   c.innerHTML=n<0
-    ? '<div class="et">Önce sınıf söylesin</div><h3>Beş senaryo</h3><p>Her senaryoda <b>el kaldırtın</b>, sonra tıklayın. Sağdaki tabloda doğru satır da işaretlenir.</p>'
+    ? '<div class="et">Dört seçenek</div><h3>Layout · Partial · View Component · Ayrı sayfa</h3><p>Dördü de tekrarı önler, ama farklı soruları cevaplar. Ayırt edici soru şudur: <b>bu parça veriyi nereden alıyor ve kendi adresi olmalı mı?</b></p>'
     : '<div class="et">senaryo '+(n+1)+' · cevap</div><h3>'+x.ad+'</h3><p>'+x.n+'</p>';
   tazele(c);}
 };
@@ -1881,7 +1881,7 @@ M.nplus={
   $('.nplus-etiket',s).textContent='';$('.nplus-bar i',s).style.width='0';
   $('.nplus-coz',s).classList.remove('on');
   const n=$('.nplus-not',s);n.className='kutu nplus-not';
-  n.innerHTML='Sayfa açıldığında kaç sorgu çalışacağını <b>önce sınıfa tahmin ettirin</b>, sonra düğmeye basın.';
+  n.innerHTML='Bu sayfa açıldığında <b>kaç sorgu</b> çalışır? Liste 50 kitap içeriyor.';
   $('.nplus-ipucu',s).textContent='50 kitaplık liste — kaç sorgu çalışır?';},
  calistir(s){this.dur(s);let n=0;
   const sy=$('.nplus-sayi',s),et=$('.nplus-etiket',s),br=$('.nplus-bar i',s),nt=$('.nplus-not',s);
