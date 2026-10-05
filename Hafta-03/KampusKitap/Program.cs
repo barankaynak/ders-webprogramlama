@@ -5,11 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 // ---------------------------------------------------------------
 // 2. EVRE — servis kaydı
 // Bu satırlar builder.Build()'dan ÖNCE olmak ZORUNDA.
-// Sonrasına yazarsanız derlenir ama hiçbir etkisi olmaz (ders notu §5.2).
+// Sonrasına yazarsanız derlenir ama hiçbir etkisi olmaz (ders notu bölüm 5.2).
 // ---------------------------------------------------------------
 builder.Services.AddControllersWithViews();
 
-// Yaşam döngüsünü değiştirip farkı gözleyin (ders notu §5.3):
+// Yaşam döngüsünü değiştirip farkı gözleyin (ders notu bölüm 5.3):
 //   AddSingleton → sayaç artarak gider   (1, 2, 3, ...)
 //   AddScoped    → her istekte 1'den başlar
 //   AddTransient → her enjeksiyonda yeni nesne
@@ -22,7 +22,7 @@ var app = builder.Build();
 // SIRA ÖNEMLİDİR. Bozmak çoğu zaman hata vermez; sessizce yanlış çalışır.
 // ---------------------------------------------------------------
 
-// Günlükleyen middleware (ders notu §4.4).
+// Günlükleyen middleware (ders notu bölüm 4.4).
 // next() çağrısını yorum satırı yapıp short-circuit'i gözleyin:
 // sayfa bomboş gelir, durum kodu 200 olur, HATA ALMAZSINIZ.
 app.Use(async (context, next) =>
@@ -48,7 +48,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-// {id:int?} — route kısıtı (ders notu §3.3).
+// {id:int?} — route kısıtı (ders notu bölüm 3.3).
 // Kısıt sayesinde /Kitap/Detay/abc bu route'a EŞLEŞMEZ ve temiz bir 404 alırsınız.
 // Kısıtı kaldırıp deneyin: "abc" değeri int'e çevrilemediği için farklı bir hata çıkar.
 app.MapControllerRoute(

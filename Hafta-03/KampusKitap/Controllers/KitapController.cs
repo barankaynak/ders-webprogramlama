@@ -10,12 +10,12 @@ public class KitapController : Controller
     // Hafta 2'de buradaki action'lar düz metin döndürüyordu. Değişen tek şey
     // dönüş tipi değil, SORUMLULUK: HTML üretimi artık görünümün işi.
     //
-    // DİKKAT (ders notu §3.5): veri burada, BİR KEZ alınır. Görünüm yalnızca
+    // DİKKAT (ders notu bölüm 3.5): veri burada, BİR KEZ alınır. Görünüm yalnızca
     // gösterir. Sorguyu .cshtml içine taşırsanız kod çalışır ama N+1 problemi
     // doğar ve hiçbir hata almazsınız.
 
     // GET /Kitap  ·  GET /Kitap/Index
-    // View() dosya adı vermedi → çatı sırayla şunları arar (ders notu §2.5):
+    // View() dosya adı vermedi → çatı sırayla şunları arar (ders notu bölüm 2.5):
     //   1) /Views/Kitap/Index.cshtml
     //   2) /Views/Shared/Index.cshtml
     public IActionResult Index()
@@ -37,7 +37,7 @@ public class KitapController : Controller
         ViewData["Title"] = kitap.Baslik;
 
         // Kategori adını BURADA çözüyoruz, görünümde değil.
-        // Görünümden çağırsaydık kod yine çalışırdı — ve §3.5'teki tuzağa
+        // Görünümden çağırsaydık kod yine çalışırdı — ve bölüm 3.5'teki tuzağa
         // düşmüş olurduk. Görünümün işi GÖSTERMEK; veri hazırlamak değil.
         ViewData["Kategori"] = KitapDeposu.KategoriAdi(kitap.KategoriId);
 
@@ -55,11 +55,11 @@ public class KitapController : Controller
             : KitapDeposu.Ara(kelime));
     }
 
-    // GET /Kitap/Sozdizimi — Razor sözdizimi kılavuzu (ders notu §1)
+    // GET /Kitap/Sozdizimi — Razor sözdizimi kılavuzu (ders notu bölüm 1)
     // Görünüm veri almaz; amacı sözdizimini ve ürettiği HTML'i göstermektir.
     public IActionResult Sozdizimi() => View();
 
-    // GET /Kitap/Tuzak  — 🕳️ KLASİK TUZAK (ders notu §3.5)
+    // GET /Kitap/Tuzak  — 🕳️ KLASİK TUZAK (ders notu bölüm 3.5)
     // Bu action BİLEREK eksiktir: görünüme hiç veri göndermiyor.
     // Views/Kitap/Tuzak.cshtml veriyi @inject ile KENDİ çekiyor.
     // Kod çalışır. Neden yanlış olduğu görünümün içinde yazılı.

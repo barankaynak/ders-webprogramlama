@@ -23,14 +23,14 @@ public class KategoriController : Controller
     public IActionResult Detay(int? id)
     {
         if (id is null || id < 0 || id >= Kategoriler.Length)
-            return NotFound();                       // 404 — Hafta 2 §2.2
+            return NotFound();                       // 404 — Hafta 2 bölüm 2.2
 
         ViewData["Title"] = Kategoriler[id.Value];
         return View("Detay", Kategoriler[id.Value]);
     }
 
     // GET /Kategori/Ara
-    // Bu action bilinçli olarak RedirectToAction gösteriyor (Hafta 2 §2.5)
+    // Bu action bilinçli olarak RedirectToAction gösteriyor (Hafta 2 bölüm 2.5)
     public IActionResult Ara()
     {
         return RedirectToAction("Index");            // 302 → /Kategori

@@ -4,7 +4,7 @@ using KampusKitap.Services;
 namespace KampusKitap.ViewComponents;
 
 /// <summary>
-/// HAFTA 3 — View Component (ders notu §3.2).
+/// HAFTA 3 — View Component (ders notu bölüm 3.2).
 ///
 /// Partial View ile farkı tek cümlede:
 ///   Partial veriyi ALIR  ·  View Component veriyi KENDİ GETİRİR.
@@ -23,7 +23,7 @@ public class ZiyaretRozetiViewComponent : ViewComponent
 {
     private readonly IZiyaretSayaci _sayac;
 
-    // Kurucu enjeksiyonu — Hafta 2 §5.2 ile birebir aynı.
+    // Kurucu enjeksiyonu — Hafta 2 bölüm 5.2 ile birebir aynı.
     public ZiyaretRozetiViewComponent(IZiyaretSayaci sayac)
     {
         _sayac = sayac;

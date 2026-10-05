@@ -2,7 +2,7 @@ namespace KampusKitap.Models;
 
 /// <summary>
 /// Hafta 3 — görünümlere taşınan model.
-/// Model "veri neye benziyor?" sorusunu cevaplar (Hafta 2 §1.1).
+/// Model "veri neye benziyor?" sorusunu cevaplar (Hafta 2 bölüm 1.1).
 /// </summary>
 public class Kitap
 {

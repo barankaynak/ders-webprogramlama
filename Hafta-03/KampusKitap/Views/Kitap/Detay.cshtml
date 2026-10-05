@@ -10,20 +10,20 @@
 </dl>
 
 @*
-    Yukarıdaki son satırda parantez neden var? (ders notu §1.2)
+    Yukarıdaki son satırda parantez neden var? (ders notu bölüm 1.2)
     @Model.Fiyat * 0.82m yazsaydınız Razor ifadeyi @Model.Fiyat'ta bitirir,
     geri kalanını düz metin sanırdı. Parantez "açık ifade"dir.
 *@
 
 @{
-    // @{ } kod bloğu ÇALIŞIR ama kendisi hiçbir şey YAZDIRMAZ (ders notu §1.3)
+    // @{ } kod bloğu ÇALIŞIR ama kendisi hiçbir şey YAZDIRMAZ (ders notu bölüm 1.3)
     var etiket = Model.Fiyat < 150 ? "uygun" : "pahalı";
 }
 <p>Bu kitap <span class="etiket @etiket">@etiket</span> aralıkta.</p>
 
 <hr />
 
-<h2>🔒 Otomatik HTML kodlaması (ders notu §1.5)</h2>
+<h2>🔒 Otomatik HTML kodlaması (ders notu bölüm 1.5)</h2>
 <p>
     Aşağıdaki iki satır <em>aynı</em> metni yazdırıyor. Biri güvenli, diğeri değil.
     <strong>Ctrl+U ile kaynağa bakın.</strong>
