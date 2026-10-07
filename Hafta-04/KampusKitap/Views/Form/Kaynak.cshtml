@@ -1,0 +1,37 @@
+@*
+    Aynı ad (deger) rotada, sorgu dizesinde ve form gövdesinde birden
+    bulunabilir. Model binding hangisini seçer? Sayfa üçünü de gösterir.
+*@
+<h1>Bağlama kaynakları — hangisi kazanır?</h1>
+
+<p class="ipucu">
+    Aşağıdaki form <code>/Form/Kaynak/<strong>rota</strong>?deger=<strong>sorgu</strong></code>
+    adresine gönderiliyor ve gövdede de <code>deger=<strong>form</strong></code> var.
+    Yani aynı ad <strong>üç yerden birden</strong> geliyor.
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:220px">Kaynak</th><th>Değer</th></tr></thead>
+    <tbody>
+        <tr><td>Rota (<code>{deger}</code>)</td><td><code>@ViewData["Rota"]</code></td></tr>
+        <tr><td>Sorgu dizesi (<code>?deger=</code>)</td><td><code>@ViewData["Sorgu"]</code></td></tr>
+        <tr><td>Form gövdesi</td><td><code>@ViewData["Form"]</code></td></tr>
+    </tbody>
+</table>
+
+<div class="uyari">
+    <strong>Action parametresine bağlanan değer:</strong>
+    <code style="font-size:1.2em">@ViewData["Kazanan"]</code>
+</div>
+
+<h2>Deneyin</h2>
+<ul>
+    <li><a href="/Form/Kaynak/rota">yalnızca rota</a></li>
+    <li><a href="/Form/Kaynak/rota?deger=sorgu">rota + sorgu</a></li>
+    <li>üçü birden: aşağıdaki düğme</li>
+</ul>
+
+<form method="post" action="/Form/Kaynak/rota?deger=sorgu">
+    <input type="hidden" name="deger" value="form" />
+    <button type="submit">Üçünü birden gönder (POST)</button>
+</form>

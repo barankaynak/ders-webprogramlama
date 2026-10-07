@@ -1,0 +1,70 @@
+@*
+    Formun sunucuya tam olarak ne gönderdiğini KANITLA gösterir.
+    Model binding kullanılmıyor; isteğin gövdesi ham okunup ekrana basılıyor.
+*@
+<h1>Formun gönderdiği şey</h1>
+
+<p class="ipucu">
+    Formu doldurup gönderin. Aşağıda <strong>tarayıcının gerçekte gönderdiği
+    istek gövdesi</strong> görünecek — tahmin değil, ham metin.
+</p>
+
+<form method="post" action="/Form">
+    <p>
+        <label for="Baslik">Başlık</label><br />
+        <input type="text" id="Baslik" name="Baslik" value="Suç ve Ceza" />
+    </p>
+    <p>
+        <label for="Yazar">Yazar</label><br />
+        <input type="text" id="Yazar" name="Yazar" value="Dostoyevski" />
+    </p>
+    <p>
+        <label for="Fiyat">Fiyat</label><br />
+        <input type="number" id="Fiyat" name="Fiyat" value="120" />
+    </p>
+    <p>
+        <label><input type="checkbox" name="Hediye" value="evet" /> Hediye paketi</label>
+    </p>
+    <p>
+        @* id ile name BİLEREK farklı: sunucuya giden hangisi? *@
+        <label for="notAlani">Not <span class="ipucu" style="display:inline;padding:2px 6px">id="notAlani" · name="Notlar"</span></label><br />
+        <input type="text" id="notAlani" name="Notlar" value="deneme" />
+    </p>
+    <p>
+        @* name YOK: bu alan hiç gönderilmez *@
+        <label for="unutulan">name özniteliği olmayan alan</label><br />
+        <input type="text" id="unutulan" value="bu değer gitmeyecek" />
+    </p>
+    <p><button type="submit">Gönder</button></p>
+</form>
+
+@if (ViewData["Govde"] != null)
+{
+    <hr />
+    <h2>Sunucuya ne geldi?</h2>
+
+    <table class="table">
+        <tr><td style="width:190px"><strong>Metot</strong></td><td><code>@ViewData["Metot"]</code></td></tr>
+        <tr><td><strong>Content-Type</strong></td><td><code>@ViewData["Tip"]</code></td></tr>
+    </table>
+
+    <h3>İstek gövdesi (ham)</h3>
+    <pre><code>@ViewData["Govde"]</code></pre>
+
+    <h3>Çatının ayrıştırdığı alanlar</h3>
+    <ul>
+        @foreach (var satir in (List<string>)ViewData["Alanlar"]!)
+        {
+            <li><code>@satir</code></li>
+        }
+    </ul>
+
+    <div class="ipucu">
+        <strong>Üç gözlem:</strong>
+        ① Gövde <code>ad=değer&amp;ad=değer</code> biçiminde — bu, <code>Content-Type</code>
+        satırında yazan <code>application/x-www-form-urlencoded</code> demek. &nbsp;
+        ② Sunucuya giden ad, <code>&lt;input&gt;</code> etiketinin <strong><code>name</code></strong>
+        özniteliğidir — <code>id</code> değil. <code>name</code> yoksa alan <em>hiç</em> gönderilmez. &nbsp;
+        ③ İşaretlenmemiş onay kutusu gövdede <strong>yoktur</strong>; "false" diye bir şey gönderilmez.
+    </div>
+}

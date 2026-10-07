@@ -1,0 +1,62 @@
+@*
+    🕳️ KLASİK TUZAK — entity'yi doğrudan action parametresi yapmak.
+    Formda OLMAYAN bir alan el ile gönderildiğinde model binding onu da doldurur.
+*@
+@{
+    var k = (KampusKitap.Models.Kitap)ViewData["Gelen"]!;
+}
+
+<h1>🕳️ Over-posting (kütle atama)</h1>
+
+<table class="table">
+    <thead><tr><th style="width:230px">Özellik</th><th>Bağlanan değer</th></tr></thead>
+    <tbody>
+        <tr><td><code>Baslik</code></td><td>@k.Baslik</td></tr>
+        <tr><td><code>Yazar</code></td><td>@k.Yazar</td></tr>
+        <tr><td><code>Fiyat</code></td><td>@k.Fiyat</td></tr>
+        <tr class="@(k.Onayli ? "" : "")">
+            <td><code>Onayli</code></td>
+            <td><strong style="color:@(k.Onayli ? "#a4231b" : "#2f6b2a")">@k.Onayli</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+@if (k.Onayli)
+{
+    <div class="uyari">
+        <strong>Formda "Onaylı" diye bir alan yoktu.</strong> Kullanıcı isteğin
+        gövdesine <code>Onayli=true</code> satırını kendi ekledi ve model binding
+        onu seve seve doldurdu. Gerçek bir uygulamada bu alan
+        <code>IsAdmin</code>, <code>Rol</code> ya da <code>Bakiye</code> olabilirdi.
+    </div>
+}
+else
+{
+    <div class="ipucu">
+        Şu an <code>Onayli = false</code>. Aşağıdaki ikinci formu gönderin:
+        formda görünmeyen bir alanı el ile ekliyor.
+    </div>
+}
+
+<hr />
+
+<h2>1 · Normal form</h2>
+<form method="post" action="/Form/Tuzak">
+    <input type="hidden" name="Baslik" value="Suç ve Ceza" />
+    <input type="hidden" name="Yazar" value="Dostoyevski" />
+    <input type="hidden" name="Fiyat" value="120" />
+    <button type="submit">Gönder</button>
+</form>
+
+<h2>2 · Saldırganın gönderdiği form</h2>
+<p class="ipucu">
+    Tek fark son satır. Kullanıcı HTML'i kendi makinesinde değiştirebilir;
+    <strong>formun HTML'i sizin, gönderilen veri değil.</strong>
+</p>
+<form method="post" action="/Form/Tuzak">
+    <input type="hidden" name="Baslik" value="Suç ve Ceza" />
+    <input type="hidden" name="Yazar" value="Dostoyevski" />
+    <input type="hidden" name="Fiyat" value="120" />
+    <input type="hidden" name="Onayli" value="true" />
+    <button type="submit">Fazladan alanla gönder</button>
+</form>

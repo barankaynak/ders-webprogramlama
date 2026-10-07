@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hafta 4 — Web Formlar</title>
+<meta name="description" content="Web Programlama · Hafta 4 — Web formlar, model binding, PRG deseni ve form güvenliği. Adım adım animasyonlu ders sunumu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font:"Source Sans 3","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
+  --bg:#fbfaf7; --fg:#1c1a17; --ink2:#3a352e; --muted:#5d574e; --faint:#8a8377;
+  --line:#ddd6ca; --line2:#ece7dd; --card:#fff; --card2:#f4f1ea;
+  --accent:#8a3d0f; --accent-s:#fbeadf;
+  --accent2:#14607a; --accent2-s:#e0eff4;
+  --ok:#2f6b2a; --ok-s:#e6f1e4;
+  --warn:#a4231b; --warn-s:#fae7e5;
+  --gold:#9a6b0c; --gold-s:#fbf0da;
+  --plum:#5c3f78; --plum-s:#eee8f5;
+  --code:#f2efe8;
+  --grid:rgba(28,26,23,.045);
+  --shadow:0 1px 2px rgba(28,26,23,.06),0 10px 26px rgba(28,26,23,.07);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#20201d}
+body{font-family:var(--font);color:var(--fg);-webkit-font-smoothing:antialiased}
+svg{font-family:inherit;overflow:visible}
+button{font-family:inherit}
+code,.mono{font-family:var(--mono)}
+
+/* ---------- sahne ---------- */
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  overflow:hidden;background:var(--bg);box-shadow:0 30px 90px rgba(0,0,0,.5)}
+.slide{position:absolute;inset:0;padding:48px 72px 70px;display:flex;flex-direction:column;
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:40px 40px;background-position:-1px -1px;
+  opacity:0;visibility:hidden;transform:translateX(30px);
+  transition:opacity .42s ease,transform .42s cubic-bezier(.2,.7,.2,1),visibility 0s linear .42s}
+.slide.past{transform:translateX(-30px)}
+.slide.active{opacity:1;visibility:visible;transform:none;
+  transition:opacity .42s ease,transform .42s cubic-bezier(.2,.7,.2,1),visibility 0s}
+.slide.dark{background-color:#1c1a17;color:#fff;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px)}
+.slide .notes{display:none}
+
+.secA{--sec:var(--accent);--sec-s:var(--accent-s)}
+.secB{--sec:var(--accent2);--sec-s:var(--accent2-s)}
+.secC{--sec:var(--plum);--sec-s:var(--plum-s)}
+.sec0{--sec:var(--accent);--sec-s:var(--accent-s)}
+
+/* ---------- başlıklar ---------- */
+.s-head{margin-bottom:20px;flex:none}
+.kicker{font-size:15px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--sec);
+  display:flex;align-items:center;gap:11px}
+.kicker::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--sec);box-shadow:0 0 0 4px var(--sec-s)}
+.dark .kicker::before{box-shadow:0 0 0 4px rgba(255,255,255,.14)}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.015em}
+h2{font-size:42px;line-height:1.1;margin-top:9px}
+.sub{font-size:21px;line-height:1.4;color:var(--muted);margin-top:9px;max-width:1300px}
+.dark .sub{color:rgba(255,255,255,.72)}
+.s-body{flex:1;position:relative;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.src{position:absolute;left:72px;bottom:46px;font-size:13px;color:var(--faint)}
+
+/* ---------- adım parçaları ---------- */
+.f{opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
+.f.on{opacity:1;transform:none}
+.f.fx{transform:translateX(-16px)} .f.fx.on{transform:none}
+.f.fs{transform:scale(.88)} .f.fs.on{transform:none}
+.f.fo{transform:none}
+svg .f{transform-box:fill-box;transform-origin:center}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1s ease}
+.draw.on,.on .draw{stroke-dashoffset:0}
+.dim{opacity:.26;transition:opacity .4s}
+
+/* ---------- bileşenler ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow)}
+.card h3{font-size:22px;margin-bottom:7px}
+.lead{font-size:23px;line-height:1.45;color:var(--ink2)}
+.muted{color:var(--muted)}
+.row{display:flex;gap:20px}
+.col{display:flex;flex-direction:column;gap:16px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;
+  font-size:15px;font-weight:700;background:var(--sec-s);color:var(--sec)}
+.pill.gri{background:var(--card2);color:var(--muted)}
+.hint{font-size:15px;color:var(--faint)}
+.big{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.num{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;
+  background:var(--sec);color:#fff;font-weight:800;font-size:17px;flex:none}
+.btn{appearance:none;border:1.5px solid var(--line);background:var(--card);color:var(--fg);
+  font-size:16px;font-weight:700;padding:9px 16px;border-radius:10px;cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--sec);color:var(--sec)}
+.btn.primary{background:var(--sec);border-color:var(--sec);color:#fff}
+.seg{display:inline-flex;background:var(--card2);border-radius:12px;padding:4px;gap:4px}
+.seg button{appearance:none;border:0;background:transparent;font-size:16px;font-weight:700;
+  color:var(--muted);padding:9px 16px;border-radius:9px;cursor:pointer;transition:.22s}
+.seg button.on{background:var(--card);color:var(--sec);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:15px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--sec-s);color:var(--sec)}
+.chip.gri{background:var(--card2);color:var(--ink2)}
+
+table.tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:18px;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+table.tbl th{background:var(--ink2);color:#fff;text-align:left;font-weight:700;padding:11px 14px;font-size:16px}
+table.tbl td{padding:10px 14px;border-top:1px solid var(--line2);vertical-align:top;line-height:1.35}
+table.tbl td:first-child{font-weight:700}
+table.tbl tr.hot td{background:var(--sec-s)}
+
+/* ---------- kod ---------- */
+.kod{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  font-family:var(--mono);font-size:17px;line-height:1.62;white-space:pre;overflow:hidden}
+.kod.sm{font-size:15px;line-height:1.55}
+.kod .c{color:var(--muted)}                 /* yorum */
+.kod .h{color:var(--accent2)}               /* html */
+.kod .s{color:var(--accent);font-weight:700}/* c# / razor */
+.kod .y{background:var(--gold-s);border-radius:3px}
+.kod .ekle{background:var(--ok-s);border-radius:3px}
+.kod .sil{background:var(--warn-s);border-radius:3px;text-decoration:line-through;opacity:.6}
+.dosya{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--muted);
+  background:var(--card2);border:1px solid var(--line);border-bottom:0;
+  border-radius:10px 10px 0 0;padding:6px 14px;display:inline-block}
+.dosya + .kod{border-radius:0 12px 12px 12px}
+
+/* ---------- çıktı kutusu (tarayıcı) ---------- */
+.tarayici{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.tarayici .ub{background:var(--card2);border-bottom:1px solid var(--line);padding:7px 12px;
+  display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);font-family:var(--mono)}
+.tarayici .ub i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.tarayici .ic{padding:14px 18px;font-size:17px;line-height:1.5}
+.tarayici .ic h4{margin:0 0 6px;font-size:21px}
+
+/* ---------- uyarı kutuları ---------- */
+.kutu{border-left:5px solid var(--sec);background:var(--card2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:18px;line-height:1.45}
+.kutu.warn{border-left-color:var(--warn);background:var(--warn-s)}
+.kutu.ok{border-left-color:var(--ok);background:var(--ok-s)}
+.kutu.gold{border-left-color:var(--gold);background:var(--gold-s)}
+.kutu b{color:var(--sec)}
+.kutu.warn b{color:var(--warn)}
+.kutu.ok b{color:var(--ok)}
+
+/* ---------- kapak ---------- */
+.cover .ct{position:absolute;left:72px;top:150px;width:760px}
+.cover h1{font-size:68px;line-height:1.04;margin-top:18px;letter-spacing:-.03em}
+.cover h1 em{font-style:normal;color:#e8a05c}
+.cover .sl{font-size:22px;line-height:1.45;color:rgba(255,255,255,.75);margin-top:22px;max-width:680px}
+.cover .meta{position:absolute;left:72px;bottom:86px;display:flex;gap:10px;flex-wrap:wrap}
+.cover .meta span{font-size:14px;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;padding:6px 13px}
+.cover .meta kbd{font-family:inherit;font-weight:800;color:#fff}
+
+/* ---------- yol haritası ---------- */
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative;margin-top:10px}
+.road::before{content:"";position:absolute;left:14%;right:14%;top:36px;height:6px;border-radius:6px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--plum))}
+.durak{text-align:center;cursor:pointer}
+.durak .d{width:78px;height:78px;margin:0 auto;border-radius:50%;background:var(--card);
+  border:6px solid var(--sec);display:grid;place-items:center;font-weight:800;font-size:21px;
+  color:var(--sec);position:relative;z-index:1;transition:.25s}
+.durak:hover .d{background:var(--sec);color:#fff;transform:scale(1.06)}
+.durak .t{font-size:23px;font-weight:800;margin-top:14px;line-height:1.2}
+.durak .q{font-size:18px;color:var(--muted);margin-top:7px;line-height:1.35}
+
+/* ---------- çalışan kısayol çubuğu ---------- */
+#bar{position:absolute;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 72px;font-size:13px;color:var(--faint);pointer-events:none;z-index:20}
+#bar .sn{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#bar .ctr{font-variant-numeric:tabular-nums;font-size:19px;font-weight:800;color:var(--fg);
+  background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:2px 15px}
+#bar .ctr b{color:var(--sec,var(--accent))}
+#stage.dk #bar{color:rgba(255,255,255,.55)}
+#stage.dk #bar .ctr{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.26)}
+#stage.dk #bar .ctr b{color:#e8a05c}
+#ilerleme{position:absolute;left:0;bottom:0;height:4px;background:var(--sec,var(--accent));transition:width .45s ease;z-index:21}
+#nokta{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:6px;z-index:21}
+#nokta i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:.3s}
+#nokta i.on{background:var(--sec,var(--accent))}
+#stage.dk #nokta i{background:rgba(255,255,255,.2)}
+#stage.dk #nokta i.on{background:#fff}
+#gez{position:absolute;right:190px;bottom:7px;display:flex;gap:6px;z-index:22;opacity:0;transition:opacity .3s}
+#stage:hover #gez{opacity:1}
+#gez button{width:33px;height:29px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+  color:var(--fg);cursor:pointer;font-size:14px}
+
+/* ---------- katmanlar ---------- */
+#kus{position:fixed;inset:0;background:rgba(20,18,15,.94);z-index:100;display:none;overflow:auto;padding:36px 44px}
+#kus.open{display:block}
+#kus h3{color:#fff;font-size:21px;margin:0 0 18px;font-weight:700}
+#kus .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:13px}
+#kus .k{background:#2a2621;border:1px solid #3d382f;border-radius:13px;padding:13px 15px;color:#e4ded3;
+  cursor:pointer;transition:.2s;min-height:92px}
+#kus .k:hover,#kus .k.cur{border-color:#e8a05c;background:#332e27}
+#kus .k b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;color:#e8a05c}
+#kus .k span{font-size:15px;line-height:1.35}
+#yardim{position:fixed;inset:0;background:rgba(20,18,15,.8);z-index:110;display:none;place-items:center}
+#yardim.open{display:grid}
+#yardim .b{background:var(--card);border-radius:16px;padding:26px 32px;min-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#yardim h3{font-size:21px;margin-bottom:13px}
+#yardim table{border-collapse:collapse;font-size:16px}
+#yardim td{padding:5px 14px 5px 0}
+#yardim kbd{display:inline-block;min-width:28px;text-align:center;padding:3px 8px;border:1px solid var(--line);
+  border-bottom-width:3px;border-radius:6px;font-family:inherit;font-weight:700;font-size:13px;background:var(--card2)}
+#kara{position:fixed;inset:0;background:#000;z-index:120;display:none}
+#kara.open{display:block}
+#atla{position:fixed;right:22px;top:18px;z-index:130;background:#1c1a17;color:#fff;font-size:26px;
+  font-weight:800;padding:7px 17px;border-radius:11px;display:none}
+
+
+</style>
+</head>
+<body>
+<div id="stage">
+<!-- ========== 1 · KAPAK ========== -->
+<section class="slide dark cover sec0" id="s-kapak" data-title="Kapak">
+  <svg viewBox="0 0 1600 900" style="position:absolute;inset:0;width:1600px;height:900px">
+    <g transform="translate(880,150)">
+      <rect x="0" y="0" width="330" height="200" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+      <text x="18" y="32" font-size="14" font-weight="700" fill="#e8a05c" font-family="monospace">form</text>
+      <g font-family="monospace" font-size="15" fill="#d8e8e2">
+        <rect x="18" y="52" width="292" height="30" rx="6" fill="rgba(255,255,255,.07)"/>
+        <text x="30" y="72">Baslik: Suc ve Ceza</text>
+        <rect x="18" y="92" width="292" height="30" rx="6" fill="rgba(255,255,255,.07)"/>
+        <text x="30" y="112">Yazar: Dostoyevski</text>
+        <rect x="18" y="132" width="292" height="30" rx="6" fill="rgba(255,255,255,.07)"/>
+        <text x="30" y="152">Fiyat: 120</text>
+      </g>
+      <path d="M165 212V250" stroke="#e8a05c" stroke-width="3" marker-end="url(#okb)"/>
+    </g>
+    <g transform="translate(880,400)">
+      <rect x="0" y="0" width="330" height="110" rx="14" fill="rgba(232,160,92,.12)" stroke="rgba(232,160,92,.45)"/>
+      <text x="18" y="30" font-size="13" font-weight="700" fill="#e8a05c" font-family="monospace">istek gövdesi</text>
+      <text x="18" y="62" font-size="14" font-family="monospace" fill="#fff">Baslik=Suc+ve+Ceza&amp;</text>
+      <text x="18" y="86" font-size="14" font-family="monospace" fill="#fff">Yazar=Dostoyevski&amp;Fiyat=120</text>
+      <path d="M165 112V150" stroke="#9fd8c8" stroke-width="3" marker-end="url(#okb)"/>
+    </g>
+    <g transform="translate(880,560)">
+      <rect x="0" y="0" width="330" height="130" rx="14" fill="rgba(159,216,200,.12)" stroke="rgba(159,216,200,.45)"/>
+      <text x="18" y="30" font-size="13" font-weight="700" fill="#9fd8c8" font-family="monospace">C# nesnesi</text>
+      <g font-family="monospace" font-size="15" fill="#d8e8e2">
+        <text x="18" y="60">kitap.Baslik = "Suc ve Ceza"</text>
+        <text x="18" y="84">kitap.Yazar  = "Dostoyevski"</text>
+        <text x="18" y="108">kitap.Fiyat  = 120m</text>
+      </g>
+    </g>
+    <text x="1045" y="736" text-anchor="middle" font-size="17" fill="rgba(255,255,255,.6)">Arada bir mekanizma var: <tspan font-weight="700" fill="#9fd8c8">Model Binding</tspan></text>
+  </svg>
+  <div class="ct">
+    <div class="kicker">Web Programlama · Hafta 4</div>
+    <h1>Web <em>Formlar</em></h1>
+    <p class="sl">Kullanıcıdan veri almanın tam döngüsü: formun gönderdiği şey, o verinin C# nesnesine dönüşmesi ve aradaki güven sorunu.</p>
+  </div>
+  <div class="meta"><span>3 × 50 dakika</span><span><kbd>→</kbd> sonraki adım</span><span><kbd>O</kbd> tüm slaytlar</span><span><kbd>?</kbd> kısayollar</span></div>
+
+</section>
+
+<!-- ========== 2 · YOL HARİTASI ========== -->
+<section class="slide sec0" id="s-yol" data-title="Bugünün yolu">
+  <header class="s-head">
+    <div class="kicker">Hafta 4 · Genel bakış</div>
+    <h2>Üç durak: <span style="color:var(--accent)">ne geliyor</span> · <span style="color:var(--accent2)">nasıl dönüşüyor</span> · <span style="color:var(--plum)">neye güvenmeyeceğiz</span></h2>
+  </header>
+  <div class="s-body">
+    <div class="road">
+      <div class="durak secA" data-goto="s-neden"><div class="d">A</div><div class="t">Form temelleri</div><div class="q">Tarayıcı sunucuya <b>ne</b> gönderiyor?</div></div>
+      <div class="durak secB" data-goto="s-mb"><div class="d">B</div><div class="t">Model Binding</div><div class="q">O metin <b>nasıl</b> C# nesnesi oluyor?</div></div>
+      <div class="durak secC" data-goto="s-prg"><div class="d">C</div><div class="t">PRG ve güvenlik</div><div class="q">Gelen veriye <b>ne kadar</b> güvenebiliriz?</div></div>
+    </div>
+    <div class="f" data-step="1" style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
+      <div class="card" style="display:flex;gap:18px;align-items:center">
+        <div class="big" style="color:var(--accent)">🧩</div>
+        <div>
+          <h3>Haftanın ilkesi — İstemciden gelen hiçbir veri güvenilir değildir</h3>
+          <p class="lead" style="margin:0;font-size:20px">Formun HTML'ini siz yazarsınız; ama o HTML <b>kullanıcının makinesinde</b> çalışır. Sunucuya ulaşan şey sizin formunuz değil, <b>kullanıcının göndermeyi seçtiği veridir.</b></p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Hafta 1–3'ten devralınan</h3>
+        <table class="tbl" style="font-size:17px;box-shadow:none">
+          <tr><td>HTTP isteği ve <b>gövdesi</b></td><td>Hafta 1 → bu hafta <b>dolduruyoruz</b></td></tr>
+          <tr><td>Action parametreleri</td><td>Hafta 2 → nereden geldiği <b>bugün</b></td></tr>
+          <tr><td>Razor ve görünüm</td><td>Hafta 3 → form <b>oraya</b> yazılacak</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 3 · NEDEN FORM ========== -->
+<section class="slide secA" id="s-neden" data-title="Tek yönden çift yöne" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">A · Form nedir, neden gerekiyor</div>
+    <h2>Üç haftadır veri <u>tek yöne</u> aktı — bugün ters yön açılıyor</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div class="col" style="gap:14px">
+        <div class="card f fx" data-step="1" style="border-left:5px solid var(--accent2)">
+          <h3>Şimdiye kadar: sunucu → kullanıcı</h3>
+          <svg viewBox="0 0 560 90" width="100%" height="90">
+            <rect x="4" y="24" width="150" height="46" rx="10" fill="#e0eff4" stroke="#14607a" stroke-width="2"/>
+            <text x="79" y="53" text-anchor="middle" font-size="16" font-weight="700" fill="#14607a">Controller</text>
+            <path d="M160 47H250" stroke="#14607a" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+            <rect x="256" y="24" width="140" height="46" rx="10" fill="#e0eff4" stroke="#14607a" stroke-width="2"/>
+            <text x="326" y="53" text-anchor="middle" font-size="16" font-weight="700" fill="#14607a">Razor</text>
+            <path d="M402 47H466" stroke="#14607a" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+            <rect x="472" y="24" width="84" height="46" rx="10" fill="#fff" stroke="#ddd6ca" stroke-width="2"/>
+            <text x="514" y="53" text-anchor="middle" font-size="15" fill="#3a352e">HTML</text>
+          </svg>
+          <p class="muted" style="margin:4px 0 0;font-size:17px">Kullanıcı yalnızca <b>okudu</b>.</p>
+        </div>
+        <div class="card f fx" data-step="2" style="border-left:5px solid var(--accent)">
+          <h3>Bugünden sonra: kullanıcı → sunucu</h3>
+          <svg viewBox="0 0 560 90" width="100%" height="90">
+            <rect x="4" y="24" width="120" height="46" rx="10" fill="#fbeadf" stroke="#8a3d0f" stroke-width="2"/>
+            <text x="64" y="53" text-anchor="middle" font-size="16" font-weight="700" fill="#8a3d0f">form</text>
+            <path d="M130 47H206" stroke="#8a3d0f" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+            <rect x="212" y="24" width="150" height="46" rx="10" fill="#fbeadf" stroke="#8a3d0f" stroke-width="2"/>
+            <text x="287" y="53" text-anchor="middle" font-size="15" font-weight="700" fill="#8a3d0f">istek gövdesi</text>
+            <path d="M368 47H444" stroke="#8a3d0f" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+            <rect x="450" y="24" width="106" height="46" rx="10" fill="#fbeadf" stroke="#8a3d0f" stroke-width="2"/>
+            <text x="503" y="53" text-anchor="middle" font-size="15" font-weight="700" fill="#8a3d0f">Action</text>
+          </svg>
+          <p class="muted" style="margin:4px 0 0;font-size:17px">Kullanıcı artık <b>yazıyor</b> — ve yazdığı şey bizim denetimimizde değil.</p>
+        </div>
+      </div>
+
+      <div class="col" style="gap:14px">
+        <div class="f fx" data-step="3">
+          <div class="pill" style="margin-bottom:8px">HTTP'nin iki metodu, iki işi</div>
+          <table class="tbl" style="font-size:17px">
+            <thead><tr><th style="width:150px"></th><th>GET</th><th>POST</th></tr></thead>
+            <tbody>
+              <tr><td>Veri nereye</td><td><b>adres çubuğuna</b></td><td><b>gövdeye</b></td></tr>
+              <tr><td>Yer imi / geçmiş</td><td>görünür</td><td>görünmez</td></tr>
+              <tr><td>Yenilenince</td><td>zararsız</td><td><b>tekrar gönderilir</b></td></tr>
+              <tr><td>Ne için</td><td><b>okuma</b>: arama, filtre</td><td><b>değiştirme</b>: kayıt, silme</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kutu f" data-step="4" style="font-size:20px"><b>Kural:</b> Sunucuda bir şeyi <b>değiştiren</b> her işlem POST olmalıdır. Arama formu GET, kayıt formu POST.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 4 · FORMUN GÖNDERDİĞİ ŞEY ========== -->
+<section class="slide secA" id="s-govde" data-title="Formun gönderdiği şey" data-module="govde" data-steps="5">
+  <header class="s-head">
+    <div class="kicker">A · Geçen haftanın sorusu kapanıyor</div>
+    <h2>Tarayıcı gövdeye tam olarak <u>ne</u> koyuyor?</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div>
+        <span class="dosya">yazdığınız form</span>
+        <div class="kod sm" style="font-size:15px"><span class="h">&lt;form method="post" action="/Form"&gt;</span>
+  <span class="gv-s" data-n="0"><span class="h">&lt;input type="text"   id="Baslik"</span>   <span class="y">name="Baslik"</span><span class="h"> …&gt;</span></span>
+  <span class="gv-s" data-n="1"><span class="h">&lt;input type="text"   id="Yazar"</span>    <span class="y">name="Yazar"</span><span class="h"> …&gt;</span></span>
+  <span class="gv-s" data-n="2"><span class="h">&lt;input type="number" id="Fiyat"</span>    <span class="y">name="Fiyat"</span><span class="h"> …&gt;</span></span>
+  <span class="gv-s" data-n="3"><span class="h">&lt;input type="text"   id="notAlani"</span> <span class="y">name="Notlar"</span><span class="h"> …&gt;</span></span>
+  <span class="gv-s" data-n="4"><span class="h">&lt;input type="text"   id="unutulan"</span>  <span class="c">(name YOK)</span><span class="h">&gt;</span></span>
+<span class="h">&lt;/form&gt;</span></div>
+        <div class="gv-not kutu" style="margin-top:14px;font-size:19px;min-height:78px"></div>
+      </div>
+      <div class="col" style="gap:12px">
+        <div>
+          <span class="dosya">sunucuya ulaşan istek</span>
+          <div class="kod sm" style="font-size:15px;min-height:150px"><span class="gv-h" style="opacity:.25">POST /Form HTTP/1.1</span>
+<span class="gv-ct" style="opacity:.25">Content-Type: <span class="y">application/x-www-form-urlencoded</span></span>
+
+<span class="gv-b"></span></div>
+        </div>
+        <div class="gv-ozet" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 5 · GET/POST ÇİFTİ ========== -->
+<section class="slide secA" id="s-cift" data-title="GET/POST action çifti" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">A · Form sayfasının iskeleti</div>
+    <h2>Bir form sayfası <u>iki</u> action ister: biri gösterir, biri işler</h2>
+  </header>
+  <div class="s-body">
+    <svg viewBox="0 0 1440 300" width="1440" height="300">
+      <g class="f fs" data-step="1">
+        <rect x="20" y="40" width="250" height="90" rx="12" fill="#fff" stroke="#14607a" stroke-width="2.5"/>
+        <text x="145" y="72" text-anchor="middle" font-size="15" font-family="monospace" fill="#8a8377">GET /Kitap/Ekle</text>
+        <text x="145" y="100" text-anchor="middle" font-size="18" font-weight="800" fill="#14607a">formu göster</text>
+        <text x="145" y="120" text-anchor="middle" font-size="14" fill="#5d574e">return View();</text>
+        <path d="M276 85H360" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+        <rect x="366" y="40" width="210" height="90" rx="12" fill="#f4f1ea" stroke="#ddd6ca" stroke-width="2"/>
+        <text x="471" y="80" text-anchor="middle" font-size="17" font-weight="700" fill="#3a352e">kullanıcı doldurur</text>
+        <text x="471" y="106" text-anchor="middle" font-size="15" fill="#5d574e">ve Gönder'e basar</text>
+      </g>
+      <g class="f fs" data-step="2">
+        <path d="M582 85H666" stroke="#8a3d0f" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+        <rect x="672" y="40" width="270" height="90" rx="12" fill="#fbeadf" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="807" y="72" text-anchor="middle" font-size="15" font-family="monospace" fill="#8a8377">POST /Kitap/Ekle</text>
+        <text x="807" y="100" text-anchor="middle" font-size="18" font-weight="800" fill="#8a3d0f">gelen veriyi işle</text>
+        <text x="807" y="120" text-anchor="middle" font-size="14" fill="#5d574e">Ekle(KitapEkleVM girdi)</text>
+      </g>
+      <g class="f fs" data-step="3">
+        <path d="M948 85H1032" stroke="#2f6b2a" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+        <rect x="1038" y="40" width="250" height="90" rx="12" fill="#e6f1e4" stroke="#2f6b2a" stroke-width="2.5"/>
+        <text x="1163" y="74" text-anchor="middle" font-size="18" font-weight="800" fill="#2f6b2a">302 → /Kitap</text>
+        <text x="1163" y="104" text-anchor="middle" font-size="15" fill="#2f6b2a">PRG — Blok C</text>
+      </g>
+      <g class="f fo" data-step="1">
+        <rect x="20" y="170" width="922" height="54" rx="10" fill="none" stroke="#8a8377" stroke-width="2" stroke-dasharray="8 6"/>
+        <text x="481" y="203" text-anchor="middle" font-size="18" font-weight="700" fill="#3a352e">İkisinin adı AYNI: <tspan font-family="monospace">Ekle</tspan> — metotları farklı</tspan></text>
+      </g>
+    </svg>
+    <div class="f" data-step="2" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:4px">
+      <div><span class="dosya">Controllers/KitapController.cs</span>
+        <div class="kod sm" style="font-size:15px"><span class="y">[HttpGet]</span>
+<span class="s">public</span> IActionResult Ekle()
+    =&gt; View(<span class="s">new</span> KitapEkleVM());
+
+<span class="y">[HttpPost]</span>
+<span class="s">public</span> IActionResult Ekle(KitapEkleVM girdi)
+{
+    <span class="s">if</span> (!ModelState.IsValid) <span class="s">return</span> View(girdi);
+    …
+}</div></div>
+      <div class="kutu" style="font-size:19px"><b>Aynı adı taşıyan iki metot bir aşırı yüklemedir (overload)</b> — parametreleri farklı olmak zorunda. Zaten öyle: biri parametresiz, diğeri modeli alıyor.
+        <div class="muted" style="margin-top:8px;font-size:17px">Öznitelikleri koymazsanız çatı hangisini seçeceğini bilemez ve <code>AmbiguousMatchException</code> fırlatır — bir sonraki slayt.</div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 6 · [HttpGet] / [HttpPost] ========== -->
+<section class="slide secA" id="s-metot" data-title="[HttpGet] ve [HttpPost]" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">A · Metot öznitelikleri</div>
+    <h2>Hangi action, hangi HTTP metoduna cevap verir?</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div class="col" style="gap:14px">
+        <table class="tbl f" data-step="1">
+          <thead><tr><th style="width:190px">Yazım</th><th>Sonuç</th></tr></thead>
+          <tbody>
+            <tr><td><code>[HttpGet]</code></td><td>Yalnızca <b>GET</b> isteklerinde çalışır</td></tr>
+            <tr><td><code>[HttpPost]</code></td><td>Yalnızca <b>POST</b> isteklerinde çalışır</td></tr>
+            <tr class="hot"><td>hiçbiri yok</td><td><b>Her metoda</b> cevap verir</td></tr>
+          </tbody>
+        </table>
+        <div class="kutu f" data-step="2" style="font-size:19px">Hafta 2'den beri action'larımızda öznitelik <b>yoktu</b> ve çalışıyorlardı — çünkü öznitelik yokluğu <b>"hepsini kabul et"</b> demek.
+          <div class="muted" style="margin-top:8px;font-size:17px">Form çiftinde ise <b>zorunlu</b>: iki action aynı adı taşıyor.</div></div>
+      </div>
+      <div class="col" style="gap:14px">
+        <div class="f fx" data-step="2">
+          <span class="dosya">öznitelikler konmazsa</span>
+          <div class="kod sm" style="background:var(--warn-s);border-color:#e7b5b0;font-size:14px"><span style="color:var(--warn);font-weight:700">AmbiguousMatchException:</span>
+The request matched multiple endpoints.
+Matches:
+  KampusKitap.Controllers.KitapController.Ekle
+  KampusKitap.Controllers.KitapController.Ekle</div>
+        </div>
+        <div class="kutu warn f" data-step="3" style="font-size:19px"><b>Yanlış anlaşılma uyarısı:</b> Bir action'ı <code>[HttpPost]</code> yapmak onu <b>güvenli yapmaz</b>. Yalnızca adres çubuğuna yazılarak çağrılmasını engeller.
+          <div class="muted" style="margin-top:8px;font-size:17px">Yetkilendirme <b>Hafta 11</b>'in konusu; CSRF koruması <b>Hafta 5</b>'te Tag Helper'larla gelecek.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 7 · UYGULAMA A ========== -->
+<section class="slide secA" id="s-uygA" data-title="Uygulama A — gövdeyi görmek" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama A · canlı kodlama</div>
+    <h2>Formu gönder, gövdeyi <u>iki ayrı kaynaktan</u> doğrula</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="1">
+          <div class="pill gri" style="margin-bottom:6px">① sayfadaki ham gövde — <code>/Form</code></div>
+          <div class="kod sm" style="font-size:15px">Baslik=Suc+ve+Ceza&amp;Yazar=Dostoyevski
+&amp;Fiyat=120&amp;Notlar=deneme</div>
+        </div>
+        <div class="f fx" data-step="2">
+          <div class="pill" style="margin-bottom:6px">② tarayıcıdan — F12 → Network → Payload</div>
+          <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>Network · Form</span></div>
+            <div class="ic" style="padding:10px 14px;font-family:var(--mono);font-size:14px;line-height:1.7">
+              <div style="color:var(--muted)">Form Data</div>
+              Baslik: Suc ve Ceza<br>Yazar: Dostoyevski<br>Fiyat: 120<br>Notlar: deneme</div></div>
+        </div>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="3">
+          <div class="pill" style="margin-bottom:6px;background:var(--gold-s);color:var(--gold)">③ iki özel alan</div>
+          <table class="tbl" style="font-size:17px">
+            <tbody>
+              <tr><td style="width:230px"><code>id="notAlani"</code><br><code>name="Notlar"</code></td><td>Gövdede <b>Notlar</b> var — yani <b><code>name</code></b></td></tr>
+              <tr><td><code>id="unutulan"</code><br><code>name</code> <b>YOK</b></td><td>Gövdede <b>hiç yok</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kutu warn f" data-step="4" style="font-size:19px"><b>Dönem boyunca en sık soru:</b> "Formu gönderdim, veri boş geliyor."
+          <div style="margin-top:8px">Cevap neredeyse her zaman ikisinden biri: <b><code>name</code> yok / yanlış yazılmış</b> ya da <b><code>method="post"</code> unutulmuş</b>.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 8 · IFormCollection ========== -->
+<section class="slide secA" id="s-formcol" data-title="IFormCollection ile ham okuma" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">A · Ham okuma</div>
+    <h2>Model binding'e hiç uğramadan okumak — <u>mümkün</u>, ama bedeli var</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div class="f fx" data-step="1">
+        <span class="dosya">IFormCollection ile</span>
+        <div class="kod sm" style="font-size:15px"><span class="y">[HttpPost]</span>
+<span class="s">public</span> IActionResult Ekle(IFormCollection form)
+{
+    <span class="s">var</span> baslik = form[<span class="y">"Baslik"</span>];
+    <span class="s">var</span> fiyat  = <span class="s">int</span>.Parse(form[<span class="y">"Fiyat"</span>]!);
+    <span class="c">// her alan için elle çevirme…</span>
+}</div>
+      </div>
+      <div class="col" style="gap:14px">
+        <table class="tbl f" data-step="2">
+          <thead><tr><th style="width:180px">Sorun</th><th>Neden</th></tr></thead>
+          <tbody>
+            <tr><td>Tip güvenliği yok</td><td>Her şey metin; her alanda elle <code>Parse</code></td></tr>
+            <tr><td>Yazım hatası sessiz</td><td><code>form["Balsik"]</code> boş döner, derleyici uyarmaz</td></tr>
+            <tr><td>Doğrulama yok</td><td><code>ModelState</code> dolmaz → <b>Hafta 6</b>'nın araçları çalışmaz</td></tr>
+            <tr><td>Okunmaz</td><td>10 alanlı formda 10 satır dönüştürme kodu</td></tr>
+          </tbody>
+        </table>
+        <div class="kutu ok f" data-step="3" style="font-size:19px"><b>Ne zaman meşru:</b> alan adları <b>çalışma zamanında</b> belli oluyorsa — örneğin kullanıcının kendi tanımladığı anket soruları. Onun dışında model binding kullanın.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 9 · MODEL BINDING NEDİR ========== -->
+<section class="slide secB" id="s-mb" data-title="Model Binding nedir" data-module="mb" data-steps="5">
+  <header class="s-head">
+    <div class="kicker">B · Model Binding</div>
+    <h2>Metin gelir, <u>nesne</u> çıkar — aradaki beş adım</h2>
+  </header>
+  <div class="s-body">
+    <svg class="mb-svg" viewBox="0 0 1440 400" width="1440" height="400"></svg>
+    <div class="f" data-step="5" style="margin-top:6px">
+      <div class="kutu ok" style="font-size:20px"><b>Bu yüzden form alanının <code>name</code>'i ile sınıfın özellik adı birebir aynı olmalıdır.</b> Eşleşme yoksa çatı değeri bulamaz, özellik varsayılan değerinde kalır — <b>ve hata vermez</b>.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 10 · 3B BAĞLAMA KAYNAKLARI ========== -->
+<section class="slide secB" id="s-kaynak" data-title="Bağlama kaynakları ve öncelik sırası" data-module="kaynak" data-steps="5">
+  <header class="s-head">
+    <div class="kicker">B · Öncelik sırası · <b>sınavda çıkıyor</b></div>
+    <h2>Aynı ad üç yerde varsa <u>hangisi</u> kazanır?</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:stretch">
+      <div style="position:relative">
+        <div class="kaynak-tuval" style="width:100%;height:470px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#f7f4ed,#ece7dd)"></div>
+        <div class="kaynak-yedek" style="display:none;position:absolute;inset:0;padding:18px">
+          <div class="kutu warn" style="font-size:17px;margin-bottom:12px">3B sahne açılamadı (WebGL ya da ağ). Sıra aşağıda:</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="card" style="padding:10px 14px;font-size:18px;border-left:5px solid var(--accent)"><b>1 · Form gövdesi</b></div>
+            <div class="card" style="padding:10px 14px;font-size:18px;border-left:5px solid var(--accent2)"><b>2 · Rota verisi</b></div>
+            <div class="card" style="padding:10px 14px;font-size:18px;border-left:5px solid var(--plum)"><b>3 · Sorgu dizesi</b></div>
+          </div>
+        </div>
+        <div class="hint" style="position:absolute;right:14px;bottom:10px;background:rgba(255,255,255,.85);border-radius:8px;padding:4px 10px">⟲ sürüklenebilir</div>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="card kaynak-panel" style="min-height:200px;padding:18px 22px"></div>
+        <table class="tbl" style="font-size:16px">
+          <thead><tr><th>Rota</th><th>Sorgu</th><th>Form</th><th>Kazanan</th></tr></thead>
+          <tbody>
+            <tr data-k="1"><td>ROTA</td><td>—</td><td>—</td><td><b>ROTA</b></td></tr>
+            <tr data-k="2"><td>ROTA</td><td>SORGU</td><td>—</td><td><b>ROTA</b></td></tr>
+            <tr data-k="3"><td>—</td><td>SORGU</td><td>—</td><td><b>SORGU</b></td></tr>
+            <tr data-k="4"><td>ROTA</td><td>SORGU</td><td>FORM</td><td><b>FORM</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 11 · BAĞLAMA TİPLERİ ========== -->
+<section class="slide secB" id="s-tipler" data-title="Basit, karmaşık ve koleksiyon bağlama" data-module="tipler">
+  <header class="s-head">
+    <div class="kicker">B · Bağlanan tipler</div>
+    <h2>Üç tip, üç adlandırma kuralı</h2>
+    <p class="sub">Solda form alanının <code>name</code>'i, sağda bağlandığı C# yapısı.</p>
+  </header>
+  <div class="s-body">
+    <div class="chips tipler-sec" style="margin-bottom:16px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div><span class="dosya">form (HTML)</span><div class="kod tipler-html" style="min-height:200px"></div></div>
+      <div class="col">
+        <div><span class="dosya">action / sınıf (C#)</span><div class="kod tipler-cs" style="min-height:120px"></div></div>
+        <div class="kutu tipler-not" style="font-size:18px;min-height:86px"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 12 · UYGULAMA B ========== -->
+<section class="slide secB" id="s-uygB" data-title="Uygulama B — kaynak sırası ve bağlama hatası" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama B · canlı kodlama</div>
+    <h2>Sırayı <u>ekranda</u> görmek — ve bağlanamayan değerin nereye gittiği</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="1">
+          <div class="pill gri" style="margin-bottom:6px">① <code>/Form/Kaynak/ROTA?deger=SORGU</code> (GET)</div>
+          <table class="tbl" style="font-size:16px">
+            <tbody>
+              <tr><td style="width:150px">Rota</td><td><code>ROTA</code></td></tr>
+              <tr><td>Sorgu</td><td><code>SORGU</code></td></tr>
+              <tr><td>Form</td><td><code>(yok)</code></td></tr>
+              <tr class="hot"><td><b>Kazanan</b></td><td><b>ROTA</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="f fx" data-step="2">
+          <div class="pill" style="margin-bottom:6px">② aynı adres, POST — gövdede <code>deger=FORM</code></div>
+          <table class="tbl" style="font-size:16px">
+            <tbody>
+              <tr><td style="width:150px">Rota</td><td><code>ROTA</code></td></tr>
+              <tr><td>Sorgu</td><td><code>SORGU</code></td></tr>
+              <tr><td>Form</td><td><code>FORM</code></td></tr>
+              <tr class="hot"><td><b>Kazanan</b></td><td><b style="color:var(--accent)">FORM</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kutu f" data-step="3" style="font-size:18px">③ <code>/Form/KaynakZorla/…</code> — tek fark parametrede <code>[FromQuery]</code>.
+          <div style="margin-top:6px">Kazanan: <b style="color:var(--plum)">SORGU</b>. Öznitelik yeni kaynak eklemiyor, <b>var olan sırayı devre dışı bırakıyor</b>.</div></div>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="4">
+          <div class="pill" style="margin-bottom:6px;background:var(--warn-s);color:var(--warn)">④ <code>/Form/Bagla?sayi=abc&amp;tarih=xyz</code></div>
+          <table class="tbl" style="font-size:16px">
+            <thead><tr><th style="width:200px">Parametre</th><th>Gelen</th></tr></thead>
+            <tbody>
+              <tr><td><code>int sayi</code></td><td><b>0</b></td></tr>
+              <tr><td><code>int? sayiNullable</code></td><td><b>null</b></td></tr>
+              <tr><td><code>DateTime tarih</code></td><td><b>0001-01-01</b></td></tr>
+              <tr class="hot"><td><code>ModelState.IsValid</code></td><td><b style="color:var(--warn)">False</b></td></tr>
+            </tbody>
+          </table>
+          <div class="kutu warn" style="margin-top:10px;font-size:19px"><b>Hata sayfası yok. İstisna yok. Sayfa açılıyor.</b>
+            <div style="margin-top:6px"><code>if (sayi == 0)</code> yazarsanız <i>"kullanıcı 0 girdi"</i> ile <i>"kullanıcı saçma girdi"</i> <b>ayırt edilemez</b>. Ayrımı yapan tek şey <code>ModelState</code>.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 13 · [From*] ÖZNİTELİKLERİ ========== -->
+<section class="slide secB" id="s-from" data-title="[From…] öznitelikleri" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">B · Kaynağı zorlamak</div>
+    <h2>Varsayılan sırayı devre dışı bırakmak</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <table class="tbl f" data-step="1">
+        <thead><tr><th style="width:190px">Öznitelik</th><th>Nereden okur</th></tr></thead>
+        <tbody>
+          <tr><td><code>[FromForm]</code></td><td>Yalnızca form gövdesinden</td></tr>
+          <tr><td><code>[FromRoute]</code></td><td>Yalnızca rota verisinden</td></tr>
+          <tr><td><code>[FromQuery]</code></td><td>Yalnızca sorgu dizesinden</td></tr>
+          <tr><td><code>[FromBody]</code></td><td>Gövdeden <b>JSON</b> olarak — <b>Hafta 12</b></td></tr>
+          <tr><td><code>[FromHeader]</code></td><td>İstek başlığından</td></tr>
+          <tr><td><code>[FromServices]</code></td><td>DI kabından (Hafta 2) — <b>istekten değil</b></td></tr>
+        </tbody>
+      </table>
+      <div class="col" style="gap:14px">
+        <div class="f fx" data-step="2">
+          <span class="dosya">aynı istek, iki action</span>
+          <div class="kod sm" style="font-size:15px"><span class="c">// POST /Form/Kaynak/ROTA?deger=SORGU   (gövde: deger=FORM)</span>
+
+<span class="s">public</span> IActionResult Kaynak(<span class="s">string</span>? deger)
+<span class="c">// → FORM   (varsayılan sıra)</span>
+
+<span class="s">public</span> IActionResult Kaynak(<span class="y">[FromQuery]</span> <span class="s">string</span>? deger)
+<span class="c">// → SORGU  (sıra devre dışı)</span></div>
+        </div>
+        <div class="kutu f" data-step="3" style="font-size:19px"><b><code>[FromBody]</code> bir action'da yalnızca <u>bir kez</u> kullanılabilir.</b>
+          <div class="muted" style="margin-top:6px;font-size:17px">Sebebi teknik: gövde ileriye doğru okunan bir <b>akıştır</b>; ikinci parametre için baştan okunamaz.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 14 · BAĞLAMA BAŞARISIZ OLURSA ========== -->
+<section class="slide secB" id="s-basarisiz" data-title="Bağlama başarısız olduğunda" data-module="basarisiz">
+  <header class="s-head">
+    <div class="kicker">B · 🐛 Hafta 6'nın zemini</div>
+    <h2>Değer çevrilemezse ne olur? <u>Hiçbir şey patlamaz.</u></h2>
+  </header>
+  <div class="s-body">
+    <div class="seg bas-seg" style="margin-bottom:16px"><button data-m="0" class="on">geçerli değerler</button><button data-m="1">geçersiz değerler</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 380px;gap:22px;align-items:start">
+      <div><span class="dosya">istek</span><div class="kod sm bas-istek" style="font-size:15px;min-height:96px"></div></div>
+      <div><span class="dosya">parametrelere gelen</span><div class="kod sm bas-sonuc" style="font-size:15px;min-height:96px"></div></div>
+      <div class="tarayici"><div class="ub"><i></i><i></i><i></i> <span>ekran</span></div><div class="ic bas-ekran" style="min-height:96px;font-size:16px"></div></div>
+    </div>
+    <div class="bas-not kutu" style="margin-top:20px;font-size:20px;min-height:96px"></div>
+  </div>
+
+</section>
+
+<!-- ========== 15 · PRG PROBLEMİ ========== -->
+<section class="slide secC" id="s-prg" data-title="PRG problemi — F5 kaydı tekrar ekliyor" data-module="prg" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">C · Post-Redirect-Get</div>
+    <h2>Formu gönderdikten sonra <u>F5</u>'e basınca ne olur?</h2>
+  </header>
+  <div class="s-body">
+    <svg class="prg-svg" viewBox="0 0 1440 360" width="1440" height="360"></svg>
+    <div class="f" data-step="4" style="margin-top:4px">
+      <div class="kutu warn" style="font-size:20px"><b>Kullanıcı hata yapmadı.</b> Biz adres çubuğunda bir <b>POST</b> bıraktık; F5 son isteği tekrarlıyor ve o istek bir POST. Geri/ileri tuşları da aynı sonucu verir.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 16 · PRG ÇÖZÜMÜ ========== -->
+<section class="slide secC" id="s-prgcoz" data-title="PRG çözümü" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">C · Çözüm</div>
+    <h2>Üç harf, tek satır: <u>Post → Redirect → Get</u></h2>
+  </header>
+  <div class="s-body">
+    <svg viewBox="0 0 1440 230" width="1440" height="230">
+      <g class="f fs" data-step="1">
+        <rect x="30" y="40" width="300" height="96" rx="12" fill="#fbeadf" stroke="#8a3d0f" stroke-width="2.5"/>
+        <text x="180" y="72" text-anchor="middle" font-size="26" font-weight="800" fill="#8a3d0f">P</text>
+        <text x="180" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#1c1a17">Post</text>
+        <text x="180" y="124" text-anchor="middle" font-size="15" fill="#5d574e">form gönderilir, iş yapılır</text>
+      </g>
+      <path class="f fo" data-step="2" d="M336 88H414" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <g class="f fs" data-step="2">
+        <rect x="420" y="40" width="300" height="96" rx="12" fill="#e0eff4" stroke="#14607a" stroke-width="2.5"/>
+        <text x="570" y="72" text-anchor="middle" font-size="26" font-weight="800" fill="#14607a">R</text>
+        <text x="570" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#1c1a17">Redirect — 302</text>
+        <text x="570" y="124" text-anchor="middle" font-size="15" fill="#5d574e">"şu adrese git"</text>
+      </g>
+      <path class="f fo" data-step="3" d="M726 88H804" stroke="#8a8377" stroke-width="3" fill="none" marker-end="url(#ok)"/>
+      <g class="f fs" data-step="3">
+        <rect x="810" y="40" width="300" height="96" rx="12" fill="#e6f1e4" stroke="#2f6b2a" stroke-width="2.5"/>
+        <text x="960" y="72" text-anchor="middle" font-size="26" font-weight="800" fill="#2f6b2a">G</text>
+        <text x="960" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#1c1a17">Get</text>
+        <text x="960" y="124" text-anchor="middle" font-size="15" fill="#5d574e">adres çubuğunda artık GET var</text>
+      </g>
+      <g class="f fs" data-step="3">
+        <rect x="1146" y="40" width="264" height="96" rx="12" fill="#fff" stroke="#2f6b2a" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <text x="1278" y="80" text-anchor="middle" font-size="19" font-weight="800" fill="#2f6b2a">F5 → zararsız</text>
+        <text x="1278" y="110" text-anchor="middle" font-size="15" fill="#3a352e">yalnızca liste yeniden okunur</text>
+      </g>
+      <text class="f fo" data-step="3" x="720" y="190" text-anchor="middle" font-size="19" font-weight="700" fill="#3a352e">Tarayıcının son isteği artık bir GET — tekrarlanması zararsız.</text>
+    </svg>
+    <div class="f" data-step="2" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:2px">
+      <div><span class="dosya">POST action'ının sonu</span>
+        <div class="kod sm" style="font-size:15px"><span class="sil">return View("Tamam");</span>
+<span class="ekle">return RedirectToAction(nameof(Index));</span></div></div>
+      <div class="kutu ok f" data-step="3" style="font-size:19px"><b>Kural:</b> Veri <b>değiştiren</b> bir POST action'ı, <b>başarı</b> durumunda <code>View()</code> değil <b><code>RedirectToAction()</code></b> döndürür.
+        <div class="muted" style="margin-top:8px;font-size:17px">Başarısızlıkta (<code>ModelState</code> geçersiz) <code>View(girdi)</code> döner — kullanıcının düzeltmesi gereken form oradadır.</div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 17 · UYGULAMA C ========== -->
+<section class="slide secC" id="s-uygC" data-title="Uygulama C — PRG ve over-posting" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">🔧 Uygulama C · canlı kodlama</div>
+    <h2>Aynı form, iki düğme — ve tek satırlık fark</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="1">
+          <div class="pill" style="margin-bottom:6px;background:var(--warn-s);color:var(--warn)">① PRG'siz → F5</div>
+          <div class="kod sm" style="font-size:15px"><span class="s">return</span> View(<span class="y">"EkleYanlis"</span>);  <span class="c">// 200, adres çubuğunda POST</span></div>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <div class="card" style="flex:1;text-align:center;padding:10px"><div class="muted" style="font-size:14px">F5 öncesi</div><div class="big" style="font-size:40px;color:var(--ink2)">6</div></div>
+            <div class="card" style="flex:1;text-align:center;padding:10px;background:var(--warn-s);border-color:var(--warn)"><div style="font-size:14px;color:var(--warn)">1. F5</div><div class="big" style="font-size:40px;color:var(--warn)">7</div></div>
+            <div class="card" style="flex:1;text-align:center;padding:10px;background:var(--warn-s);border-color:var(--warn)"><div style="font-size:14px;color:var(--warn)">2. F5</div><div class="big" style="font-size:40px;color:var(--warn)">8</div></div>
+          </div>
+          <div class="muted" style="font-size:17px;margin-top:8px">Depodaki kayıt sayısı her yenilemede artıyor.</div>
+        </div>
+        <div class="f fx" data-step="2">
+          <div class="pill" style="margin-bottom:6px;background:var(--ok-s);color:var(--ok)">② PRG ile → F5</div>
+          <div class="kod sm" style="font-size:15px"><span class="s">return</span> RedirectToAction(nameof(Index));  <span class="c">// 302</span></div>
+          <div class="tarayici" style="margin-top:10px"><div class="ub"><i></i><i></i><i></i> <span>/Kitap</span></div>
+            <div class="ic" style="padding:10px 14px;font-size:16px"><span style="background:var(--ok-s);padding:2px 8px;border-radius:5px">✓ "Deneme" eklendi.</span>
+              <div class="muted" style="font-size:15px;margin-top:6px">F5 → hiçbir şey eklenmiyor</div></div></div>
+        </div>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="3">
+          <div class="pill" style="margin-bottom:6px;background:var(--plum-s);color:var(--plum)">③ iki form, tek satır fark</div>
+          <div class="kod sm" style="font-size:14px"><span class="c">// 1 · normal</span>
+<span class="h">&lt;input type="hidden" name="Baslik" value="Suç ve Ceza"&gt;</span>
+<span class="h">&lt;input type="hidden" name="Fiyat"  value="120"&gt;</span>
+
+<span class="c">// 2 · saldırganın formu — tek fark son satır</span>
+<span class="h">&lt;input type="hidden" name="Baslik" value="Suç ve Ceza"&gt;</span>
+<span class="h">&lt;input type="hidden" name="Fiyat"  value="120"&gt;</span>
+<span class="ekle">&lt;input type="hidden" name="Onayli" value="true"&gt;</span></div>
+        </div>
+        <div class="f fs" data-step="4" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card" style="text-align:center;padding:14px;background:var(--ok-s);border-color:var(--ok)">
+            <div style="font-size:15px;font-weight:700;color:var(--ok)">normal form</div>
+            <div class="mono" style="font-size:26px;font-weight:800;color:var(--ok);margin-top:6px">Onayli = False</div></div>
+          <div class="card" style="text-align:center;padding:14px;background:var(--warn-s);border-color:var(--warn)">
+            <div style="font-size:15px;font-weight:700;color:var(--warn)">fazladan alanla</div>
+            <div class="mono" style="font-size:26px;font-weight:800;color:var(--warn);margin-top:6px">Onayli = True</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 18 · OVER-POSTING ========== -->
+<section class="slide secC" id="s-over" data-title="Over-posting (kütle atama)" data-module="over">
+  <header class="s-head">
+    <div class="kicker">C · 🕳️ Bu haftanın tuzağı</div>
+    <h2>Model binding <u>adı uyan her alanı</u> doldurur — formda olmasa bile</h2>
+  </header>
+  <div class="s-body">
+    <div class="seg over-seg" style="margin-bottom:16px"><button data-m="0" class="on">formun gönderdiği</button><button data-m="1">saldırganın gönderdiği</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 380px;gap:22px;align-items:start">
+      <div><span class="dosya">istek gövdesi</span><div class="kod sm over-govde" style="font-size:15px;min-height:110px"></div></div>
+      <div><span class="dosya">bağlanan nesne</span><div class="kod sm over-nesne" style="font-size:15px;min-height:110px"></div></div>
+      <div class="col">
+        <div><span class="dosya">entity</span>
+          <div class="kod sm" style="font-size:14px"><span class="s">public class</span> Kitap
+{
+    <span class="s">public string</span> Baslik { … }
+    <span class="s">public decimal</span> Fiyat { … }
+    <span class="y">public bool Onayli { … }</span>  <span class="c">// ⚠️</span>
+}</div></div>
+        <div class="kod sm" style="font-size:14px"><span class="y">[HttpPost]</span>
+<span class="s">public</span> IActionResult Ekle(<span class="y">Kitap kitap</span>)
+<span class="c">// 🕳️ entity doğrudan parametre</span></div>
+      </div>
+    </div>
+    <div class="over-not kutu" style="margin-top:18px;font-size:20px;min-height:92px"></div>
+  </div>
+
+</section>
+
+<!-- ========== 19 · VIEWMODEL ========== -->
+<section class="slide secC" id="s-vm" data-title="ViewModel çözümü" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">C · Çözüm</div>
+    <h2>Formun alabileceği alanları <u>açıkça</u> yazmak</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div class="col" style="gap:12px">
+        <div class="f fx" data-step="1">
+          <span class="dosya">ViewModels/KitapEkleVM.cs</span>
+          <div class="kod sm" style="font-size:15px"><span class="s">public class</span> KitapEkleVM
+{
+    <span class="s">public string</span> Baslik { get; set; } = <span class="y">""</span>;
+    <span class="s">public string</span> Yazar  { get; set; } = <span class="y">""</span>;
+    <span class="s">public decimal</span> Fiyat { get; set; }
+    <span class="s">public int</span> KategoriId { get; set; }
+
+    <span class="c">// Onayli YOK — bağlanacak özellik olmadığı için</span>
+    <span class="c">// gönderilse bile DÜŞER</span>
+}</div>
+        </div>
+        <div class="f fx" data-step="2">
+          <div class="kod sm" style="font-size:15px"><span class="y">[HttpPost]</span>
+<span class="s">public</span> IActionResult Ekle(<span class="ekle">KitapEkleVM girdi</span>)
+{
+    <span class="s">if</span> (!ModelState.IsValid) <span class="s">return</span> View(girdi);
+
+    <span class="s">var</span> kitap = <span class="s">new</span> Kitap
+    {
+        Baslik = girdi.Baslik, Yazar = girdi.Yazar,
+        Fiyat = girdi.Fiyat,
+        <span class="ekle">Onayli = false</span>   <span class="c">// ← kararı SİZ veriyorsunuz</span>
+    };
+    …
+}</div>
+        </div>
+      </div>
+      <div class="col" style="gap:14px">
+        <div class="card f" data-step="2" style="border-left:5px solid var(--ok)">
+          <h3 style="color:var(--ok)">İki faydası</h3>
+          <table class="tbl" style="font-size:17px;box-shadow:none">
+            <tr><td style="width:40px">①</td><td>Bağlanabilecek alanlar listesi <b>sonludur ve görünürdür</b></td></tr>
+            <tr><td>②</td><td>Entity'ye yeni bir hassas alan eklendiğinde form onu <b>otomatik olarak kabul etmez</b></td></tr>
+          </table>
+        </div>
+        <div class="kutu warn f" data-step="3" style="font-size:18px"><b><code>[Bind("Baslik,Yazar,Fiyat")]</code> de aynı işi yapar — ama kırılgandır.</b>
+          <div style="margin-top:8px">Alan adını değiştirdiğinizde bu <b>metin listesi</b> sessizce eskir; o alan artık bağlanmaz ve <b>derleyici uyarmaz</b>.</div>
+          <div class="muted" style="margin-top:8px;font-size:17px">Güncelleme senaryolarında <code>TryUpdateModelAsync</code> + lambda daha sağlam — ayrıntı <code>H04-detay.md</code> bölüm 3.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 20 · GİZLİ ALAN VE İLKE ========== -->
+<section class="slide secC" id="s-gizli" data-title="Gizli alanlara güvenmemek" data-steps="3">
+  <header class="s-head">
+    <div class="kicker">C · 🧩 Haftanın ilkesi</div>
+    <h2>"Gizli" alan <u>gizlenmiştir</u> — korunmamıştır</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start">
+      <div class="col" style="gap:14px">
+        <div class="f fx" data-step="1">
+          <span class="dosya">sizin yazdığınız</span>
+          <div class="kod sm" style="font-size:15px"><span class="h">&lt;input type="hidden" name="Fiyat" value="120"&gt;</span></div>
+        </div>
+        <div class="f fx" data-step="2">
+          <span class="dosya">kullanıcının gönderdiği</span>
+          <div class="kod sm" style="font-size:15px;background:var(--warn-s);border-color:#e7b5b0"><span class="h">&lt;input type="hidden" name="Fiyat" value="</span><span class="ekle">1</span><span class="h">"&gt;</span></div>
+          <div class="muted" style="font-size:17px;margin-top:8px">Sayfanın kaynağını görmek, değeri değiştirmek ve göndermek: üç tıklama.</div>
+        </div>
+        <div class="kutu ok f" data-step="3" style="font-size:19px"><b>Doğrusu:</b> fiyat, indirim, kullanıcı kimliği gibi değerler <b>sunucuda</b> belirlenir — istemciden gelen değere değil, <b>kendi kayıtlarınıza</b> bakarak.</div>
+      </div>
+      <div class="f fs" data-step="3">
+        <div class="card" style="border-left:6px solid var(--accent);padding:24px 28px">
+          <div class="big" style="color:var(--accent);font-size:44px">🧩</div>
+          <h3 style="font-size:26px;margin:10px 0 12px">İstemciden gelen hiçbir veri güvenilir değildir</h3>
+          <p class="lead" style="font-size:21px;margin:0">Formun HTML'ini siz yazarsınız; ama o HTML <b>kullanıcının makinesinde</b> çalışır ve kullanıcı onu değiştirebilir. Sunucuya ulaşan şey sizin formunuz değil, <b>kullanıcının göndermeyi seçtiği veridir.</b></p>
+          <div class="kutu" style="margin-top:16px;font-size:18px">Bu haftanın bütün araçları — ViewModel, <code>ModelState</code>, PRG — aradaki bu boşluğu kapatmak için var.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 21 · HATA KÖŞESİ VE KLASİK TUZAK ========== -->
+<section class="slide secC" id="s-hata" data-title="Hata Köşesi ve Klasik Tuzak" data-steps="2">
+  <header class="s-head">
+    <div class="kicker">C · 🐛 Hata Köşesi · 🕳️ Klasik Tuzak</div>
+    <h2>Bu haftanın hataları — ve üçüncü kez aynı kalıp</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:24px;align-items:start">
+      <table class="tbl f" data-step="1" style="font-size:16px">
+        <thead><tr><th style="width:290px">Belirti</th><th>Gerçek sebep</th></tr></thead>
+        <tbody>
+          <tr><td>Form gönderildi, model <b>boş</b></td><td><code>name</code> yok ya da özellik adıyla uyuşmuyor</td></tr>
+          <tr><td>Form <b>GET</b>'e düşüyor</td><td><code>method="post"</code> unutulmuş</td></tr>
+          <tr><td><code>AmbiguousMatchException</code></td><td>Aynı adda iki action, <code>[HttpGet]</code>/<code>[HttpPost]</code> yok</td></tr>
+          <tr><td>Sayısal alan hep <b>0</b></td><td>Değer çevrilemiyor → <code>ModelState</code>'e bakın</td></tr>
+          <tr><td>Onay kutusu hep <b>false</b></td><td>İşaretsiz kutu gövdede <b>hiç gelmez</b> (Hafta 5)</td></tr>
+          <tr><td>Sorgudaki değer <b>göz ardı</b></td><td>Aynı ad formda da var; <b>form öncelikli</b></td></tr>
+          <tr><td>F5'te kayıt <b>ikinci kez</b></td><td>POST sonrası <code>View()</code> → PRG yok</td></tr>
+          <tr><td>Dosya yüklenmiyor, <b>adı</b> geliyor</td><td><code>enctype="multipart/form-data"</code> yok</td></tr>
+          <tr><td>Liste yalnızca <b>ilk</b> elemanı alıyor</td><td>İndisler atlamalı: <code>[0]</code>, <code>[2]</code></td></tr>
+        </tbody>
+      </table>
+      <div class="col" style="gap:14px">
+        <div class="card f fx" data-step="1" style="border-left:5px solid var(--warn)">
+          <h3>🕳️ Klasik Tuzak — entity'yi doğrudan parametre yapmak</h3>
+          <div class="kod sm" style="font-size:14px"><span class="y">[HttpPost]</span>
+<span class="s">public</span> IActionResult Ekle(<span class="y">Kitap kitap</span>)</div>
+          <p style="font-size:18px;line-height:1.45;margin:10px 0 0">Kod çalışır, testler geçer, form doğru görünür. Açık yalnızca <b>birisi aramaya başladığında</b> ortaya çıkar.</p>
+          <p style="font-size:18px;line-height:1.45;margin:8px 0 0">Üstelik kusur <b>büyüyerek</b> gelir: entity'ye bugün eklediğiniz zararsız bir alan, yarın formun kabul ettiği bir alana dönüşür — ve bunu <b>size kimse haber vermez</b>.</p>
+        </div>
+        <div class="kutu warn f" data-step="2" style="font-size:19px"><b>Üçüncü kez aynı kalıp:</b>
+          <div style="margin-top:8px;line-height:1.5">Hafta 2 — middleware sırası · Hafta 3 — görünüm içinde sorgu · Hafta 4 — bağlanamayan parametre ve over-posting.
+            <br><b>Üçü de hata vermiyor.</b> Bu dersin en pahalı hataları, çalışan koddan çıkıyor.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== 22 · ÖZET VE KAPANIŞ ========== -->
+<section class="slide dark sec0" id="s-ozet" data-title="Özet, ev görevi ve haftaya" data-steps="4">
+  <header class="s-head">
+    <div class="kicker">Hafta 4 · Kapanış</div>
+    <h2 style="color:#fff">Tek sayfada Hafta 4</h2>
+  </header>
+  <div class="s-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+      <div class="f fx" data-step="1" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 20px">
+        <div style="font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#e8a05c;margin-bottom:10px">A · Form</div>
+        <ul style="margin:0;padding-left:20px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88)">
+          <li>Gövde: <code>ad=değer&amp;…</code> · <code>x-www-form-urlencoded</code></li>
+          <li>Gönderilen ad <b><code>name</code></b> — <code>id</code> değil</li>
+          <li><code>name</code>'i olmayan alan <b>hiç gitmez</b></li>
+          <li>Okuma GET · <b>değiştirme POST</b></li>
+          <li>GET/POST <b>çifti</b>, aynı ad</li>
+        </ul>
+      </div>
+      <div class="f fx" data-step="2" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 20px">
+        <div style="font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6cc6e0;margin-bottom:10px">B · Model Binding</div>
+        <ul style="margin:0;padding-left:20px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88)">
+          <li>Sıra: <b>Form → Rota → Sorgu</b></li>
+          <li><code>[From…]</code> sırayı <b>devre dışı bırakır</b></li>
+          <li>Ad eşleşmesi: <code>name</code> = özellik adı</li>
+          <li>Bağlanamazsa <b>0 / null</b>, hata <b>yok</b></li>
+          <li>Ayrımı yapan: <b><code>ModelState</code></b></li>
+        </ul>
+      </div>
+      <div class="f fx" data-step="3" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 20px">
+        <div style="font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#b89ad6;margin-bottom:10px">C · PRG ve güven</div>
+        <ul style="margin:0;padding-left:20px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88)">
+          <li>POST sonrası <b><code>RedirectToAction</code></b></li>
+          <li>Hata durumunda <code>View(girdi)</code></li>
+          <li>🕳️ Entity'yi parametre yapmak → <b>over-posting</b></li>
+          <li>Çözüm: <b>ViewModel</b></li>
+          <li>Gizli alan <b>korunmuş değil</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f" data-step="4" style="margin-top:24px;display:grid;grid-template-columns:1.3fr 1fr;gap:22px">
+      <div style="background:#fff;color:var(--fg);border-radius:14px;padding:18px 22px">
+        <h3 style="color:var(--accent);font-size:22px;margin-bottom:8px">🏠 Ev görevi</h3>
+        <div style="font-size:18px;line-height:1.55">
+          ① Kayıt formunu <b>elle</b> kurun (Tag Helper yok) &nbsp;·&nbsp;
+          ② GET/POST çifti + <code>[HttpGet]</code>/<code>[HttpPost]</code> &nbsp;·&nbsp;
+          ③ <b>F12 → Network → Payload</b> ekran görüntüsü &nbsp;·&nbsp;
+          ④ Bir <code>name</code>'i bilerek yanlış yazıp sonucu gösterin &nbsp;·&nbsp;
+          ⑤ Sayısal alana harf yazıp <code>ModelState.IsValid</code>'i ekrana basın &nbsp;·&nbsp;
+          ⑥ <b>PRG</b> öncesi/sonrası F5 karşılaştırması &nbsp;·&nbsp;
+          ⑦ <b>ViewModel</b> yazın; ona koymadığınız alanı el ile gönderip bağlanmadığını gösterin
+          <div style="margin-top:10px;font-size:17px;color:var(--muted)"><b>Teslim:</b> proje + ekran görüntüleri + <b>elle yazdığınız formun ürettiği HTML</b> (Hafta 5'te karşılaştıracağız) + <i>"4. maddede neden hata almadınız?"</i> sorusuna iki cümle.</div>
+        </div>
+      </div>
+      <div style="background:rgba(232,160,92,.14);border:1px solid rgba(232,160,92,.4);border-radius:14px;padding:18px 22px">
+        <h3 style="color:#e8a05c;font-size:22px;margin-bottom:8px">🔜 Hafta 5 — Tag Helper'lar</h3>
+        <p style="font-size:19px;line-height:1.5;margin:0;color:rgba(255,255,255,.9)">Bu hafta <code>name</code> eşleşmesinden <b>biz</b> sorumluyduk ve yazım hatası yaptığımızda <b>kimse uyarmadı</b>. Haftaya bu işi çatıya devrediyoruz.</p>
+        <p style="font-size:18px;line-height:1.5;margin:10px 0 0;color:#e8a05c"><b>Düşünerek gelin:</b> <code>name="Baslik"</code> yazmak yerine çatıya <i>"bu alan modelin Baslik özelliği için"</i> diyebilseydik ne kazanırdık? Yazım hatası <b>ne zaman</b> yakalanırdı?</p>
+      </div>
+    </div>
+  </div>
+  <div class="src" style="color:rgba(255,255,255,.45)">Kaynaklar ve her iddianın dayanağı: <b>H04-Ders-Notu.pdf · 📑 Kaynakça</b> · learn.microsoft.com/aspnet/core — <b>?view=aspnetcore-10.0</b></div>
+
+</section>
+
+<div id="bar"><span class="sn"></span><span class="ctr"></span></div>
+<div id="nokta"></div>
+<div id="ilerleme"></div>
+<div id="gez">
+  <button data-g="geri" title="Önceki (←)">‹</button>
+  <button data-g="ileri" title="Sonraki (→)">›</button>
+
+  <button data-g="kus" title="Tüm slaytlar (O)">▦</button>
+</div>
+
+</div><!-- /stage -->
+
+<div id="kus"><h3>Tüm slaytlar — tıklayın · Esc kapatır</h3><div class="g"></div></div>
+<div id="yardim"><div class="b"><h3>Klavye kısayolları</h3><table>
+<tr><td><kbd>→</kbd> <kbd>Boşluk</kbd></td><td>sonraki adım / slayt</td></tr>
+<tr><td><kbd>←</kbd></td><td>önceki adım / slayt</td></tr>
+<tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>ilk / son slayt</td></tr>
+<tr><td>sayı + <kbd>Enter</kbd></td><td>o slayda atla</td></tr>
+
+<tr><td><kbd>O</kbd></td><td>tüm slaytlar</td></tr>
+<tr><td><kbd>F</kbd></td><td>tam ekran</td></tr>
+<tr><td><kbd>B</kbd> veya <kbd>.</kbd></td><td>ekranı karart</td></tr>
+<tr><td><kbd>R</kbd></td><td>bu slayttaki etkileşimi sıfırla</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>açık katmanı kapat</td></tr>
+</table></div></div>
+<div id="kara"></div>
+<div id="atla"></div>
+
+<style>
+/* ---- slayt içi küçük bileşenler ---- */
+.uyg-ad{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 15px;box-shadow:var(--shadow)}
+.uyg-ad b{display:block;font-size:19px;line-height:1.3}
+.uyg-ad > div > span{font-size:16px;color:var(--muted);line-height:1.4;display:block;margin-top:2px}
+.arama-yol{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--card);
+  border:2px solid var(--line);border-radius:11px;padding:13px 16px;transition:.35s;opacity:.4}
+.arama-yol.gor{opacity:1}
+.arama-yol.ara{border-color:var(--gold);background:var(--gold-s)}
+.arama-yol.yok{border-color:var(--warn);background:var(--warn-s)}
+.arama-yol.var{border-color:var(--ok);background:var(--ok-s)}
+.arama-yol .mono{font-family:var(--mono);font-size:19px;font-weight:700}
+.arama-yol .dr{font-size:16px;font-weight:800;white-space:nowrap}
+.arama-yol.ara .dr{color:var(--gold)} .arama-yol.yok .dr{color:var(--warn)} .arama-yol.var .dr{color:var(--ok)}
+.arama-sonuc{min-height:150px}
+.ksen{background:var(--card);border:2px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;
+  font-size:17px;line-height:1.38;transition:.25s;box-shadow:var(--shadow);text-align:left;color:var(--fg);font-family:inherit}
+.ksen:hover{border-color:var(--plum)}
+.ksen.cur{border-color:var(--plum);background:var(--plum-s)}
+.ksen b{display:block;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.karar-cevap .et{font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--plum)}
+.karar-cevap h3{font-size:30px;margin:6px 0 10px}
+.karar-cevap p{font-size:20px;line-height:1.5;margin:0;color:var(--ink2)}
+.syntax-sec .chip{cursor:pointer;background:var(--card2);color:var(--ink2);border:2px solid transparent;transition:.2s}
+.syntax-sec .chip.cur{background:var(--accent-s);color:var(--accent);border-color:var(--accent)}
+.kanit-kutu .fark{background:var(--ok-s);border-radius:3px}
+</style>
+<!-- three.js — slayt 10’daki 3B sahne için.
+     Yüklenemezse sahne kendini kapatır ve yerine 2B şema gösterilir. -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+const NS='http://www.w3.org/2000/svg';
+const DURGUN=/[?&]durgun/.test(location.search);
+if(DURGUN)document.documentElement.classList.add('durgun');
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+function S(tag,attrs,parent){const e=document.createElementNS(NS,tag);
+  if(attrs)for(const k in attrs){if(k==='text')e.textContent=attrs[k];else e.setAttribute(k,attrs[k]);}
+  if(parent)parent.appendChild(e);return e;}
+function tazele(el){el.style.animation='none';void el.offsetWidth;el.style.animation='';}
+/* SVG metin yardımcıları: <text> otomatik satır kırmaz, elle sararız. */
+function sar(t,max){const w=String(t).split(' '),L=[];let c='';
+  for(const x of w){if((c+' '+x).trim().length>max&&c){L.push(c);c=x;}else c=(c+' '+x).trim();}
+  if(c)L.push(c);return L;}
+function stext(ebeveyn,x,cy,metin,max,fs,lh,attrs){
+  const satir=Array.isArray(metin)?metin:sar(metin,max);
+  const t=S('text',Object.assign({x:x,'font-size':fs,'text-anchor':'middle'},attrs||{}),ebeveyn);
+  const y0=cy-(satir.length-1)*lh/2+fs*0.36;
+  satir.forEach((l,i)=>S('tspan',{x:x,y:(y0+i*lh).toFixed(1),text:l},t));
+  return t;}
+
+/* ===================== MOTOR ===================== */
+const stage=$('#stage');
+const slaytlar=$$('.slide',stage);
+const BOLUM={sec0:'Web Programlama · Hafta 4',secA:'A · Form temelleri',
+  secB:'B · Model Binding',secC:'C · PRG ve form güvenliği'};
+const M={};
+const HOOK=[];                 /* slayt/adım değişince çağrılan işlevler */
+const KAPAT=[];                /* Esc ile kapatılacak ek katmanlar */
+let i=0,adim=0,acildi=false;
+
+function bolumOf(s){for(const c of s.classList)if(BOLUM[c])return c;return'sec0';}
+function enBuyuk(s){if(s._mx==null){let m=+(s.dataset.steps||0);
+  $$('[data-step]',s).forEach(e=>{m=Math.max(m,+e.dataset.step);});s._mx=m;}return s._mx;}
+function uygula(s,k){
+  $$('[data-step]',s).forEach(e=>e.classList.toggle('on',+e.dataset.step<=k));
+  const m=M[s.dataset.module];if(m&&m.step)m.step(s,k);}
+function git(j,k,zorla){
+  j=Math.max(0,Math.min(slaytlar.length-1,j));
+  const onceki=slaytlar[i],s=slaytlar[j],degisti=zorla||j!==i;
+  if(degisti&&acildi&&onceki!==s){const pm=M[onceki.dataset.module];if(pm&&pm.leave)pm.leave(onceki);}
+  slaytlar.forEach((x,n)=>{x.classList.toggle('active',n===j);x.classList.toggle('past',n<j);});
+  i=j;adim=Math.max(0,Math.min(enBuyuk(s),k||0));
+  if(degisti){const m=M[s.dataset.module];if(m&&m.enter)m.enter(s);}
+  uygula(s,adim);cizim();}
+function ileri(){const s=slaytlar[i];
+  if(adim<enBuyuk(s)){adim++;uygula(s,adim);cizim();}else if(i<slaytlar.length-1)git(i+1,0);}
+function geri(){const s=slaytlar[i];
+  if(adim>0){adim--;uygula(s,adim);cizim();}else if(i>0)git(i-1,enBuyuk(slaytlar[i-1]));}
+function sifirla(){const s=slaytlar[i],m=M[s.dataset.module];
+  if(m&&m.reset)m.reset(s);if(m&&m.enter)m.enter(s);adim=0;uygula(s,0);cizim();}
+function cizim(){
+  const s=slaytlar[i];
+  stage.classList.toggle('dk',s.classList.contains('dark'));
+  stage.style.setProperty('--sec',getComputedStyle(s).getPropertyValue('--sec').trim()||'#8a3d0f');
+  $('#bar .sn').textContent=BOLUM[bolumOf(s)];
+  $('#bar .ctr').innerHTML='<b>'+(i+1)+'</b> / '+slaytlar.length;
+  $('#ilerleme').style.width=((i+1)/slaytlar.length*100)+'%';
+  const n=enBuyuk(s);let h='';for(let j=0;j<n;j++)h+='<i class="'+(j<adim?'on':'')+'"></i>';
+  $('#nokta').innerHTML=n>0?h:'';
+  try{history.replaceState(null,'','#'+(i+1)+(adim?'.'+adim:''));}catch(e){}
+  $$('#kus .k').forEach((c,j)=>c.classList.toggle('cur',j===i));
+  HOOK.forEach(f=>{try{f(s,i,adim,n);}catch(e){}});}
+function olcekle(){const sc=Math.min(window.innerWidth/1600,window.innerHeight/900);
+  stage.style.transform='translate(-50%,-50%) scale('+sc+')';}
+window.addEventListener('resize',olcekle);
+
+/* --- katmanlar --- */
+function kusBak(zorla){const o=$('#kus');
+  o.classList.toggle('open',zorla!=null?zorla:!o.classList.contains('open'));}
+function tamEkran(){if(!document.fullscreenElement)
+  document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen&&document.exitFullscreen();}
+(function kusKur(){const g=$('#kus .g');
+  slaytlar.forEach((s,j)=>{const c=document.createElement('div');c.className='k';
+    c.innerHTML='<b>'+(j+1)+' · '+BOLUM[bolumOf(s)].split(' · ')[0]+'</b><span>'+(s.dataset.title||'')+'</span>';
+    c.addEventListener('click',()=>{kusBak(false);git(j,0);});g.appendChild(c);});})();
+
+/* --- klavye --- */
+let tampon='',zaman=null;
+function tus(e){
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const t=e.target,tag=(t&&t.tagName)||'';
+  const yon=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','PageUp','PageDown',' ','Home','End'];
+  if((tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')&&yon.includes(e.key))return;
+  if(tag==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){tampon+=k;const a=$('#atla');a.textContent='→ '+tampon;a.style.display='block';
+    clearTimeout(zaman);zaman=setTimeout(()=>{tampon='';a.style.display='none';},1700);return;}
+  if(k==='Enter'&&tampon){const n=parseInt(tampon,10);tampon='';$('#atla').style.display='none';
+    if(n>=1&&n<=slaytlar.length)git(n-1,0);e.preventDefault();return;}
+  switch(k){
+    case'ArrowRight':case'ArrowDown':case'PageDown':case' ':ileri();e.preventDefault();break;
+    case'ArrowLeft':case'ArrowUp':case'PageUp':geri();e.preventDefault();break;
+    case'Home':git(0,0);e.preventDefault();break;
+    case'End':git(slaytlar.length-1,0);e.preventDefault();break;
+    case'o':case'O':kusBak();break;
+    case'f':case'F':tamEkran();break;
+    case'b':case'B':case'.':$('#kara').classList.toggle('open');break;
+    case'r':case'R':sifirla();break;
+    case'?':case'h':case'H':$('#yardim').classList.toggle('open');break;
+    case'Escape':['#kus','#yardim','#kara'].forEach(x=>$(x).classList.remove('open'));
+      KAPAT.forEach(f=>{try{f();}catch(e){}});break;
+  }}
+document.addEventListener('keydown',tus);
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(b)setTimeout(()=>b.blur(),0);
+  const g=e.target.closest('[data-goto]');
+  if(g&&stage.contains(g)){const j=slaytlar.findIndex(x=>x.id===g.dataset.goto);if(j>=0)git(j,0);}
+  const n=e.target.closest('[data-g]');
+  if(n){const f={geri:geri,ileri:ileri,kus:()=>kusBak()}[n.dataset.g];
+    if(f)f();}   /* data-g="not" düğmesi anlatım bloğunda kendi dinleyicisini kurar */
+  if(e.target.closest('#yardim')||e.target.closest('#kara')){
+    $('#yardim').classList.remove('open');$('#kara').classList.remove('open');}});
+let dx0=null,dy0=null;
+stage.addEventListener('touchstart',e=>{if(e.target.closest('input,button'))return;
+  dx0=e.touches[0].clientX;dy0=e.touches[0].clientY;},{passive:true});
+stage.addEventListener('touchend',e=>{if(dx0==null)return;
+  const dx=e.changedTouches[0].clientX-dx0,dy=e.changedTouches[0].clientY-dy0;dx0=null;
+  if(Math.abs(dx)>60&&Math.abs(dy)<60){dx<0?ileri():geri();}},{passive:true});
+
+/* ===================== MODÜLLER ===================== */
+
+/* --- 4 · formun gönderdiği gövde --- */
+const GV = [
+ {b:'', ct:0, not:'Gövde henüz boş. Form alanlarını tek tek ekleyelim.', oz:[]},
+ {b:'Baslik=Suc+ve+Ceza', ct:1,
+  not:'İlk alan geldi: <b>ad=değer</b>. Boşluk <code>+</code> oldu — gövde <b>URL kodlamasından</b> geçiyor.', oz:[0]},
+ {b:'Baslik=Suc+ve+Ceza&Yazar=Dostoyevski&Fiyat=120', ct:1,
+  not:'Alanlar <code>&amp;</code> ile ayrılıyor. Bu biçimin adı <code>Content-Type</code> satırında yazıyor: <b>application/x-www-form-urlencoded</b>.', oz:[0,1,2]},
+ {b:'Baslik=Suc+ve+Ceza&Yazar=Dostoyevski&Fiyat=120&Notlar=deneme', ct:1,
+  not:'Dördüncü alanın <code>id</code>’si <b>notAlani</b>, <code>name</code>’i <b>Notlar</b>. Gövdeye giren: <b>Notlar</b>. Sunucunun gördüğü ad <b><code>name</code></b>’dir.', oz:[0,1,2,3]},
+ {b:'Baslik=Suc+ve+Ceza&Yazar=Dostoyevski&Fiyat=120&Notlar=deneme', ct:1,
+  not:'Son alanın <code>name</code> özniteliği <b>yok</b> — gövdede <b>hiç görünmüyor</b>. <code>name</code> yoksa alan sunucuya <b>ulaşmaz</b>.', oz:[0,1,2,3,4]}
+];
+const GV_OZ = [
+ ['Gövde biçimi', '<code>ad=değer&amp;ad=değer</code>', 'var(--accent)'],
+ ['Ayraç', '<code>&amp;</code> · boşluk <code>+</code> · özel karakter <code>%XX</code>', 'var(--accent)'],
+ ['Content-Type', '<code>application/x-www-form-urlencoded</code>', 'var(--accent2)'],
+ ['Sunucunun gördüğü ad', '<b>name</b> — <code>id</code> değil', 'var(--gold)'],
+ ['<code>name</code> yoksa', 'alan <b>hiç gönderilmez</b>', 'var(--warn)']
+];
+M.govde = {
+ enter(s){ this.step(s,0); },
+ step(s,k){
+  const c = GV[k] || GV[0];
+  $('.gv-b',s).textContent = c.b;
+  $('.gv-h',s).style.opacity = k>=1 ? 1 : .25;
+  $('.gv-ct',s).style.opacity = c.ct ? 1 : .25;
+  $$('.gv-s',s).forEach(e=>{
+    const n = +e.dataset.n;
+    e.style.transition='opacity .35s';
+    e.style.opacity = (k===0 || n<=k-1) ? 1 : .3;
+    e.style.background = (k>=3 && n===3) ? 'var(--gold-s)'
+                       : (k>=4 && n===4) ? 'var(--warn-s)' : '';
+  });
+  const n = $('.gv-not',s);
+  n.className = 'gv-not kutu' + (k>=4 ? ' warn' : (k===3 ? ' gold' : ''));
+  n.innerHTML = c.not; tazele(n);
+  $('.gv-ozet',s).innerHTML = c.oz.map(i=>{
+    const o = GV_OZ[i];
+    return '<div style="display:flex;gap:10px;align-items:baseline;background:var(--card);border:1px solid var(--line);'
+      + 'border-left:5px solid '+o[2]+';border-radius:9px;padding:7px 12px;font-size:16px">'
+      + '<b style="min-width:168px">'+o[0]+'</b><span>'+o[1]+'</span></div>';
+  }).join('');
+ }
+};
+
+/* --- 9 · model binding mekanizması --- */
+const MBA = [
+ ['Parametreye bak', 'Ekle(KitapEkleVM girdi)', 'bir KitapEkleVM lazım'],
+ ['Özellikleri çıkar', 'Baslik · Yazar · Fiyat', 'her biri için bir değer aranacak'],
+ ['İstekte aynı adı ara', 'Form → Rota → Sorgu', 'ilk bulan kazanır'],
+ ['Tipe çevir', '"120" → 120m', 'metin → decimal'],
+ ['Çeviremezse', 'varsayılan + ModelState', 'hata FIRLATMAZ']
+];
+M.mb = {
+ init(s){
+  const svg = $('.mb-svg',s);
+  MBA.forEach((a,i)=>{
+    const x = 16 + i*284, g = S('g',{class:'mb-k','data-i':i},svg);
+    S('rect',{x:x,y:60,width:256,height:180,rx:14,fill:'#fff',stroke:'#ddd6ca','stroke-width':2.5},g);
+    S('circle',{cx:x+30,cy:90,r:19,fill:'#ddd6ca'},g);
+    S('text',{class:'no',x:x+30,y:97,'text-anchor':'middle','font-size':18,'font-weight':800,fill:'#fff',text:String(i+1)},g);
+    stext(g,x+128,142,a[0],22,19,24,{'font-weight':800,fill:'#1c1a17'});
+    S('rect',{x:x+16,y:160,width:224,height:32,rx:7,fill:'#f2efe8'},g);
+    stext(g,x+128,176,a[1],26,14,17,{'font-family':'monospace',fill:'#3a352e'});
+    stext(g,x+128,214,a[2],30,15,18,{fill:'#5d574e'});
+    if(i<4) S('path',{class:'mb-ok','data-i':i,d:'M'+(x+262)+' 150H'+(x+278),stroke:'#8a8377','stroke-width':3,fill:'none','marker-end':'url(#ok)'},svg);
+  });
+  S('text',{class:'mb-not',x:720,y:310,'text-anchor':'middle','font-size':20,'font-weight':700,fill:'#3a352e'},svg);
+ },
+ enter(s){ this.step(s,0); },
+ step(s,k){
+  $$('.mb-k',s).forEach(g=>{
+   const i=+g.dataset.i, ac = k>0 && i<=k-1, su = k>0 && i===k-1;
+   const r=$('rect',g), c=$('circle',g);
+   r.setAttribute('fill', su ? (i===4?'#fae7e5':'#e0eff4') : '#fff');
+   r.setAttribute('stroke', ac ? (i===4?'#a4231b':'#14607a') : '#ddd6ca');
+   r.setAttribute('stroke-width', su ? 4 : 2.5);
+   c.setAttribute('fill', ac ? (i===4?'#a4231b':'#14607a') : '#ddd6ca');
+   g.style.transition='opacity .35s';
+   g.style.opacity = (k===0 || ac) ? 1 : .32;
+  });
+  $$('.mb-ok',s).forEach(p=>{ p.setAttribute('opacity', (k===0 || +p.dataset.i <= k-2) ? 1 : .18); });
+  const t=$('.mb-not',s);
+  t.textContent = k===0 ? 'Metin gelir, nesne çıkar — beş adımda.'
+    : (k===5 ? 'Beşinci adım bu haftanın en çok hata ürettiren yeri: istisna fırlamaz.'
+             : (k+' · '+MBA[k-1][0]));
+  t.setAttribute('fill', k===5 ? '#a4231b' : '#3a352e');
+  tazele(t);
+ }
+};
+
+/* --- 10 · 3B bağlama kaynakları --- */
+const KYN = [
+ {b:'Üç kaynak, tek ad', m:'Aynı ad <code>deger</code> üç yerde birden bulunabilir: form gövdesi, rota verisi ve sorgu dizesi. Çatı hepsine birden bakmaz — <b>sırayla</b> bakar.'},
+ {b:'1 · Form gövdesi', m:'Arama <b>en üstten</b> başlar. Form gövdesinde değer varsa <b>orada durur</b>.', kaz:'FORM', satir:4},
+ {b:'Alttakilere bakılmaz', m:'İlk bulan kazanır. Rota ve sorgu dizesinde <b>aynı ad olsa bile</b> okunmaz.', kaz:'FORM', satir:4},
+ {b:'2 · Rota verisi', m:'Form gövdesi yoksa (örneğin GET isteği) sıra <b>rotaya</b> geçer.', kaz:'ROTA', satir:2},
+ {b:'3 · Sorgu dizesi', m:'Rota da değer taşımıyorsa en son <b>sorgu dizesine</b> bakılır. Adres çubuğunda gördüğümüz için en güçlü sandığımız kaynak, <b>en zayıf olanıdır</b>.', kaz:'SORGU', satir:3},
+ {b:'[FromQuery] — sıra devre dışı', m:'Öznitelik yeni bir kaynak eklemiyor; <b>sırayı atlıyor</b>. Üçü birden gelse bile yalnızca sorgu dizesi okunur.', kaz:'SORGU', fq:true}
+];
+M.kaynak = {
+ init(s){
+  const l=$('.kaynak-panel',s); if(l) l.innerHTML='';
+ },
+ enter(s){ this.kur(s); this.step(s,0); this.basla(s); },
+ leave(s){ this.dur(s); },
+ reset(s){ if(s._g) s._g.rotation.y = 0.2; this.step(s,0); },
+
+ kur(s){
+  if(s._kuruldu) return; s._kuruldu = true;
+  const kutu = $('.kaynak-tuval',s);
+  let ok=false;
+  try{ const c=document.createElement('canvas');
+       ok = !!(window.THREE && window.WebGLRenderingContext && (c.getContext('webgl2')||c.getContext('webgl'))); }
+  catch(e){ ok=false; }
+  if(!ok){ s._yok=true; kutu.style.display='none'; $('.kaynak-yedek',s).style.display='block'; return; }
+
+  const G=window.THREE, w=kutu.clientWidth||960, h=kutu.clientHeight||470;
+  const rnd=new G.WebGLRenderer({antialias:true,alpha:true});
+  rnd.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); rnd.setSize(w,h);
+  kutu.appendChild(rnd.domElement);
+  const sahne=new G.Scene();
+  const kam=new G.PerspectiveCamera(36,w/h,0.1,100);
+  kam.position.set(0.25,6.6,5.2); kam.lookAt(0,-0.1,0);
+  const grup=new G.Group(); grup.rotation.y=0.2; sahne.add(grup);
+  s._r=rnd; s._s=sahne; s._k=kam; s._g=grup;
+
+  function tuval(w2,h2,ciz){
+    const c=document.createElement('canvas'); c.width=w2; c.height=h2;
+    const x=c.getContext('2d'); ciz(x,w2,h2);
+    const t=new G.CanvasTexture(c); t.anisotropy=4; return t;
+  }
+  function yuv(x,X,Y,W,H,R,f,c2){ x.beginPath(); x.moveTo(X+R,Y);
+    x.arcTo(X+W,Y,X+W,Y+H,R); x.arcTo(X+W,Y+H,X,Y+H,R); x.arcTo(X,Y+H,X,Y,R); x.arcTo(X,Y,X+W,Y,R);
+    x.closePath(); if(f){x.fillStyle=f;x.fill();} if(c2){x.strokeStyle=c2;x.lineWidth=5;x.stroke();} }
+  function katTuval(ad,deger,renk,zemin){
+    return tuval(1100,280,(x,w2,h2)=>{
+      x.clearRect(0,0,w2,h2); yuv(x,8,8,w2-16,h2-16,22,zemin,renk);
+      x.fillStyle=renk; x.font='800 54px "Source Sans 3",Segoe UI,sans-serif'; x.textAlign='left';
+      x.fillText(ad,44,112);
+      x.fillStyle='#5d574e'; x.font='400 34px "Source Sans 3",sans-serif';
+      x.fillText(deger.alt,44,172);
+      x.textAlign='right'; x.font='800 62px Consolas,monospace'; x.fillStyle=deger.v==='(yok)'?'#b5aea2':renk;
+      x.fillText(deger.v,w2-48,140);
+    });
+  }
+  const KAT=[
+   {ad:'Form gövdesi', alt:'POST isteğinin gövdesi', renk:'#8a3d0f', zemin:'#fdf3ec', v:'FORM',  y:2.05},
+   {ad:'Rota verisi',  alt:'/Form/Kaynak/{deger}',   renk:'#14607a', zemin:'#eef6f9', v:'ROTA',  y:0.0},
+   {ad:'Sorgu dizesi', alt:'?deger=…',               renk:'#5c3f78', zemin:'#f4f0f9', v:'SORGU', y:-2.05}
+ ];
+  s._kat = KAT.map(d=>{
+    const dolu = katTuval(d.ad,{v:d.v,alt:d.alt},d.renk,d.zemin);
+    const bos  = katTuval(d.ad,{v:'(yok)',alt:d.alt},'#b5aea2','#f6f4f0');
+    const m=new G.Mesh(new G.PlaneGeometry(4.6,1.17),
+      new G.MeshBasicMaterial({map:dolu,transparent:true,opacity:1,depthWrite:false}));
+    m.rotation.x=-Math.PI/2; m.position.set(0,d.y,0); grup.add(m);
+    m.userData={dolu:dolu,bos:bos,y:d.y,renk:d.renk};
+    return m;
+  });
+
+  /* sonda: yukarıdan inen arama */
+  const sonda=new G.Group(); grup.add(sonda); s._sonda=sonda;
+  const kon=new G.Mesh(new G.ConeGeometry(0.17,0.42,20),
+    new G.MeshBasicMaterial({color:0x1c1a17}));
+  kon.rotation.x=Math.PI; kon.position.y=0.21; sonda.add(kon);
+  const cizgi=new G.Mesh(new G.CylinderGeometry(0.018,0.018,2.2,10),
+    new G.MeshBasicMaterial({color:0x1c1a17,transparent:true,opacity:.35}));
+  cizgi.position.y=1.4; sonda.add(cizgi);
+  sonda.position.y=3.6; sonda.userData={hedef:3.6};
+
+  const el=rnd.domElement; let bas=false,x0=0,r0=0;
+  el.style.cursor='grab';
+  el.addEventListener('pointerdown',e=>{bas=true;x0=e.clientX;r0=grup.rotation.y;el.style.cursor='grabbing';el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointermove',e=>{ if(bas) grup.rotation.y = r0 + (e.clientX-x0)*0.006; });
+  el.addEventListener('pointerup',()=>{bas=false;el.style.cursor='grab';});
+  s._surukle=()=>bas;
+ },
+
+ step(s,k){
+  const c = KYN[k] || KYN[0], p = $('.kaynak-panel',s);
+  p.innerHTML = '<div style="font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--plum)">'
+    + (k===0?'üç kaynak':(k===5?'öznitelikle':'adım '+k)) + '</div>'
+    + '<h3 style="font-size:25px;margin:6px 0 10px">'+c.b+'</h3>'
+    + '<p style="font-size:19px;line-height:1.5;margin:0;color:var(--ink2)">'+c.m+'</p>'
+    + (c.kaz ? '<div class="kutu" style="margin-top:12px;font-size:19px">Parametreye gelen: <b class="mono" style="font-size:22px">'+c.kaz+'</b></div>' : '');
+  tazele(p);
+  $$('.tbl tbody tr',s).forEach(r=>r.classList.toggle('hot', !!c.satir && +r.dataset.k===c.satir));
+  if(s._yok) return;
+
+  /* katman doluluğu */
+  const bosalt = k===3 ? [0] : (k>=4 ? [0,1] : []);
+  s._kat.forEach((m,i)=>{
+    const d = bosalt.includes(i) && k<5;
+    m.material.map = d ? m.userData.bos : m.userData.dolu;
+    m.material.needsUpdate = true;
+    let o = 1;
+    if(k===2 && i>0) o = .3;                       /* alttakilere bakılmaz */
+    if(k===5 && i<2) o = .22;                      /* [FromQuery] atlıyor */
+    m.userData.op = o;
+  });
+  /* sonda hedefi */
+  const dur = k===0 ? 3.6 : (k===1||k===2 ? 2.05 : (k===3 ? 0.0 : -2.05));
+  s._sonda.userData.hedef = dur;
+  s._sonda.visible = true;
+  s._fq = (k===5);
+ },
+
+ basla(s){
+  if(s._yok || s._dongu) return;
+  const cerceve = t => {
+    if(!s.classList.contains('active')){ s._dongu=null; return; }
+    s._dongu = requestAnimationFrame(cerceve);
+    const dt = 0.016;
+    s._kat.forEach(m=>{ const o=m.userData.op==null?1:m.userData.op;
+      m.material.opacity += (o-m.material.opacity)*Math.min(1,dt*6); });
+    const sd=s._sonda, hd=sd.userData.hedef;
+    sd.position.y += (hd-sd.position.y)*Math.min(1,dt*5);
+    sd.position.x = s._fq ? 1.9 : 0;
+    if(!s._surukle()) s._g.rotation.y = 0.2 + Math.sin(t/1000*0.15)*0.12;
+    s._r.render(s._s,s._k);
+  };
+  s._dongu = requestAnimationFrame(cerceve);
+ },
+ dur(s){ if(s._dongu){ cancelAnimationFrame(s._dongu); s._dongu=null; } }
+};
+
+/* --- 11 · bağlama tipleri --- */
+const TIP = [
+ {ad:'Basit tip', html:'<span class="h">&lt;input name="kelime"&gt;</span>\n<span class="h">&lt;input name="sayfa"&gt;</span>\n\n<span class="c">// ya da adres çubuğundan:</span>\n<span class="c">// /Kitap/Ara?kelime=roman&amp;sayfa=2</span>',
+  cs:'<span class="s">public</span> IActionResult Ara(\n    <span class="s">string</span>? kelime,\n    <span class="s">int</span> sayfa = <span class="y">1</span>)',
+  not:'<code>int</code>, <code>string</code>, <code>bool</code>, <code>DateTime</code>, <code>decimal</code> doğrudan bağlanır. Varsayılan değer (<code>= 1</code>) parametre <b>hiç gelmezse</b> kullanılır.'},
+ {ad:'Karmaşık tip (sınıf)', html:'<span class="h">&lt;input name="Baslik"&gt;</span>\n<span class="h">&lt;input name="Yazar"&gt;</span>\n<span class="h">&lt;input name="Fiyat"&gt;</span>',
+  cs:'<span class="s">public class</span> KitapEkleVM\n{\n    <span class="s">public string</span> Baslik { … }\n    <span class="s">public string</span> Yazar  { … }\n    <span class="s">public decimal</span> Fiyat { … }\n}',
+  not:'Çatı <b>özellik özellik</b> doldurur. Form alanının <code>name</code>’i ile özellik adı <b>birebir aynı</b> olmalıdır.'},
+ {ad:'İç içe nesne', html:'<span class="h">&lt;input name="</span><span class="y">Teslimat.Sehir</span><span class="h">"&gt;</span>\n<span class="h">&lt;input name="</span><span class="y">Teslimat.Posta</span><span class="h">"&gt;</span>',
+  cs:'<span class="s">public class</span> Siparis\n{\n    <span class="s">public</span> Adres Teslimat { … }\n}',
+  not:'İç içe nesnede yol <b>noktayla</b> yazılır: <code>Ozellik.AltOzellik</code>.'},
+ {ad:'Koleksiyon', html:'<span class="h">&lt;input name="</span><span class="y">Etiketler[0]</span><span class="h">" value="roman"&gt;</span>\n<span class="h">&lt;input name="</span><span class="y">Etiketler[1]</span><span class="h">" value="klasik"&gt;</span>\n\n<span class="c">// nesne listesinde:</span>\n<span class="h">&lt;input name="Kitaplar[0].Baslik"&gt;</span>\n<span class="h">&lt;input name="Kitaplar[0].Fiyat"&gt;</span>',
+  cs:'<span class="s">public</span> List&lt;<span class="s">string</span>&gt; Etiketler { … }\n\n<span class="s">public</span> List&lt;Kitap&gt; Kitaplar { … }',
+  not:'<b>İndisler 0’dan başlar ve kesintisiz olmalıdır.</b> <code>[0]</code>, <code>[2]</code> gönderirseniz çatı <code>[1]</code>’de durur ve listeye yalnızca ilk eleman girer — <b>hata almazsınız</b>.'}
+];
+M.tipler = {
+ init(s){
+  $('.tipler-sec',s).innerHTML = TIP.map((x,i)=>'<button class="chip" data-n="'+i+'">'+x.ad+'</button>').join('');
+  $$('.tipler-sec .chip',s).forEach(b=>b.addEventListener('click',()=>this.sec(s,+b.dataset.n)));
+ },
+ enter(s){ this.sec(s,0); },
+ reset(s){ this.sec(s,0); },
+ sec(s,n){
+  const x=TIP[n];
+  $$('.tipler-sec .chip',s).forEach(b=>b.classList.toggle('cur',+b.dataset.n===n));
+  $('.tipler-html',s).innerHTML = x.html;
+  $('.tipler-cs',s).innerHTML = x.cs;
+  const nt=$('.tipler-not',s);
+  nt.className = 'kutu tipler-not' + (n===3 ? ' warn' : '');
+  nt.innerHTML = x.not;
+  tazele($('.tipler-html',s)); tazele(nt);
+ }
+};
+
+/* --- 14 · bağlama başarısız --- */
+const BAS = {
+ 0:{istek:'<span class="c">// geçerli değerler</span>\nGET /Form/Bagla?sayi=<span class="y">42</span>\n    &amp;sayiNullable=<span class="y">42</span>\n    &amp;tarih=<span class="y">2026-03-01</span>',
+    sonuc:'sayi         = <span class="y">42</span>\nsayiNullable = <span class="y">42</span>\ntarih        = <span class="y">2026-03-01</span>\n\nModelState.IsValid = <span class="y">True</span>',
+    ekran:'<div style="color:var(--ok);font-weight:700">✓ Üç değer de çevrildi.</div><div class="muted" style="font-size:15px;margin-top:6px">Beklenen davranış.</div>',
+    not:'ok|Beklenen durum: üç değer de tiplerine çevrildi, <code>ModelState</code> geçerli.'},
+ 1:{istek:'<span class="c">// hiçbiri geçerli değil</span>\nGET /Form/Bagla?sayi=<span class="y">abc</span>\n    &amp;sayiNullable=<span class="y">abc</span>\n    &amp;tarih=<span class="y">xyz</span>',
+    sonuc:'sayi         = <span class="y">0</span>\nsayiNullable = <span class="y">null</span>\ntarih        = <span class="y">0001-01-01</span>\n\nModelState.IsValid = <span class="y">False</span>',
+    ekran:'<div style="color:var(--ok);font-weight:700">Sayfa açıldı.</div><div class="muted" style="font-size:15px;margin-top:6px">Hata sayfası <b>yok</b>. İstisna <b>yok</b>.</div>',
+    not:'warn|<b>Hiçbir şey patlamadı.</b> Çatı çeviremediği değer için parametreye <b>tipin varsayılanını</b> koydu ve durumu <code>ModelState</code>’e yazdı.<br><b><code>if (sayi == 0)</code> yazarsanız</b> <i>"kullanıcı 0 girdi"</i> ile <i>"kullanıcı saçma girdi"</i> <b>ayırt edilemez</b>. Ayrımı yapan tek şey <code>ModelState</code>’dir.'}
+};
+M.basarisiz = {
+ init(s){ $$('.bas-seg button',s).forEach(b=>b.addEventListener('click',()=>this.mod(s,+b.dataset.m))); },
+ enter(s){ this.mod(s,0); },
+ reset(s){ this.mod(s,0); },
+ mod(s,m){
+  const x=BAS[m];
+  $$('.bas-seg button',s).forEach(b=>b.classList.toggle('on',+b.dataset.m===m));
+  $('.bas-istek',s).innerHTML=x.istek;
+  $('.bas-sonuc',s).innerHTML=x.sonuc;
+  $('.bas-ekran',s).innerHTML=x.ekran;
+  const p=x.not.split('|'), n=$('.bas-not',s);
+  n.className='bas-not kutu '+p[0]; n.innerHTML=p[1];
+  tazele($('.bas-sonuc',s)); tazele(n);
+ }
+};
+
+/* --- 15 · PRG problemi --- */
+M.prg = {
+ init(s){
+  const svg=$('.prg-svg',s);
+  const kutu=(x,y,w,h,ad,alt,renk,zemin,cls)=>{
+    const g=S('g',{class:cls},svg);
+    S('rect',{x:x,y:y,width:w,height:h,rx:12,fill:zemin,stroke:renk,'stroke-width':2.5},g);
+    stext(g,x+w/2,y+h/2-12,ad,24,18,22,{'font-weight':800,fill:'#1c1a17'});
+    stext(g,x+w/2,y+h/2+22,alt,30,15,18,{fill:'#5d574e'});
+    return g;
+  };
+  s._p1=kutu(30,30,250,96,'POST /Kitap/Ekle','form gönderildi','#8a3d0f','#fbeadf','f fo');
+  s._p1.dataset.step=1;
+  S('path',{class:'f fo pr-ok','data-step':1,d:'M286 78H364',stroke:'#8a3d0f','stroke-width':3,fill:'none','marker-end':'url(#ok)'},svg);
+  s._p2=kutu(370,30,280,96,'Kayıt eklendi','depoda 1 kayıt','#2f6b2a','#e6f1e4','f fo');
+  s._p2.dataset.step=1;
+  S('path',{class:'f fo pr-ok','data-step':2,d:'M656 78H734',stroke:'#8a8377','stroke-width':3,fill:'none','marker-end':'url(#ok)'},svg);
+  s._p3=kutu(740,30,300,96,'return View()','200 — görünüm döndü','#a4231b','#fae7e5','f fo');
+  s._p3.dataset.step=2;
+
+  /* adres çubuğu */
+  const ad=S('g',{class:'f fo pr-adres','data-step':2},svg);
+  S('rect',{x:740,y:150,width:300,height:50,rx:10,fill:'#fff',stroke:'#a4231b','stroke-width':2.5},ad);
+  S('text',{x:890,y:172,'text-anchor':'middle','font-size':13,fill:'#8a8377',text:'adres çubuğundaki son istek'},ad);
+  S('text',{x:890,y:192,'text-anchor':'middle','font-size':17,'font-weight':800,'font-family':'monospace',fill:'#a4231b',text:'POST /Kitap/Ekle'},ad);
+
+  /* F5 */
+  const f5=S('g',{class:'f fs pr-f5','data-step':3},svg);
+  S('rect',{x:1080,y:34,width:116,height:88,rx:12,fill:'#fff',stroke:'#1c1a17','stroke-width':3},f5);
+  S('text',{x:1138,y:78,'text-anchor':'middle','font-size':30,'font-weight':800,fill:'#1c1a17',text:'F5'},f5);
+  S('text',{x:1138,y:104,'text-anchor':'middle','font-size':14,fill:'#5d574e',text:'yenile'},f5);
+
+  /* tekrar */
+  const tk=S('g',{class:'f fo pr-tekrar','data-step':4},svg);
+  S('path',{d:'M1138 128V250H420V140',stroke:'#a4231b','stroke-width':3.5,fill:'none','marker-end':'url(#ok)','stroke-dasharray':'9 7'},tk);
+  S('text',{x:780,y:242,'text-anchor':'middle','font-size':19,'font-weight':800,fill:'#a4231b',text:'aynı POST yeniden gönderilir'},tk);
+  S('rect',{x:1210,y:34,width:200,height:88,rx:12,fill:'#fae7e5',stroke:'#a4231b','stroke-width':3},tk);
+  S('text',{x:1310,y:66,'text-anchor':'middle','font-size':15,fill:'#a4231b',text:'depoda'},tk);
+  S('text',{x:1310,y:100,'text-anchor':'middle','font-size':30,'font-weight':800,fill:'#a4231b',text:'2 kayıt'},tk);
+
+  S('text',{class:'pr-not',x:720,y:320,'text-anchor':'middle','font-size':19,'font-weight':700,fill:'#3a352e'},svg);
+ },
+ enter(s){ this.step(s,0); },
+ step(s,k){
+  const t=$('.pr-not',s);
+  t.textContent = ['Form gönderildikten sonra adres çubuğunda ne kalıyor?',
+    '1 · POST gider, sunucu kaydı ekler',
+    '2 · Sunucu doğrudan görünüm döndürür — adres çubuğunda POST kalır',
+    '3 · Kullanıcı sayfayı yeniler',
+    '4 · Tarayıcı son isteği tekrarlar; o istek bir POST'][k] || '';
+  t.setAttribute('fill', k>=4 ? '#a4231b' : '#3a352e');
+  tazele(t);
+ }
+};
+
+/* --- 18 · over-posting --- */
+const OVR = {
+ 0:{govde:'POST /Kitap/Ekle\nContent-Type: application/x-www-form-urlencoded\n\nBaslik=Suç+ve+Ceza&amp;Fiyat=120',
+    nesne:'kitap.Baslik = <span class="y">"Suç ve Ceza"</span>\nkitap.Fiyat  = <span class="y">120m</span>\nkitap.Onayli = <span class="y">false</span>',
+    not:'ok|Formun gönderdiği üç alan bağlandı. <code>Onayli</code> gövdede yok, bu yüzden <code>bool</code>’un varsayılanı olan <b>false</b> kaldı.'},
+ 1:{govde:'POST /Kitap/Ekle\nContent-Type: application/x-www-form-urlencoded\n\nBaslik=Suç+ve+Ceza&amp;Fiyat=120<span class="ekle">&amp;Onayli=true</span>',
+    nesne:'kitap.Baslik = <span class="y">"Suç ve Ceza"</span>\nkitap.Fiyat  = <span class="y">120m</span>\nkitap.Onayli = <span class="ekle">true</span>  <span class="c">// ⚠️</span>',
+    not:'warn|<b>Formda <code>Onayli</code> diye bir alan yoktu.</b> Kullanıcı isteğin gövdesine o satırı kendi ekledi; model binding <b>adı uyduğu için</b> doldurdu. Kullanıcı kendi kaydını onaylamış oldu.<br>Gerçek bir uygulamada bu alan <code>IsAdmin</code>, <code>Rol</code>, <code>Bakiye</code> ya da <code>KullaniciId</code> olabilirdi.'}
+};
+M.over = {
+ init(s){ $$('.over-seg button',s).forEach(b=>b.addEventListener('click',()=>this.mod(s,+b.dataset.m))); },
+ enter(s){ this.mod(s,0); },
+ reset(s){ this.mod(s,0); },
+ mod(s,m){
+  const x=OVR[m];
+  $$('.over-seg button',s).forEach(b=>b.classList.toggle('on',+b.dataset.m===m));
+  $('.over-govde',s).innerHTML=x.govde;
+  $('.over-nesne',s).innerHTML=x.nesne;
+  const p=x.not.split('|'), n=$('.over-not',s);
+  n.className='over-not kutu '+p[0]; n.innerHTML=p[1];
+  tazele($('.over-nesne',s)); tazele(n);
+ }
+};
+
+/* ===================== AÇILIŞ ===================== */
+slaytlar.forEach(s=>{const m=M[s.dataset.module];if(m&&m.init)m.init(s);});
+olcekle();
+let bas=0,basAdim=0;
+const h=(location.hash||'').replace('#','');
+if(h){const p=h.split('.');bas=Math.max(0,(parseInt(p[0],10)||1)-1);basAdim=parseInt(p[1],10)||0;}
+git(bas,basAdim,true);acildi=true;
+window.addEventListener('hashchange',()=>{
+  const x=(location.hash||'').replace('#','').split('.');
+  const j=Math.max(0,(parseInt(x[0],10)||1)-1),k=parseInt(x[1],10)||0;
+  if(j!==i||k!==adim)git(j,k,true);});
+window.sunum={git:git,ileri:ileri,geri:geri,slaytlar:slaytlar};
+
+
+})();
+</script>
+</body>
+</html>

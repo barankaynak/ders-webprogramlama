@@ -1,0 +1,29 @@
+@model List<Kitap>
+
+<h1>Arama</h1>
+
+@if (ViewData["Kelime"] is null || string.IsNullOrWhiteSpace((string?)ViewData["Kelime"]))
+{
+    <p class="ipucu">Bir kelime girin: <code>/Kitap/Ara?kelime=roman</code></p>
+}
+else if (Model.Count == 0)
+{
+    <p class="bos">"@ViewData["Kelime"]" için sonuç yok.</p>
+}
+else
+{
+    <p>"@ViewData["Kelime"]" için @Model.Count sonuç:</p>
+    <div class="kart-liste">
+        @foreach (var k in Model)
+        {
+            @*
+                AYNI partial, ikinci sayfada.
+                Karta bir satır eklemek artık tek dosya düzenlemek demek —
+                bu sayfa da Index de otomatik güncellenir. (🧩 Tek doğruluk kaynağı)
+            *@
+            <partial name="_KitapKart" model="k" />
+        }
+    </div>
+}
+
+<p><a asp-controller="Kitap" asp-action="Index">← Tüm kitaplar</a></p>

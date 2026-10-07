@@ -1,0 +1,43 @@
+@model Kitap
+
+<h1>@Model.Baslik</h1>
+
+<dl class="detay">
+    <dt>Yazar</dt><dd>@Model.Yazar</dd>
+    <dt>Fiyat</dt><dd>@Model.Fiyat TL</dd>
+    <dt>Kategori</dt><dd>@ViewData["Kategori"]</dd>   @* veri controller’da hazırlandı *@
+    <dt>KDV hariç</dt><dd>@(Model.Fiyat * 0.82m) TL</dd>
+</dl>
+
+@*
+    Yukarıdaki son satırda parantez neden var? (ders notu bölüm 1.2)
+    @Model.Fiyat * 0.82m yazsaydınız Razor ifadeyi @Model.Fiyat'ta bitirir,
+    geri kalanını düz metin sanırdı. Parantez "açık ifade"dir.
+*@
+
+@{
+    // @{ } kod bloğu ÇALIŞIR ama kendisi hiçbir şey YAZDIRMAZ (ders notu bölüm 1.3)
+    var etiket = Model.Fiyat < 150 ? "uygun" : "pahalı";
+}
+<p>Bu kitap <span class="etiket @etiket">@etiket</span> aralıkta.</p>
+
+<hr />
+
+<h2>🔒 Otomatik HTML kodlaması (ders notu bölüm 1.5)</h2>
+<p>
+    Aşağıdaki iki satır <em>aynı</em> metni yazdırıyor. Biri güvenli, diğeri değil.
+    <strong>Ctrl+U ile kaynağa bakın.</strong>
+</p>
+@{
+    var kullaniciVerisi = "<b>kalın</b> ve <script>alert('ele geçirildi')</script>";
+}
+<p><strong>@@Model ile (varsayılan, güvenli):</strong><br />@kullaniciVerisi</p>
+<p>
+    <strong>@@Html.Raw ile (koruma kapalı):</strong><br />
+    @* AŞAĞIDAKİ SATIRIN YORUMUNU KALDIRIRSANIZ UYARI KUTUSU AÇILIR.
+       Derste bilerek deneyin; gerçek projede kullanıcı verisinde ASLA. *@
+    @* @Html.Raw(kullaniciVerisi) *@
+    <em class="kapali">— satır kasten yorumda; derste açılır</em>
+</p>
+
+<p><a asp-controller="Kitap" asp-action="Index">← Listeye dön</a></p>

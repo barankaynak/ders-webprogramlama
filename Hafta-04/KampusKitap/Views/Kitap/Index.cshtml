@@ -1,0 +1,55 @@
+@*
+    Hafta 3 · güçlü tipli görünüm (ders notu bölüm 1.4)
+
+    @model  (küçük m) = YÖNERGE — bu görünümün model tipini bildirir, dosyada bir kez
+    @Model  (büyük M) = NESNE   — controller'ın gönderdiği gerçek veri
+
+    Tip bildirildiği için @Model.Cuont yazarsanız sayfa açılmadan DERLEME hatası
+    alırsınız. ViewBag kullansaydınız sessizce null gelirdi.
+*@
+@model List<Kitap>
+
+<h1>Kitaplar</h1>
+
+@if (TempData["Mesaj"] != null)
+{
+    @* HAFTA 4 — PRG sonrası mesaj. Yönlendirme yeni bir istek olduğu için
+       ViewData ile taşınamaz; TempData bir sonraki isteğe kadar yaşar.
+       TempData'nın tamamı HAFTA 7'nin konusu. *@
+    <div class="ipucu"><strong>✓ @TempData["Mesaj"]</strong></div>
+}
+
+<p><a asp-controller="Kitap" asp-action="Ekle">+ Yeni kitap ekle</a></p>
+<p class="ipucu">
+    Bu sayfa Hafta 2'de <code>Content("Kitap listesi")</code> ile düz metin döndürüyordu.
+    Şimdi <code>return View(...)</code> diyor ve HTML'i Razor üretiyor.
+    <strong>Ctrl+U</strong> ile kaynağa bakın: aşağıdaki döngü ve koşul ifadelerinden
+    <em>hiçbiri</em> orada yok — yalnızca sonuç HTML var.
+</p>
+
+@if (Model.Count == 0)
+{
+    @* @if'ten sonra gelen else, @ ALMAZ — Razor zaten C# kipindedir *@
+    <p class="bos">Hiç kitap yok.</p>
+}
+else
+{
+    <p>@Model.Count kitap listeleniyor.</p>
+
+    <div class="kart-liste">
+        @foreach (var k in Model)
+        {
+            @* Kart üç ayrı sayfada kullanılıyor → tek sahip: _KitapKart partial'ı *@
+            <partial name="_KitapKart" model="k" />
+        }
+    </div>
+}
+
+@section Scripts {
+    @* Bu betik YALNIZCA bu sayfada çalışır.
+       Layout'taki @@RenderSectionAsync("Scripts", required: false) satırı
+       olmasaydı "sections have been defined but have not been rendered" hatası gelirdi. *@
+    <script>
+        console.log("Yalnızca kitap listesinde çalışan betik — /Kategori'de bu satır yok.");
+    </script>
+}

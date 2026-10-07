@@ -1,0 +1,73 @@
+@*
+    HAFTA 4 — form ELLE yazılmıştır. Tag Helper YOK.
+
+    Her <input>'un name özniteliğini kendimiz koyuyoruz ve ViewModel'deki
+    özellik adıyla birebir aynı olmasından kendimiz sorumluyuz. Yazım hatası
+    yaparsak derleyici uyarmaz, alan sessizce boş gelir.
+
+    Hafta 5'te bu dosyayı Tag Helper'larla yeniden yazıp ürettikleri HTML'i
+    yan yana koyacağız. O yüzden bu hâlini saklıyoruz.
+*@
+@model KampusKitap.ViewModels.KitapEkleVM
+
+<h1>Kitap ekle</h1>
+
+<p class="ipucu">
+    Bu form <strong>elle</strong> yazıldı: <code>name</code> değerlerini biz koyduk.
+    <strong>Ctrl+U</strong> ile kaynağa bakın — Hafta 5'te Tag Helper'ın ürettiği
+    HTML'le karşılaştıracağız.
+</p>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="uyari">
+        <strong>Bağlanamayan alanlar var.</strong> Hata fırlamadı; parametreler
+        varsayılan değerlerini aldı ve <code>ModelState</code> geçersiz işaretlendi.
+        <ul>
+            @foreach (var giris in ViewData.ModelState)
+            {
+                foreach (var hata in giris.Value.Errors)
+                {
+                    <li><code>@giris.Key</code>: @(string.IsNullOrEmpty(hata.ErrorMessage)
+                        ? "değer çevrilemedi" : hata.ErrorMessage)</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+<form method="post" action="/Kitap/Ekle">
+    <p>
+        <label for="baslikAlani">Başlık</label><br />
+        <input type="text" id="baslikAlani" name="Baslik" value="@Model.Baslik" size="40" />
+    </p>
+    <p>
+        <label for="yazarAlani">Yazar</label><br />
+        <input type="text" id="yazarAlani" name="Yazar" value="@Model.Yazar" size="40" />
+    </p>
+    <p>
+        <label for="fiyatAlani">Fiyat</label><br />
+        <input type="text" id="fiyatAlani" name="Fiyat" value="@Model.Fiyat" />
+        <span class="ipucu" style="display:inline;padding:2px 8px">harf yazıp gönderin: ne olacak?</span>
+    </p>
+    <p>
+        <label for="katAlani">Kategori</label><br />
+        <select id="katAlani" name="KategoriId">
+            <option value="1">Edebiyat</option>
+            <option value="2">Bilgisayar</option>
+            <option value="3">Bilim kurgu</option>
+        </select>
+    </p>
+    <p>
+        <button type="submit">Kaydet (PRG ile)</button>
+        <button type="submit" formaction="/Kitap/EkleYanlis">Kaydet (PRG'siz — yanlış)</button>
+    </p>
+</form>
+
+<div class="ipucu">
+    <strong>İki düğmenin farkı yalnızca gittiği action.</strong> Soldaki
+    <code>RedirectToAction</code> döndürür (PRG), sağdaki doğrudan görünüm döndürür.
+    Sağdakini kullanıp sonra <strong>F5</strong>'e basın.
+</div>
+
+<p><a asp-controller="Kitap" asp-action="Index">← Listeye dön</a></p>

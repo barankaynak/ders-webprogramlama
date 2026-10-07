@@ -1,0 +1,17 @@
+@model List<string>
+
+<h1>Kategoriler</h1>
+
+<ul class="kategori-liste">
+    @foreach (var ad in Model)
+    {
+        <li>@ad</li>
+    }
+</ul>
+
+<p class="ipucu">
+    Bu sayfa <code>@@section Scripts</code> <em>tanımlamıyor</em>. Yine de çalışıyor,
+    çünkü layout'ta <code>required: false</code> yazıyor (ders notu bölüm 2.6).
+    <br />
+    Tarayıcı konsolunu açın: <code>/Kitap</code>'taki mesaj burada <strong>yok</strong>.
+</p>

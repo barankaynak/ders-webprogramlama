@@ -1,0 +1,163 @@
+@*
+    Hafta 3 — Razor sözdizimi kılavuzu (ders notu bölüm 1)
+
+    Bu sayfanın amacı anlatmak değil, GÖSTERMEK. Her bölümün yanında
+    tarayıcıya giden gerçek HTML'i görebilmek için Ctrl+U ile kaynağa bakın.
+*@
+@{
+    ViewData["Title"] = "Razor sözdizimi";
+
+    var kitap = KampusKitap.Data.KitapDeposu.Bul(42)!;
+    var sayilar = new[] { 3, 7, 11 };
+    var durum = "hazir";
+    string? bosEtiket = null;          // null öznitelik denemesi için
+    var secili = true;                 // bool öznitelik denemesi için
+}
+
+<h1>Razor sözdizimi — hepsi tek sayfada</h1>
+<p class="ipucu">
+    Her örneğin altında ne ürettiği yazıyor. <strong>Ctrl+U</strong> ile kaynağa bakıp
+    karşılaştırın — bu sayfanın bütün amacı o karşılaştırma.
+</p>
+
+<h2>1 &middot; Örtük ifade (implicit expression)</h2>
+<p>@kitap.Baslik — @kitap.Fiyat TL</p>
+<p class="ipucu">Boşluk ifadeyi <strong>bitirir</strong>: <code>@@kitap.Fiyat TL</code> yazdığımızda "TL" düz metindir.</p>
+
+<h2>2 &middot; Açık ifade (explicit expression) — parantez ne zaman <u>zorunlu</u>?</h2>
+<p><strong>Kural 1 — ifadede boşluk varsa.</strong> Razor ilk boşlukta C#'ı bitirir.</p>
+<table class="table">
+    <thead><tr><th>Yazım</th><th>Çıktı</th></tr></thead>
+    <tbody>
+        <tr><td><code>@@kitap.Fiyat * 0.82m</code></td><td>@kitap.Fiyat * 0.82m <em>&larr; hesaplamadı!</em></td></tr>
+        <tr><td><code>@@(kitap.Fiyat * 0.82m)</code></td><td>@(kitap.Fiyat * 0.82m)</td></tr>
+        <tr><td><code>@@(DateTime.Now - TimeSpan.FromDays(7))</code></td><td>@(DateTime.Now - TimeSpan.FromDays(7))</td></tr>
+    </tbody>
+</table>
+<p>
+    <strong>Kural 2 — generic tip argümanı varsa.</strong>
+    <code>@@Yardimci&lt;int&gt;()</code> <strong>derlenmez</strong>: Razor <code>&lt;int&gt;</code>'i
+    HTML etiketi sanır, geriye yalnızca <code>@@Yardimci</code> kalır ve
+    <code>CS1503: cannot convert from 'method group'</code> hatası verir.
+    Doğrusu: <code>@@(Yardimci&lt;int&gt;())</code>
+</p>
+<p class="ipucu">
+    Tek istisna: <code>await</code>. <code>@@await Islem()</code> boşluk içerdiği hâlde
+    parantezsiz çalışır.
+</p>
+
+<h2>2b &middot; Parantez <u>gerekmeyen</u> durumlar</h2>
+<p class="ipucu">
+    Yaygın bir yanılgı: "her şüpheli yerde parantez kullan." Razor örtük ifadenin
+    nerede bittiğini çoğu durumda doğru anlar. Aşağıdaki çiftler <strong>aynı</strong>
+    çıktıyı verir:
+</p>
+<table class="table">
+    <thead><tr><th>Yazım</th><th>Çıktı</th></tr></thead>
+    <tbody>
+        <tr><td><code>@@kitap.Baslik-indirimli.pdf</code></td><td>@kitap.Baslik-indirimli.pdf</td></tr>
+        <tr><td><code>@@(kitap.Baslik)-indirimli.pdf</code></td><td>@(kitap.Baslik)-indirimli.pdf</td></tr>
+        <tr><td><code>@@kitap.Yazar'in kitabi</code></td><td>@kitap.Yazar'in kitabi</td></tr>
+        <tr><td><code>@@kitap.Fiyat.ToString("0.00")</code></td><td>@kitap.Fiyat.ToString("0.00")</td></tr>
+    </tbody>
+</table>
+<p class="ipucu">
+    Metot çağrısı, nokta zinciri, tireyle biten metin — hepsi parantezsiz çalışır.
+    Parantez yalnızca <strong>iki</strong> durumda zorunludur; sıradaki bölüm onları gösteriyor.
+</p>
+
+<h2>3 &middot; @@ kaçışı ve Razor yorumu</h2>
+<p>İletişim: baran.kaynak@@ornek.edu.tr</p>
+@* Bu satır tarayıcıya HİÇ gitmez *@
+<!-- Bu satır tarayıcıya GİDER; kullanıcı Ctrl+U ile görür -->
+<p class="ipucu">Kaynağa bakın: HTML yorumu orada, Razor yorumu yok.</p>
+
+<h2>4 &middot; @@if / else if / else</h2>
+@if (kitap.Fiyat < 100)
+{
+    <p>Ucuz.</p>
+}
+else if (kitap.Fiyat < 300)
+{
+    <p>Orta.</p>
+}
+else
+{
+    <p>Pahalı.</p>
+}
+<p class="ipucu"><code>else</code> ve <code>else if</code> <strong>@@ almaz</strong> — Razor zaten C# kipindedir.</p>
+
+<h2>5 &middot; @@switch</h2>
+@switch (durum)
+{
+    case "hazir":
+        <p>Stokta var.</p>
+        break;
+    case "tukendi":
+        <p>Tükendi.</p>
+        break;
+    default:
+        <p>Bilinmiyor.</p>
+        break;
+}
+
+<h2>6 &middot; @@for, @@foreach, @@while</h2>
+<ul>
+    @for (var i = 0; i < sayilar.Length; i++)
+    {
+        <li>for: @sayilar[i]</li>
+    }
+    @foreach (var s in sayilar)
+    {
+        <li>foreach: @s</li>
+    }
+    @{ var j = 0; }
+    @while (j < 2)
+    {
+        <li>while: @j</li>
+        j++;
+    }
+</ul>
+
+<h2>7 &middot; Etiketsiz metin: @@: ve &lt;text&gt;</h2>
+<div>
+    @foreach (var s in sayilar)
+    {
+        @:— tek satır: @s
+        <text>çok satırlı blok: @s</text>
+    }
+</div>
+<p class="ipucu">Etiketsiz düz metin yazarken bunlardan biri <strong>gerekir</strong>; yoksa Razor metni C# sanır.</p>
+
+<h2>8 &middot; Öznitelik üretimi ve <code>null</code> davranışı</h2>
+<p class="@durum">class özniteliği C#'tan geldi (class="@durum")</p>
+<p title="@bosEtiket">title özniteliği <strong>null</strong> — kaynakta title hiç yok</p>
+<input type="checkbox" checked="@secili" /> <label>bool öznitelik: true</label><br />
+<input type="checkbox" checked="@(!secili)" /> <label>bool öznitelik: false</label>
+<p class="ipucu">
+    <strong>Ctrl+U ile bakın:</strong> <code>null</code> değerli öznitelik kaynağa
+    <em>hiç yazılmaz</em>; boş bir <code>title=""</code> bile çıkmaz.
+</p>
+
+<h2>9 &middot; @@try / catch</h2>
+@try
+{
+    var bolum = 10 / int.Parse("0");
+    <p>@bolum</p>
+}
+catch (DivideByZeroException)
+{
+    <p class="bos">Sıfıra bölme yakalandı — sayfa çökmedi.</p>
+}
+
+<h2>10 &middot; @@functions — görünüme ait küçük yardımcılar</h2>
+@functions {
+    string Para(decimal d) => d.ToString("0.00") + " TL";
+}
+<p>@Para(kitap.Fiyat)</p>
+<p class="ipucu">
+    Yalnızca <strong>biçimlendirmeye</strong> ait küçük yardımcılar için.
+    İş kuralı ya da veri erişimi buraya yazılmaz (ders notu bölüm 3.5).
+</p>
+
+<p><a asp-controller="Kitap" asp-action="Index">← Listeye dön</a></p>

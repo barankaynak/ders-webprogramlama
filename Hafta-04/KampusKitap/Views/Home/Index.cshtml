@@ -1,0 +1,87 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<h1>KampusKitap — Hafta 4</h1>
+<p class="ipucu">
+    Bu hafta action'lar <code>Content()</code> yerine <code>View()</code> döndürüyor.
+    HTML'i artık Razor üretiyor — <strong>sunucuda</strong>.
+</p>
+
+<h2>Denemeye değer adresler</h2>
+<table class="table">
+    <thead>
+        <tr><th>Adres</th><th>Ne gösteriyor</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a href="/Kitap">/Kitap</a></td>
+            <td>Güçlü tipli görünüm + <code>_KitapKart</code> partial'ı. <strong>Ctrl+U</strong> ile kaynağa bakın.</td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Detay/42">/Kitap/Detay/42</a></td>
+            <td><code>@@model Kitap</code>, açık ifade <code>@@(...)</code>, HTML kodlaması</td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Detay">/Kitap/Detay</a></td>
+            <td><code>View("Secilmedi")</code> — görünüm adı metot adından farklı</td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Detay/999">/Kitap/Detay/999</a></td>
+            <td><code>NotFound()</code> → 404</td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Ara?kelime=a">/Kitap/Ara?kelime=a</a></td>
+            <td><strong>Aynı partial</strong>, ikinci sayfada</td>
+        </tr>
+        <tr>
+            <td><a href="/Kategori">/Kategori</a></td>
+            <td><code>@@section Scripts</code> <em>yok</em> — <code>required: false</code> sayesinde sorun yok</td>
+        </tr>
+        <tr>
+            <td><a href="/Form">/Form</a></td>
+            <td><strong>Hafta 4:</strong> formun sunucuya gönderdiği <strong>ham gövde</strong>. <code>name</code> ile <code>id</code> farkı burada.</td>
+        </tr>
+        <tr>
+            <td><a href="/Form/Kaynak/ROTA?deger=SORGU">/Form/Kaynak/ROTA?deger=SORGU</a></td>
+            <td><strong>Bağlama kaynakları:</strong> aynı ad üç yerden gelince hangisi kazanır?</td>
+        </tr>
+        <tr>
+            <td><a href="/Form/Bagla?sayi=abc&amp;tarih=xyz">/Form/Bagla?sayi=abc</a></td>
+            <td><strong>Bağlama başarısız:</strong> hata yok, <code>sayi = 0</code>, <code>ModelState</code> geçersiz</td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Ekle">/Kitap/Ekle</a></td>
+            <td><strong>Form:</strong> elle yazılmış, ViewModel ile bağlanıyor, <strong>PRG</strong> ile kapanıyor</td>
+        </tr>
+        <tr>
+            <td><a href="/Form/Tuzak">/Form/Tuzak</a></td>
+            <td>🕳️ <strong>Over-posting:</strong> formda olmayan alan gönderilince ne olur</td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Sozdizimi">/Kitap/Sozdizimi</a></td>
+            <td><strong>Razor sözdizimi kılavuzu</strong> — 10 yapı, her birinin ürettiği HTML'le. <strong>Ctrl+U şart.</strong></td>
+        </tr>
+        <tr>
+            <td><a href="/Kitap/Tuzak">/Kitap/Tuzak</a></td>
+            <td>🕳️ <strong>Klasik Tuzak:</strong> görünümün içinde sorgu — çalışır ama yanlış</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Sayfanın altındaki rozet</h2>
+<p class="ipucu">
+    Footer'daki <strong>"bu sayfa N kez gösterildi"</strong> rozeti bir
+    <strong>View Component</strong>'tir. Üç sayfada da görünüyor ve bunun için
+    <strong>hiçbir controller</strong> tek satır yazmadı. Partial olsaydı,
+    rozeti kullanan her controller sayacı hazırlamak zorunda kalırdı.
+</p>
+
+<h2>🧪 Kendiniz bozun</h2>
+<ul>
+    <li><code>_Layout.cshtml</code> içindeki <code>@@RenderBody()</code> satırını yorum yapın → içerik gider, <strong>hata gelmez</strong></li>
+    <li><code>Views/_ViewStart.cshtml</code>'i yorum yapın → menü, CSS, footer gider</li>
+    <li><code>Index.cshtml</code>'de <code>model="k"</code>'yi silin → tip uyuşmazlığı hatası</li>
+    <li><code>Default.cshtml</code>'i <code>Components/</code> dışına taşıyın → bileşen bulunamaz</li>
+    <li><code>_ViewImports.cshtml</code>'den <code>@@addTagHelper *, KampusKitap</code> satırını silin → <code>&lt;vc:…&gt;</code> ekranda metin olarak çıkar</li>
+</ul>

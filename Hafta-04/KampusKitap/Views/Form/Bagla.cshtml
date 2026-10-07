@@ -1,0 +1,46 @@
+@*
+    Bağlama başarısız olduğunda ne olur? Hata fırlamaz; parametre
+    varsayılan değerini alır ve ModelState geçersiz işaretlenir.
+*@
+<h1>Bağlama başarısız olduğunda</h1>
+
+<p class="ipucu">
+    Adres: <code>/Form/Bagla?sayi=abc&amp;sayiNullable=abc&amp;tarih=xyz</code> —
+    hiçbiri geçerli değer değil. <strong>Yine de hata sayfası görmüyorsunuz.</strong>
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:230px">Parametre</th><th>Gelen değer</th></tr></thead>
+    <tbody>
+        <tr><td><code>int sayi</code></td><td><code>@ViewData["sayi"]</code></td></tr>
+        <tr><td><code>int? sayiNullable</code></td><td><code>@ViewData["sayiNullable"]</code></td></tr>
+        <tr><td><code>DateTime tarih</code></td><td><code>@ViewData["tarih"]</code></td></tr>
+    </tbody>
+</table>
+
+<div class="@((bool)ViewData["Gecerli"]! ? "ipucu" : "uyari")">
+    <strong>ModelState.IsValid = @ViewData["Gecerli"]</strong>
+    @if (((List<string>)ViewData["Hatalar"]!).Count > 0)
+    {
+        <ul>
+            @foreach (var h in (List<string>)ViewData["Hatalar"]!)
+            {
+                <li><code>@h</code></li>
+            }
+        </ul>
+    }
+</div>
+
+<div class="uyari">
+    <strong>Dersin can alıcı noktası:</strong> parametre sessizce <code>0</code> ve
+    <code>0001-01-01</code> oldu. <code>if (sayi == 0)</code> yazarsanız
+    "kullanıcı 0 girdi" ile "kullanıcı saçma girdi" <strong>ayırt edilemez</strong>.
+    Ayrımı yapan tek şey <code>ModelState</code>'tir.
+</div>
+
+<h2>Deneyin</h2>
+<ul>
+    <li><a href="/Form/Bagla?sayi=42&amp;sayiNullable=42&amp;tarih=2026-03-01">hepsi geçerli</a></li>
+    <li><a href="/Form/Bagla?sayi=abc&amp;sayiNullable=abc&amp;tarih=xyz">hepsi geçersiz</a></li>
+    <li><a href="/Form/Bagla">hiçbiri yok</a></li>
+</ul>

@@ -1,0 +1,27 @@
+@*
+    ⚠️ BİLEREK YANLIŞ SAYFA — PRG uygulanmamış hâl (ders notu bölüm 3.1).
+
+    Bu görünüm bir POST isteğinin cevabı olarak döndü. Adres çubuğunda artık
+    bir POST duruyor. F5'e basınca tarayıcı o POST'u TEKRARLAR.
+*@
+<h1>Kaydedildi (PRG'siz)</h1>
+
+<div class="uyari">
+    <strong>Şimdi F5'e basın.</strong> Tarayıcı "Formu yeniden göndermek istiyor
+    musunuz?" diye soracak. Onaylarsanız <strong>aynı kayıt ikinci kez eklenecek</strong>.
+    <br /><br />
+    Depodaki kayıt sayısı: <strong style="font-size:1.3em">@ViewData["Adet"]</strong>
+    <br />
+    Her F5'te bu sayının arttığını izleyin.
+</div>
+
+<p class="ipucu">
+    Sorun kullanıcının hatası değil: bir POST isteğinin cevabı olarak görünüm
+    döndürdük ve adres çubuğunda POST bıraktık. Çözüm
+    <code>RedirectToAction</code> — yani <strong>PRG</strong>.
+</p>
+
+<p>
+    <a asp-controller="Kitap" asp-action="Ekle">← Forma dön</a> ·
+    <a asp-controller="Kitap" asp-action="Index">Listeye git</a>
+</p>
