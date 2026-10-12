@@ -1,7 +1,7 @@
 @*
     HAFTA 4 — form ELLE yazılmıştır. Tag Helper YOK.
 
-    Her <input>'un name özniteliğini kendimiz koyuyoruz ve ViewModel'deki
+    Her <input>'un name attribute'ünü kendimiz koyuyoruz ve ViewModel'deki
     özellik adıyla birebir aynı olmasından kendimiz sorumluyuz. Yazım hatası
     yaparsak derleyici uyarmaz, alan sessizce boş gelir.
 
@@ -33,23 +33,23 @@
                 }
             }
         </ul>
-    </div>
+</div>
 }
 
 <form method="post" action="/Kitap/Ekle">
     <p>
         <label for="baslikAlani">Başlık</label><br />
         <input type="text" id="baslikAlani" name="Baslik" value="@Model.Baslik" size="40" />
-    </p>
+</p>
     <p>
         <label for="yazarAlani">Yazar</label><br />
         <input type="text" id="yazarAlani" name="Yazar" value="@Model.Yazar" size="40" />
-    </p>
+</p>
     <p>
         <label for="fiyatAlani">Fiyat</label><br />
         <input type="text" id="fiyatAlani" name="Fiyat" value="@Model.Fiyat" />
         <span class="ipucu" style="display:inline;padding:2px 8px">harf yazıp gönderin: ne olacak?</span>
-    </p>
+</p>
     <p>
         <label for="katAlani">Kategori</label><br />
         <select id="katAlani" name="KategoriId">
@@ -57,11 +57,11 @@
             <option value="2">Bilgisayar</option>
             <option value="3">Bilim kurgu</option>
         </select>
-    </p>
+</p>
     <p>
         <button type="submit">Kaydet (PRG ile)</button>
         <button type="submit" formaction="/Kitap/EkleYanlis">Kaydet (PRG'siz — yanlış)</button>
-    </p>
+</p>
 </form>
 
 <div class="ipucu">

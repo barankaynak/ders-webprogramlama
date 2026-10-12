@@ -30,7 +30,7 @@ public static class KitapDeposu
 
     public static List<Kitap> Ara(string kelime) =>
         Hepsi.Where(k => k.Baslik.Contains(kelime, StringComparison.OrdinalIgnoreCase)
-                      || k.Yazar.Contains(kelime, StringComparison.OrdinalIgnoreCase))
+ || k.Yazar.Contains(kelime, StringComparison.OrdinalIgnoreCase))
              .ToList();
 
     public static string KategoriAdi(int kategoriId) => kategoriId switch

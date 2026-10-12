@@ -10,8 +10,8 @@
     var kitap = KampusKitap.Data.KitapDeposu.Bul(42)!;
     var sayilar = new[] { 3, 7, 11 };
     var durum = "hazir";
-    string? bosEtiket = null;          // null öznitelik denemesi için
-    var secili = true;                 // bool öznitelik denemesi için
+    string? bosEtiket = null;          // null attribute denemesi için
+    var secili = true;                 // bool attribute denemesi için
 }
 
 <h1>Razor sözdizimi — hepsi tek sayfada</h1>
@@ -129,13 +129,13 @@ else
 </div>
 <p class="ipucu">Etiketsiz düz metin yazarken bunlardan biri <strong>gerekir</strong>; yoksa Razor metni C# sanır.</p>
 
-<h2>8 &middot; Öznitelik üretimi ve <code>null</code> davranışı</h2>
-<p class="@durum">class özniteliği C#'tan geldi (class="@durum")</p>
-<p title="@bosEtiket">title özniteliği <strong>null</strong> — kaynakta title hiç yok</p>
-<input type="checkbox" checked="@secili" /> <label>bool öznitelik: true</label><br />
-<input type="checkbox" checked="@(!secili)" /> <label>bool öznitelik: false</label>
+<h2>8 &middot; Attribute üretimi ve <code>null</code> davranışı</h2>
+<p class="@durum">class attribute'ü C#'tan geldi (class="@durum")</p>
+<p title="@bosEtiket">title attribute'ü <strong>null</strong> — kaynakta title hiç yok</p>
+<input type="checkbox" checked="@secili" /> <label>bool attribute: true</label><br />
+<input type="checkbox" checked="@(!secili)" /> <label>bool attribute: false</label>
 <p class="ipucu">
-    <strong>Ctrl+U ile bakın:</strong> <code>null</code> değerli öznitelik kaynağa
+    <strong>Ctrl+U ile bakın:</strong> <code>null</code> değerli attribute kaynağa
     <em>hiç yazılmaz</em>; boş bir <code>title=""</code> bile çıkmaz.
 </p>
 

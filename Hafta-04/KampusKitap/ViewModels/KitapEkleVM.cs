@@ -1,7 +1,7 @@
 namespace KampusKitap.ViewModels;
 
 /// <summary>
-/// HAFTA 4 — ViewModel (görünüm modeli), ders notu bölüm 3.4.
+/// HAFTA 4 — ViewModel (ViewModel), ders notu bölüm 3.4.
 ///
 /// Formun alabileceği alanlar BURADA, açıkça yazılıdır. Entity'yi (Kitap)
 /// doğrudan action parametresi yapsaydık kullanıcı formda olmayan alanları da
@@ -18,7 +18,7 @@ public class KitapEkleVM
     public decimal Fiyat { get; set; }
     public int KategoriId { get; set; }
 
-    // Doğrulama öznitelikleri ([Required], [Range] …) HAFTA 6'nın konusu.
+    // Doğrulama attribute'leri ([Required], [Range] …) HAFTA 6'nın konusu.
     // Bu hafta yalnızca bağlamanın başarısız olabileceğini ve bunun
     // ModelState'e yazıldığını biliyoruz (ders notu bölüm 2.7).
 }

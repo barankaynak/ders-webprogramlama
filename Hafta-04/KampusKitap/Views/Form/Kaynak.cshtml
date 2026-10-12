@@ -1,8 +1,8 @@
 @*
-    Aynı ad (deger) rotada, sorgu dizesinde ve form gövdesinde birden
+    Aynı ad (deger) rotada, query string'de ve form gövdesinde birden
     bulunabilir. Model binding hangisini seçer? Sayfa üçünü de gösterir.
 *@
-<h1>Bağlama kaynakları — hangisi kazanır?</h1>
+<h1>Model Binding kaynakları — hangisi kazanır?</h1>
 
 <p class="ipucu">
     Aşağıdaki form <code>/Form/Kaynak/<strong>rota</strong>?deger=<strong>sorgu</strong></code>
@@ -14,7 +14,7 @@
     <thead><tr><th style="width:220px">Kaynak</th><th>Değer</th></tr></thead>
     <tbody>
         <tr><td>Rota (<code>{deger}</code>)</td><td><code>@ViewData["Rota"]</code></td></tr>
-        <tr><td>Sorgu dizesi (<code>?deger=</code>)</td><td><code>@ViewData["Sorgu"]</code></td></tr>
+        <tr><td>Query string (<code>?deger=</code>)</td><td><code>@ViewData["Sorgu"]</code></td></tr>
         <tr><td>Form gövdesi</td><td><code>@ViewData["Form"]</code></td></tr>
     </tbody>
 </table>

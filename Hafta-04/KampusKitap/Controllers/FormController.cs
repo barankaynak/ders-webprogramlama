@@ -56,7 +56,7 @@ public class FormController : Controller
         => KaynakGoster(deger);
 
     // Aynı istek, tek fark [FromQuery]: öncelik sırası devre dışı kalır,
-    // değer YALNIZCA sorgu dizesinden okunur.
+    // değer YALNIZCA query string'den okunur.
     [HttpPost]
     [Route("Form/KaynakZorla/{deger?}")]
     public IActionResult KaynakZorla([FromQuery] string? deger)
@@ -64,7 +64,7 @@ public class FormController : Controller
 
     private IActionResult KaynakGoster(string? deger)
     {
-        ViewData["Title"] = "Bağlama kaynakları";
+        ViewData["Title"] = "Model Binding kaynakları";
         ViewData["Kazanan"] = deger ?? "(null)";
         ViewData["Rota"] = RouteData.Values.TryGetValue("deger", out var r) ? r?.ToString() : "(yok)";
         ViewData["Sorgu"] = Request.Query.ContainsKey("deger") ? Request.Query["deger"].ToString() : "(yok)";
@@ -80,7 +80,7 @@ public class FormController : Controller
     // GET /Form/Bagla?sayi=abc&tarih=xyz
     public IActionResult Bagla(int sayi, int? sayiNullable, DateTime tarih)
     {
-        ViewData["Title"] = "Bağlama başarısız olduğunda";
+        ViewData["Title"] = "Model Binding başarısız olduğunda";
         ViewData["sayi"] = sayi;                       // int     → 0
         ViewData["sayiNullable"] = sayiNullable?.ToString() ?? "null";
         ViewData["tarih"] = tarih.ToString("O");       // DateTime → 0001-01-01

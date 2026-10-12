@@ -78,7 +78,7 @@ public class KitapController : Controller
     {
         ViewData["Title"] = "Kitap ekle";
 
-        // Bağlama başarısız olabilir ve HATA FIRLATMAZ (ders notu bölüm 2.7).
+        // Model Binding başarısız olabilir ve HATA FIRLATMAZ (ders notu bölüm 2.7).
         // Tek ayırt edici ModelState'tir.
         if (!ModelState.IsValid)
             return View(girdi);          // formu hatalarla geri göster

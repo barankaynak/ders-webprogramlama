@@ -10,14 +10,14 @@
 
 ## Bu haftanın konusu
 
-- **Formun sunucuya gönderdiği şey** — istek gövdesi, `Content-Type`, `name` özniteliği
+- **Formun sunucuya gönderdiği şey** — istek gövdesi, `Content-Type`, `name` attribute'ü
 - **GET/POST çifti** — `[HttpGet]` ve `[HttpPost]`
 - **Model Binding** — metin değerlerin C# nesnesine dönüşmesi
-- **Bağlama kaynakları ve öncelik sırası** — Form → Rota → Sorgu
+- **Model Binding kaynakları ve öncelik sırası** — Form → Rota → Sorgu
 - **`[FromQuery]` · `[FromRoute]` · `[FromForm]` · `[FromBody]`**
-- **Bağlama başarısız olduğunda** — sessiz varsayılan değer ve `ModelState`
+- **Model Binding başarısız olduğunda** — sessiz varsayılan değer ve `ModelState`
 - **Post-Redirect-Get (PRG)** — F5 ile kaydın tekrar eklenmesi ve çözümü
-- **Over-posting (kütle atama)** ve **ViewModel** çözümü
+- **Over-posting ** ve **ViewModel** çözümü
 
 🧩 **Haftanın ilkesi — İstemciden gelen hiçbir veri güvenilir değildir.**
 Formun HTML'ini siz yazarsınız; ama o HTML **kullanıcının makinesinde** çalışır ve
@@ -25,8 +25,8 @@ kullanıcı onu değiştirebilir. Sunucuya ulaşan şey sizin formunuz değil,
 **kullanıcının göndermeyi seçtiği veridir.**
 
 > **Bağlama öncelik sırası sınavda çıkıyor ve çoğu kişi ters ezberliyor:**
-> **1) Form gövdesi · 2) Rota verisi · 3) Sorgu dizesi.**
-> Sorgu dizesini adres çubuğunda gördüğümüz için en güçlü sanırız; **en zayıf olan odur.**
+> **1) Form gövdesi · 2) Route data · 3) Query string.**
+> Query stringni adres çubuğunda gördüğümüz için en güçlü sanırız; **en zayıf olan odur.**
 
 ---
 
@@ -43,10 +43,10 @@ Ana sayfada **denenecek adreslerin listesi** var.
 
 | Dosya | Ne için |
 |---|---|
-| `Controllers/FormController.cs` | Haftanın bütün deneyleri: ham gövde, kaynak sırası, bağlama hatası, over-posting |
+| `Controllers/FormController.cs` | Haftanın bütün deneyleri: ham gövde, kaynak sırası, Model Binding hatası, over-posting |
 | `Views/Form/Index.cshtml` | Formun gönderdiği **ham gövdeyi** ekrana basar |
 | `Views/Form/Kaynak.cshtml` | Aynı ad üç kaynaktan gelince hangisinin kazandığını gösterir |
-| `Views/Form/Bagla.cshtml` | Bağlama başarısız olunca ne olduğunu gösterir |
+| `Views/Form/Bagla.cshtml` | Model Binding başarısız olunca ne olduğunu gösterir |
 | `Views/Form/Tuzak.cshtml` | 🕳️ Over-posting — iki form, tek satır fark |
 | `ViewModels/KitapEkleVM.cs` | Formun alabileceği alanlar — **over-posting çözümü** |
 | `Views/Kitap/Ekle.cshtml` | **Elle yazılmış** form (Tag Helper yok) |
@@ -57,9 +57,9 @@ Ana sayfada **denenecek adreslerin listesi** var.
 | Adres | Ne gösteriyor |
 |---|---|
 | `/Form` | Formun gönderdiği **ham gövde**. `name` ile `id` farkı burada |
-| `/Form/Kaynak/ROTA?deger=SORGU` | **Bağlama kaynakları:** POST düğmesiyle üçü birden yarışır |
+| `/Form/Kaynak/ROTA?deger=SORGU` | **Model Binding kaynakları:** POST düğmesiyle üçü birden yarışır |
 | `/Form/KaynakZorla/ROTA?deger=SORGU` | Aynı istek, tek fark `[FromQuery]` |
-| `/Form/Bagla?sayi=abc&tarih=xyz` | **Bağlama başarısız:** hata yok, `sayi = 0`, `ModelState` geçersiz |
+| `/Form/Bagla?sayi=abc&tarih=xyz` | **Model Binding başarısız:** hata yok, `sayi = 0`, `ModelState` geçersiz |
 | `/Kitap/Ekle` | Elle yazılmış form · ViewModel · **PRG** |
 | `/Form/Tuzak` | 🕳️ **Over-posting:** formda olmayan alan gönderilince |
 
