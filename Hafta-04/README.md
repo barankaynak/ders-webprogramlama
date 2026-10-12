@@ -5,12 +5,6 @@
 | 📄 **Ders notu** | [H04-Ders-Notu.pdf](../PDF/H04-Ders-Notu.pdf) — *sınav kapsamı* |
 | 🔧 **Uygulama** | [H04-Uygulama.pdf](../PDF/H04-Uygulama.pdf) — derste yapılanların dökümü |
 | 📚 **Detay** | [H04-Detay.pdf](../PDF/H04-Detay.pdf) — *sınav kapsamı DIŞI* |
-| 🖱️ **Sunum** | [H04-etkilesimli.html](H04-etkilesimli.html) — indirip tarayıcıda açın |
-
-> 🌐 **Sunumda 3B bir sahne var.** Slayt 10, bağlama kaynaklarının öncelik sırasını
-> üç boyutlu katman olarak gösterir (sürükleyerek çevirebilirsiniz). Sahne `three.js`
-> kütüphanesini internetten çeker; **ağ yoksa ya da tarayıcınız WebGL desteklemiyorsa**
-> aynı sırayı gösteren 2B şema otomatik devreye girer.
 
 ---
 

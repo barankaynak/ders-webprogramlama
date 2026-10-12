@@ -53,3 +53,8 @@ desktop.ini
 *anlatim*
 *ders-plani*
 *izlence-taslak*
+
+# --- sunumlar bu depoya KONMAZ (karar: 2026-10-12) ---
+# Burası örnek proje ve PDF deposudur. Sunum dosyaları özel depoda durur;
+# öğrenciyle başka kanaldan paylaşılır. Kazara kopyalanırsa izlenmesin.
+Hafta-*/H*-etkilesimli.html

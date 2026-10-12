@@ -69,16 +69,16 @@ en sık karşılaşılan hatalar ve çözümleri orada.
 
 ---
 
-## Etkileşimli sunumlar
+## Derste yansıtılan sunumlar
 
-Her haftanın `H0N-etkilesimli.html` dosyası, derste yansıtılan sunumun kendisidir.
-Tek dosyadır, **internetsiz çalışır** — indirip tarayıcıda açabilirsiniz.
+Sunum dosyaları **bu depoda değildir.** Burası dersin **örnek projesi** ve
+**PDF'leri** için; sunumlar ayrı tutuluyor ve sizinle **ders kanalından**
+paylaşılıyor.
 
-**Hafta 3'ten itibaren** sunumlar sabit sahneli slayt biçimindedir ve akışları
-**adım adım** çizer: <kbd>→</kbd> tuşu slayt değil **adım** ilerletir.
+Derste anlatılan her şeyin yazılı karşılığı **ders notu PDF'indedir** — sınav
+kapsamı da odur. Sunum, o metnin görsel anlatım aracıdır.
 
-| Tuş | Hafta 1–2 | Hafta 3+ |
-|---|---|---|
+---|---|---|
 | <kbd>→</kbd> <kbd>←</kbd> | bölüm geçişi | **adım** geçişi (adımlar bitince slayt) |
 | <kbd>Home</kbd> / <kbd>End</kbd> | ilk / son bölüm | ilk / son slayt |
 | <kbd>O</kbd> | — | tüm slaytlar (kuş bakışı) |

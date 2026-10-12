@@ -5,7 +5,6 @@
 | 📄 **Ders notu** | [H02-Ders-Notu.pdf](../PDF/H02-Ders-Notu.pdf) — *sınav kapsamı* |
 | 🔧 **Uygulama** | [H02-Uygulama.pdf](../PDF/H02-Uygulama.pdf) — derste yapılanların dökümü |
 | 📚 **Detay** | [H02-Detay.pdf](../PDF/H02-Detay.pdf) — *sınav kapsamı DIŞI* |
-| 🖱️ **Sunum** | [H02-etkilesimli.html](H02-etkilesimli.html) — indirip tarayıcıda açın |
 
 ---
 

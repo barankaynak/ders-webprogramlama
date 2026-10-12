@@ -5,7 +5,6 @@
 | 📄 **Ders notu** | [H01-Ders-Notu.pdf](../PDF/H01-Ders-Notu.pdf) — *sınav kapsamı* |
 | 🔧 **Uygulama** | [H01-Uygulama.pdf](../PDF/H01-Uygulama.pdf) — derste yapılanların dökümü |
 | 📚 **Detay** | [H01-Detay.pdf](../PDF/H01-Detay.pdf) — *sınav kapsamı DIŞI* |
-| 🖱️ **Sunum** | [H01-etkilesimli.html](H01-etkilesimli.html) — indirip tarayıcıda açın |
 | 🔧 **Kurulum** | [00-Kurulum-Rehberi.pdf](../PDF/00-Kurulum-Rehberi.pdf) — **bu haftanın ev görevi** |
 
 ---
