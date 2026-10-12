@@ -1,11 +1,11 @@
 namespace KampusKitap.ViewModels;
 
 /// <summary>
-/// HAFTA 4 — ViewModel (ViewModel), ders notu bölüm 3.4.
+/// HAFTA 4 — ViewModel (ViewModel), Hafta 4 ders notu bölüm 4.4.
 ///
 /// Formun alabileceği alanlar BURADA, açıkça yazılıdır. Entity'yi (Kitap)
 /// doğrudan action parametresi yapsaydık kullanıcı formda olmayan alanları da
-/// gönderebilirdi — over-posting (ders notu bölüm 3.3).
+/// gönderebilirdi — over-posting (Hafta 4 ders notu bölüm 4.3).
 ///
 /// Dikkat: Kitap sınıfındaki Onayli özelliği burada YOK. Kullanıcı isteğe
 /// Onayli=true eklese bile bağlanacak bir özellik bulunmadığı için düşer.
@@ -20,5 +20,5 @@ public class KitapEkleVM
 
     // Doğrulama attribute'leri ([Required], [Range] …) HAFTA 6'nın konusu.
     // Bu hafta yalnızca bağlamanın başarısız olabileceğini ve bunun
-    // ModelState'e yazıldığını biliyoruz (ders notu bölüm 2.7).
+    // ModelState'e yazıldığını biliyoruz (Hafta 4 ders notu bölüm 3.7).
 }

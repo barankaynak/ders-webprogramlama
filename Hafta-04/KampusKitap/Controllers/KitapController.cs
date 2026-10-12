@@ -71,14 +71,14 @@ public class KitapController : Controller
 
     // POST /Kitap/Ekle → gelen veriyi işle
     //
-    // Parametre ENTITY değil, ViewModel (ders notu bölüm 3.4). Kullanıcı
+    // Parametre ENTITY değil, ViewModel (Hafta 4 ders notu bölüm 4.4). Kullanıcı
     // Onayli=true gönderse bile bağlanacak özellik olmadığı için düşer.
     [HttpPost]
     public IActionResult Ekle(KitapEkleVM girdi)
     {
         ViewData["Title"] = "Kitap ekle";
 
-        // Model Binding başarısız olabilir ve HATA FIRLATMAZ (ders notu bölüm 2.7).
+        // Model Binding başarısız olabilir ve HATA FIRLATMAZ (Hafta 4 ders notu bölüm 3.7).
         // Tek ayırt edici ModelState'tir.
         if (!ModelState.IsValid)
             return View(girdi);          // formu hatalarla geri göster
@@ -94,7 +94,7 @@ public class KitapController : Controller
         };
         KitapDeposu.Ekle(kitap);
 
-        // PRG'nin R'si (ders notu bölüm 3.2): View() dönersek F5 kaydı tekrar ekler.
+        // PRG'nin R'si (Hafta 4 ders notu bölüm 4.2): View() dönersek F5 kaydı tekrar ekler.
         TempData["Mesaj"] = $"\"{kitap.Baslik}\" eklendi.";
         return RedirectToAction(nameof(Index));
     }

@@ -1,0 +1,58 @@
+@*
+    HAFTA 4 — ViewData, ViewBag ve TempData aynı istekte (ders notu bölüm 1).
+    Bu sayfada üçü de çalışır; aralarındaki fark burada GÖRÜNMEZ.
+*@
+<h1>Controller'dan görünüme veri taşımak</h1>
+
+<p class="ipucu">
+    Controller üç değeri de doldurdu, görünüm üçünü de okuyor.
+    <strong>Tek istek içinde üçü de aynı işi yapıyor.</strong>
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:260px">Yol</th><th>Görünümde okunuşu</th><th>Değer</th></tr></thead>
+    <tbody>
+        <tr><td><code>ViewData</code></td><td><code>@@ViewData["Mesaj"]</code></td><td>@ViewData["Mesaj"]</td></tr>
+        <tr><td><code>ViewBag</code></td><td><code>@@ViewBag.Sayi</code></td><td>@ViewBag.Sayi</td></tr>
+        <tr><td><code>TempData</code></td><td><code>@@TempData["Not"]</code></td><td>@TempData.Peek("Not")</td></tr>
+    </tbody>
+</table>
+
+<h2>ViewBag, ViewData'nın başka bir yüzü</h2>
+
+<p>
+    İkisi <strong>aynı sözlüktür</strong>. <code>ViewBag</code>, <code>ViewData</code>
+    sözlüğüne <code>dynamic</code> bir kabuk geçirir. Birine yazıp öbüründen okumak
+    serbesttir:
+</p>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td style="width:260px">Controller'da <code>ViewData["Ortak"]</code></td>
+            <td>görünümde <code>@@ViewBag.Ortak</code> → <strong>@ViewBag.Ortak</strong></td>
+        </tr>
+        <tr>
+            <td>Controller'da <code>ViewBag.Ortak2</code></td>
+            <td>görünümde <code>@@ViewData["Ortak2"]</code> → <strong>@ViewData["Ortak2"]</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="uyari">
+    <strong>Aradaki tek gerçek fark derleme zamanında yakalanır.</strong>
+    <code>@@ViewData["Yanlis"]</code> boş gelir, <code>@@ViewBag.Yanlis</code> da boş gelir —
+    ikisi de sessizdir. Ama <code>@@ViewBag.Yanlis.ToString()</code> sayfa açılırken
+    <code>RuntimeBinderException</code> fırlatır. Sayfanın <strong>asıl verisi</strong>
+    bu yüzden <code>@@model</code> ile taşınır; bunlar yan bilgi içindir.
+</div>
+
+<h2>Ömür farkını görmek</h2>
+
+<p>
+    Fark yalnızca <strong>yönlendirmeden sonra</strong> ortaya çıkar.
+    Aşağıdaki bağlantı üç değeri de doldurur, sonra
+    <code>RedirectToAction</code> ile başka bir action'a gider:
+</p>
+
+<p><a href="/Tasima/Yonlendir"><strong>/Tasima/Yonlendir</strong> → yönlendirmeden sonra ne kalıyor?</a></p>
