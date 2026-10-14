@@ -1,0 +1,21 @@
+@*
+    PARTIAL VIEW — ders notu bölüm 3.1
+
+    Adı alt çizgiyle başlar: "bu dosya tek başına bir sayfa değildir".
+    Views/Shared/ altında olduğu için HER controller kullanabilir.
+
+    Veriyi KENDİSİ GETİRMEZ. Çağıran görünüm ne verirse onu basar:
+        <partial name="_KitapKart" model="k" />
+
+    model="k" yazmazsanız partial üst görünümün modelini alır ve
+    tip uyuşmadığı için InvalidOperationException fırlatır — deneyin.
+*@
+@model Kitap
+
+<article class="kitap-kart">
+    <h3>@Model.Baslik</h3>
+    <p class="yazar">@Model.Yazar</p>
+    <p class="fiyat">@Model.Fiyat TL</p>
+    <span class="rozet">kampüs içi</span>
+    <a asp-controller="Kitap" asp-action="Detay" asp-route-id="@Model.Id">Ayrıntı →</a>
+</article>

@@ -17,16 +17,16 @@
 - **`[FromQuery]` · `[FromRoute]` · `[FromForm]` · `[FromBody]`**
 - **Model Binding başarısız olduğunda** — sessiz varsayılan değer ve `ModelState`
 - **Post-Redirect-Get (PRG)** — F5 ile kaydın tekrar eklenmesi ve çözümü
-- **Over-posting ** ve **ViewModel** çözümü
+- **Over-posting / mass assignment** ve **ViewModel** çözümü
 
 🧩 **Haftanın ilkesi — İstemciden gelen hiçbir veri güvenilir değildir.**
 Formun HTML'ini siz yazarsınız; ama o HTML **kullanıcının makinesinde** çalışır ve
 kullanıcı onu değiştirebilir. Sunucuya ulaşan şey sizin formunuz değil,
 **kullanıcının göndermeyi seçtiği veridir.**
 
-> **Bağlama öncelik sırası sınavda çıkıyor ve çoğu kişi ters ezberliyor:**
+> **Model Binding öncelik sırası sınavda çıkıyor ve çoğu kişi ters ezberliyor:**
 > **1) Form gövdesi · 2) Route data · 3) Query string.**
-> Query stringni adres çubuğunda gördüğümüz için en güçlü sanırız; **en zayıf olan odur.**
+> Query string’i adres çubuğunda gördüğümüz için en güçlü sanırız; **en zayıf olan odur.**
 
 ---
 

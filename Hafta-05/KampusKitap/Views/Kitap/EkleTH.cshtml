@@ -1,0 +1,121 @@
+@*
+    HAFTA 5 — Hafta 4'teki formun Tag Helper'lı hâli
+    (Hafta 5 ders notu bölüm 3).
+
+    Views/Kitap/Ekle.cshtml ile YAN YANA okunmak üzere yazıldı:
+    aynı form, aynı alanlar, aynı action — farklı yazım.
+
+    Dikkat edilecek tek şey: burada hiçbir yerde name="…" YAZMIYORUZ.
+*@
+@model KampusKitap.ViewModels.KitapEkleVM
+
+<h1>Kitap ekle <span class="ipucu" style="display:inline-block;padding:2px 8px;font-size:.6em">Tag Helper</span></h1>
+
+<p class="ipucu">
+    Bu form <strong>Tag Helper'larla</strong> yazıldı. <strong>Ctrl+U</strong> ile kaynağa bakın
+    ve <a asp-action="Ekle">elle yazılmış hâliyle</a> karşılaştırın: üretilen HTML neredeyse
+    aynı — <strong>iki fark dışında</strong>.
+</p>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="uyari">
+        <strong>Bağlanamayan alanlar var.</strong> Hata fırlamadı; parametreler
+        varsayılan değerlerini aldı ve <code>ModelState</code> geçersiz işaretlendi.
+        <ul>
+            @foreach (var giris in ViewData.ModelState)
+            {
+                foreach (var hata in giris.Value.Errors)
+                {
+                    <li><code>@giris.Key</code>: @(string.IsNullOrEmpty(hata.ErrorMessage)
+                        ? "değer çevrilemedi" : hata.ErrorMessage)</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+<form asp-controller="Kitap" asp-action="EkleTH" method="post">
+    <p>
+        <label asp-for="Baslik"></label><br />
+        <input asp-for="Baslik" size="40" />
+    </p>
+    <p>
+        <label asp-for="Yazar"></label><br />
+        <input asp-for="Yazar" size="40" />
+    </p>
+    <p>
+        <label asp-for="Fiyat"></label><br />
+        <input asp-for="Fiyat" />
+        <span class="ipucu" style="display:inline;padding:2px 8px">harf yazıp gönderin: ne olacak?</span>
+    </p>
+    <p>
+        <label asp-for="KategoriId"></label><br />
+        <select asp-for="KategoriId"
+                asp-items="@(new SelectList(KampusKitap.Data.KitapDeposu.Kategoriler, "Key", "Value"))">
+            <option value="">— seçiniz —</option>
+        </select>
+    </p>
+    <p>
+        <button type="submit">Kaydet</button>
+    </p>
+</form>
+
+<h2>İki yazım, iki fark</h2>
+
+<table class="table">
+    <thead>
+        <tr><th style="width:240px"></th><th>Elle (Hafta 4)</th><th>Tag Helper (bu hafta)</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>name</code> değerini kim yazdı?</td>
+            <td><strong>Biz</strong> — yazım hatası sessiz kalırdı</td>
+            <td><strong>Çatı</strong> — özellik adından türetti</td>
+        </tr>
+        <tr>
+            <td><code>action</code> adresini kim yazdı?</td>
+            <td><strong>Biz</strong> — rota değişince kırılır</td>
+            <td><strong>Çatı</strong> — rotadan üretti</td>
+        </tr>
+        <tr>
+            <td>Etiket metni nereden geldi?</td>
+            <td>Elle yazdık</td>
+            <td><code>[Display(Name = "…")]</code></td>
+        </tr>
+        <tr>
+            <td><code>type</code> nereden geldi?</td>
+            <td>Elle: hepsi <code>text</code></td>
+            <td>Model tipinden çıkarıldı</td>
+        </tr>
+        <tr class="elle">
+            <td><strong>Anti-forgery token</strong></td>
+            <td><strong>YOK</strong></td>
+            <td><strong>VAR</strong> — istemeden geldi</td>
+        </tr>
+        <tr class="elle">
+            <td>Yazım hatası ne zaman yakalanır?</td>
+            <td><strong>Hiç</strong> — alan sessizce boş gelir</td>
+            <td><strong>Derlemede</strong> — proje derlenmez</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong>Son satırı deneyin.</strong> Yukarıdaki <code>asp-for="Baslik"</code> yazımını
+    <code>asp-for="Balsik"</code> yapıp projeyi derleyin. Hafta 4'te bu hata sayfayı
+    sessizce boş bırakıyordu; şimdi <strong>derleyici durduruyor</strong>.
+</div>
+
+<div class="uyari">
+    <strong><code>&lt;option value=""&gt;— seçiniz —&lt;/option&gt;</code> neden elle yazıldı?</strong>
+    <code>asp-items</code> yalnızca listedeki seçenekleri üretir. "Hiçbiri" seçeneğini
+    isteyen biziz, o yüzden onu kendimiz koyuyoruz — Tag Helper onu silmez,
+    ürettiklerinin <strong>önüne</strong> ekler.
+</div>
+
+<p>
+    <a asp-action="Ekle">← elle yazılmış hâli</a> &nbsp;·&nbsp;
+    <a asp-action="Index">listeye dön</a> &nbsp;·&nbsp;
+    <a asp-controller="Etiket" asp-action="Csrf">→ token nereden geldi?</a>
+</p>

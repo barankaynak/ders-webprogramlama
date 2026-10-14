@@ -1,0 +1,84 @@
+@*
+    HAFTA 4 — HttpContext ile forma erişmek (ders notu bölüm 2.6).
+
+    Model Binding'in altında duran nesne HttpContext'tir. Aynı form verisine
+    üç yazımla ulaşıp hepsinin aynı yere baktığını gösteriyoruz.
+*@
+<h1>HttpContext ile forma erişmek</h1>
+
+<p class="ipucu">
+    Bu sayfa <strong>Model Binding kullanmıyor</strong>. Değerleri isteğin kendisinden,
+    <code>HttpContext</code> üzerinden okuyor.
+</p>
+
+<form method="post" action="/Baglam?kaynak=sorgudan-geldi">
+    <p>
+        <label for="baslikAlani">Başlık</label><br />
+        <input type="text" id="baslikAlani" name="Baslik" value="Suç ve Ceza" size="40" />
+    </p>
+    <p><button type="submit">Gönder</button></p>
+</form>
+
+@if (ViewData["Uzun"] != null)
+{
+    <h2>Üç yazım, tek kaynak</h2>
+
+    <table class="table">
+        <thead><tr><th style="width:360px">Yazım</th><th>Okuduğu değer</th></tr></thead>
+        <tbody>
+            <tr><td><code>HttpContext.Request.Form["Baslik"]</code></td><td><code>@ViewData["Uzun"]</code></td></tr>
+            <tr><td><code>Request.Form["Baslik"]</code></td><td><code>@ViewData["Kisa"]</code></td></tr>
+            <tr><td><code>form["Baslik"]</code> <span class="ipucu" style="display:inline;padding:1px 6px">IFormCollection parametresi</span></td><td><code>@ViewData["Parametre"]</code></td></tr>
+        </tbody>
+    </table>
+
+    <div class="ipucu">
+        <strong>Üçü aynı nesne mi?</strong>
+        <code>ReferenceEquals(HttpContext.Request.Form, form)</code> →
+        <strong>@ViewData["AyniMi"]</strong>
+        <div style="margin-top:6px">
+            Controller içinde <code>Request</code>, <code>HttpContext.Request</code>'in
+            <strong>kısayolundan başka bir şey değildir</strong>. <code>IFormCollection</code>
+            parametresi de çatının size uzattığı <strong>aynı koleksiyondur</strong>.
+        </div>
+    </div>
+
+    <h2>HttpContext yalnızca formu taşımaz</h2>
+
+    <p>İsteğin tamamı buradadır:</p>
+
+    <table class="table">
+        <tbody>
+            <tr><td style="width:300px"><code>Request.Method</code></td><td><code>@ViewData["Metot"]</code></td></tr>
+            <tr><td><code>Request.Path</code></td><td><code>@ViewData["Yol"]</code></td></tr>
+            <tr><td><code>Request.ContentType</code></td><td><code>@ViewData["Tip"]</code></td></tr>
+            <tr><td><code>Request.Query["kaynak"]</code></td><td><code>@ViewData["Sorgu"]</code></td></tr>
+            <tr><td><code>Request.Headers.UserAgent</code></td><td><code>@ViewData["Tarayici"]</code></td></tr>
+            <tr><td><code>Request.Cookies.Count</code></td><td><code>@ViewData["Cerez"]</code></td></tr>
+        </tbody>
+    </table>
+
+    <div class="uyari">
+        <strong>Olmayan alan hata vermez.</strong>
+        <code>Request.Form["Balsik"]</code> →
+        <code>"@ViewData["Olmayan"]"</code> (boş mu: <strong>@ViewData["OlmayanBos"]</strong>).
+        Yazım hatası burada da <strong>sessizdir</strong> — Model Binding'i tercih etmemizin
+        sebeplerinden biri budur.
+    </div>
+}
+
+<h2>Görünümde de erişilebilir</h2>
+
+<p>
+    Razor görünümünde <code>@@Context</code> aynı nesneyi verir. Bu sayfa şu an
+    <code>@Context.Request.Method</code> metoduyla açıldı ve yolu
+    <code>@Context.Request.Path</code>.
+</p>
+
+<div class="uyari">
+    <strong>Ama alışkanlık hâline getirmeyin.</strong> Görünümün işi veriyi
+    <em>göstermektir</em>, istekten veri <em>çıkarmak</em> değil. Veriyi controller
+    hazırlar, görünüme <code>@@model</code> ile gelir.
+</div>
+
+<p><a href="/Baglam/Tehlike">🐛 GET isteğinde <code>Request.Form</code> okunursa ne olur?</a></p>
