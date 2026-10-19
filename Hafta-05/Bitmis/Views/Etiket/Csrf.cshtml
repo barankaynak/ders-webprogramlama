@@ -1,0 +1,113 @@
+@*
+    HAFTA 5 — anti-forgery token (Hafta 5 ders notu bölüm 4).
+
+    Üç form yan yana:
+      1. Tag Helper + POST  → token var, action çalışır
+      2. Tag Helper + GET   → token YOK (gerekmiyor)
+      3. Elle yazılmış POST → token YOK, istek 400 ile reddedilir
+*@
+<h1>Anti-forgery token</h1>
+
+@if (ViewData["Sonuc"] != null)
+{
+    <div class="ipucu"><strong>@ViewData["Sonuc"]</strong></div>
+}
+
+<p class="ipucu">
+    Bu sayfadaki üç formun ikisi <strong>aynı action'a</strong> gidiyor.
+    Biri çalışacak, biri <strong>400</strong> ile reddedilecek. Aradaki tek fark
+    <strong>bir gizli alan</strong>.
+</p>
+
+<h2>1 · Tag Helper ile POST</h2>
+
+<form asp-action="Csrf" method="post" id="formTH">
+    <input type="text" name="mesaj" value="Tag Helper formundan" size="34" />
+    <button type="submit">Gönder</button>
+</form>
+
+<p>Bu formun ürettiği gizli alan:</p>
+<pre id="gizliTH"><code>(betik dolduruyor)</code></pre>
+
+<div class="ipucu">
+    <code>&lt;form asp-action="Csrf" method="post"&gt;</code> yazdık.
+    Çatı hem <code>action</code> adresini üretti hem de
+    <code>__RequestVerificationToken</code> alanını <strong>kendiliğinden</strong> ekledi.
+    <strong>Biz istemedik.</strong>
+</div>
+
+<h2>2 · Tag Helper ile GET</h2>
+
+<form asp-action="Csrf" method="get" id="formGet">
+    <input type="text" name="mesaj" value="GET formundan" size="34" />
+    <button type="submit">Gönder (GET)</button>
+</form>
+
+<p>Bu formda gizli alan: <strong id="gizliGet">(betik dolduruyor)</strong></p>
+
+<div class="uyari">
+    <strong>Aynı Tag Helper, bu kez token üretmedi.</strong> Çünkü token
+    <em>veri değiştiren</em> istekler içindir. GET bir okuma isteğidir; Hafta 4'ün
+    kuralı burada da geçerli: <strong>okuma GET, değiştirme POST</strong>.
+</div>
+
+<h2>3 · Elle yazılmış POST</h2>
+
+<form method="post" action="/Etiket/Csrf">
+    <input type="text" name="mesaj" value="Elle yazılan formdan" size="34" />
+    <button type="submit">Gönder (reddedilecek)</button>
+</form>
+
+<div class="uyari">
+    <strong>Bu düğme 400 Bad Request getirecek.</strong> Dikkat edin:
+    <ul style="margin:6px 0 0">
+        <li>Ekranda <strong>hiçbir açıklama yok</strong> — boş bir sayfa.</li>
+        <li>Bir <strong>exception değil</strong>; hata sayfası da görmezsiniz.</li>
+        <li>Action'ın içindeki kod <strong>hiç çalışmadı</strong>.</li>
+    </ul>
+    <div style="margin-top:8px">
+        Sebep: <code>[ValidateAntiForgeryToken]</code> isteği action'a <em>ulaşmadan</em>
+        reddetti.
+    </div>
+</div>
+
+<h2>Token neyi engelliyor?</h2>
+
+<table class="table">
+    <thead><tr><th style="width:280px">Saldırganın sayfası</th><th>Yapabilir mi?</th></tr></thead>
+    <tbody>
+        <tr><td>Sizin sitenize form göndermek</td><td><strong>Evet</strong> — HTML'i kendi sayfasına yazar</td></tr>
+        <tr><td>Tarayıcının oturum cookie'sini ekletmek</td><td><strong>Evet</strong> — tarayıcı bunu <em>otomatik</em> yapar</td></tr>
+        <tr class="elle"><td>Token'ın değerini öğrenmek</td><td><strong>Hayır</strong> — başka sitenin sayfasını okuyamaz</td></tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong>Koruma tam olarak bu boşluktan doğuyor.</strong> Cookie otomatik gider,
+    gizli alan gitmez. Sunucu ikisinin <strong>eşleştiğini</strong> arar:
+    cookie'deki değer ile formdaki değer aynı anahtardan türemiş olmalı.
+    Yalnızca cookie yeterli değildir — bunu <code>curl</code> ile denediğimizde de
+    <strong>400</strong> aldık.
+</div>
+
+<p>
+    <a asp-action="Baglanti">← URL üreten Tag Helper'lar</a> &nbsp;·&nbsp;
+    <a asp-action="Eksik">→ 🐛 addTagHelper olmayınca</a>
+</p>
+
+@section Scripts {
+    <script>
+        function gizliAlan(formId, hedefId, bos) {
+            var f = document.getElementById(formId);
+            var t = f.querySelector('input[name="__RequestVerificationToken"]');
+            var h = document.getElementById(hedefId);
+            if (!t) { h.textContent = bos; return; }
+            // Token uzun; tamamını değil başını gösteriyoruz.
+            var v = t.getAttribute('value') || '';
+            h.textContent = '<input name="__RequestVerificationToken" type="hidden"\n       value="'
+                          + v.slice(0, 40) + '… (' + v.length + ' karakter)" />';
+        }
+        gizliAlan('formTH', 'gizliTH', '(yok)');
+        gizliAlan('formGet', 'gizliGet', 'YOK — GET formunda token üretilmez');
+    </script>
+}

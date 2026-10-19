@@ -1,0 +1,68 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+/* ===== Hafta 3 — Razor, Layout, Partial, View Component ===== */
+
+.ipucu { background:#f6f3ec; border-left:4px solid #8a3d0f; padding:.7rem .9rem;
+         border-radius:0 6px 6px 0; }
+.bos   { color:#6b6459; font-style:italic; }
+.kapali{ color:#9a9288; }
+
+.kart-liste { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+              gap:1rem; margin:1rem 0; }
+
+/* Partial View ile üretilen kart — tek dosyada durur */
+.kitap-kart { border:1px solid #ddd6ca; border-radius:10px; padding:.9rem 1rem;
+              background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+.kitap-kart h3    { font-size:1.1rem; margin:0 0 .3rem; }
+.kitap-kart .yazar{ color:#6b6459; margin:0 0 .2rem; font-size:.92rem; }
+.kitap-kart .fiyat{ font-weight:700; margin:0 0 .5rem; }
+.kitap-kart .rozet{ display:inline-block; font-size:.72rem; font-weight:700;
+                    background:#fbeadf; color:#8a3d0f; border-radius:999px;
+                    padding:.1rem .5rem; margin-right:.5rem; }
+
+/* View Component ile üretilen rozet — veriyi kendi getirir */
+.sayac-rozet { display:inline-block; font-size:.8rem; font-weight:700;
+               background:#eee8f5; color:#5c3f78; border-radius:999px;
+               padding:.15rem .6rem; cursor:help; }
+
+.detay { display:grid; grid-template-columns:140px 1fr; gap:.3rem 1rem; margin:1rem 0; }
+.detay dt { font-weight:700; color:#6b6459; }
+.detay dd { margin:0; }
+
+.etiket          { font-weight:700; border-radius:4px; padding:.05rem .4rem; }
+.etiket.uygun    { background:#e6f1e4; color:#2f6b2a; }
+.etiket.pahalı   { background:#fae7e5; color:#a4231b; }
+
+.uyari { background:#fae7e5; border-left:4px solid #a4231b; padding:.7rem .9rem;
+         border-radius:0 6px 6px 0; margin:1rem 0; }
+
+.tuzak-liste, .kategori-liste { line-height:1.8; }

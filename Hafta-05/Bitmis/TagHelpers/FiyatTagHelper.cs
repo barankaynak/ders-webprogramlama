@@ -1,0 +1,34 @@
+using Microsoft.AspNetCore.Razor.TagHelpers;
+
+namespace KampusKitap.TagHelpers;
+
+/// <summary>
+/// HAFTA 5 (detay) — projenin KENDİ Tag Helper'ı.
+///
+/// Kullanımı:  &lt;fiyat deger="120.5" /&gt;
+/// Ürettiği:   &lt;span class="fiyat"&gt;120,50 ₺&lt;/span&gt;
+///
+/// Sınıf adının sonundaki "TagHelper" eki, etiket adını belirler:
+/// FiyatTagHelper → &lt;fiyat&gt;. Attribute adları da aynı şekilde
+/// özellik adlarından türetilir (PascalCase → kebab-case).
+///
+/// Bu sınıfın görünümlerde tanınması için _ViewImports.cshtml'deki
+/// "@addTagHelper *, KampusKitap" satırı gerekir (ders notu bölüm 1.3).
+/// </summary>
+public class FiyatTagHelper : TagHelper
+{
+    /// <summary>&lt;fiyat deger="…" /&gt;</summary>
+    public decimal Deger { get; set; }
+
+    /// <summary>&lt;fiyat para-birimi="$" /&gt; — iki kelimeli ad kebab-case olur.</summary>
+    public string ParaBirimi { get; set; } = "₺";
+
+    public override void Process(TagHelperContext context, TagHelperOutput output)
+    {
+        // ✔ TODO 5.8 · (İLERİ) `Process` gövdesini yazın: `<fiyat>` etiketini `<span class="fiyat">120,50 ₺</span>` yapın
+        output.TagName = "span";                       // <fiyat> → <span>
+        output.TagMode = TagMode.StartTagAndEndTag;    // kendi kendini kapatmasın
+        output.Attributes.SetAttribute("class", "fiyat");
+        output.Content.SetContent($"{Deger:N2} {ParaBirimi}");
+    }
+}

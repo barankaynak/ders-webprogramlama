@@ -1,0 +1,133 @@
+@*
+    HAFTA 5 — Hafta 4'teki formun Tag Helper'lı hâli
+    (Hafta 5 ders notu bölüm 3).
+
+    Views/Kitap/Ekle.cshtml ile YAN YANA okunmak üzere yazıldı:
+    aynı form, aynı alanlar, aynı action — farklı yazım.
+
+    Dikkat edilecek tek şey: burada hiçbir yerde name="…" YAZMIYORUZ.
+*@
+@model KampusKitap.ViewModels.KitapEkleVM
+
+<h1>Kitap ekle <span class="ipucu" style="display:inline-block;padding:2px 8px;font-size:.6em">Tag Helper</span></h1>
+
+<p class="ipucu">
+    Bu sayfa, Hafta 4'teki <a asp-action="Ekle">elle yazılmış formun</a> Tag Helper
+    karşılığıdır. Hafta 5'in Başlangıç projesinde <strong>TODO 5.2 – 5.6</strong> ile adım adım
+    dönüştürülür. Her adımdan sonra <strong>Ctrl+U</strong> ile kaynağa bakın: ekranda
+    neredeyse hiçbir şey değişmez — değişen, <strong>tarayıcıya giden HTML</strong>'dir.
+</p>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="uyari">
+        <strong>Bağlanamayan alanlar var.</strong> Hata fırlamadı; parametreler
+        varsayılan değerlerini aldı ve <code>ModelState</code> geçersiz işaretlendi.
+        <ul>
+            @foreach (var giris in ViewData.ModelState)
+            {
+                foreach (var hata in giris.Value.Errors)
+                {
+                    <li><code>@giris.Key</code>: @(string.IsNullOrEmpty(hata.ErrorMessage)
+                        ? "değer çevrilemedi" : hata.ErrorMessage)</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+@* TODO 5.2 · Form etiketini Tag Helper'a çevirin: `asp-controller` ve `asp-action` *@
+@*      ipucu: ders notu bölüm 2.4 — Ctrl+U: `action` adresi üretildi ve formun sonunda `__RequestVerificationToken` belirdi *@
+<form method="post" action="/Kitap/EkleTH">
+    <p>
+        @* TODO 5.3 · Başlık alanını Tag Helper'a çevirin: `<label asp-for>` ve `<input asp-for>` *@
+        @*      ipucu: ders notu bölüm 3.1 ve 3.3 — Ctrl+U: `name`, `id` ve `type`'ı siz yazmadınız. Etiket metni "Baslik" oldu (TODO 5.5'i bekleyin) *@
+        <label for="baslikAlani">Başlık</label><br />
+        <input type="text" id="baslikAlani" name="Baslik" value="@Model.Baslik" size="40" />
+    </p>
+    <p>
+        @* TODO 5.4 · Yazar ve Fiyat alanları için de aynısını yapın *@
+        @*      ipucu: Fiyat için Ctrl+U'da `type`'a bakın — neden `number` değil de `text`? (ders notu bölüm 3.2) *@
+        <label for="yazarAlani">Yazar</label><br />
+        <input type="text" id="yazarAlani" name="Yazar" value="@Model.Yazar" size="40" />
+    </p>
+    <p>
+        @* TODO 5.4 · Fiyat alanı *@
+        <label for="fiyatAlani">Fiyat</label><br />
+        <input type="text" id="fiyatAlani" name="Fiyat" value="@Model.Fiyat" />
+        <span class="ipucu" style="display:inline;padding:2px 8px">harf yazıp gönderin: ne olacak?</span>
+    </p>
+    <p>
+        @* TODO 5.6 · Kategori listesini `<select asp-for asp-items>` yapın; kaynak: `KitapDeposu.Kategoriler` *@
+        @*      ipucu: ders notu bölüm 3.4 — "— seçiniz —" satırını siz bırakın, Tag Helper diğerlerini arkasına ekler *@
+        <label for="katAlani">Kategori</label><br />
+        <select id="katAlani" name="KategoriId">
+            <option value="1">Edebiyat</option>
+            <option value="2">Bilgisayar</option>
+            <option value="3">Bilim kurgu</option>
+        </select>
+    </p>
+    <p>
+        <button type="submit">Kaydet</button>
+    </p>
+</form>
+
+<h2>İki yazım, iki fark</h2>
+
+<table class="table">
+    <thead>
+        <tr><th style="width:240px"></th><th>Elle (Hafta 4)</th><th>Tag Helper (bu hafta)</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>name</code> değerini kim yazdı?</td>
+            <td><strong>Biz</strong> — yazım hatası sessiz kalırdı</td>
+            <td><strong>Çatı</strong> — özellik adından türetti</td>
+        </tr>
+        <tr>
+            <td><code>action</code> adresini kim yazdı?</td>
+            <td><strong>Biz</strong> — rota değişince kırılır</td>
+            <td><strong>Çatı</strong> — rotadan üretti</td>
+        </tr>
+        <tr>
+            <td>Etiket metni nereden geldi?</td>
+            <td>Elle yazdık</td>
+            <td><code>[Display(Name = "…")]</code></td>
+        </tr>
+        <tr>
+            <td><code>type</code> nereden geldi?</td>
+            <td>Elle: hepsi <code>text</code></td>
+            <td>Model tipinden çıkarıldı</td>
+        </tr>
+        <tr class="elle">
+            <td><strong>Anti-forgery token</strong></td>
+            <td><strong>YOK</strong></td>
+            <td><strong>VAR</strong> — istemeden geldi</td>
+        </tr>
+        <tr class="elle">
+            <td>Yazım hatası ne zaman yakalanır?</td>
+            <td><strong>Hiç</strong> — alan sessizce boş gelir</td>
+            <td><strong>Derlemede</strong> — proje derlenmez</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong>Son satırı deneyin</strong> (Hafta 5'in Başlangıç projesinde TODO 5.3'ten sonra).
+    Yukarıdaki <code>asp-for="Baslik"</code> yazımını
+    <code>asp-for="Balsik"</code> yapıp projeyi derleyin. Hafta 4'te bu hata sayfayı
+    sessizce boş bırakıyordu; şimdi <strong>derleyici durduruyor</strong>.
+</div>
+
+<div class="uyari">
+    <strong><code>&lt;option value=""&gt;— seçiniz —&lt;/option&gt;</code> neden elle yazıldı?</strong>
+    <code>asp-items</code> yalnızca listedeki seçenekleri üretir. "Hiçbiri" seçeneğini
+    isteyen biziz, o yüzden onu kendimiz koyuyoruz — Tag Helper onu silmez,
+    ürettiklerinin <strong>önüne</strong> ekler.
+</div>
+
+<p>
+    <a asp-action="Ekle">← elle yazılmış hâli</a> &nbsp;·&nbsp;
+    <a asp-action="Index">listeye dön</a> &nbsp;·&nbsp;
+    <a asp-controller="Etiket" asp-action="Csrf">→ token nereden geldi?</a>
+</p>

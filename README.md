@@ -27,7 +27,7 @@ Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 | 02 | ASP.NET Core MVC Temelleri ve Mimari Yapısı | [PDF](PDF/H02-Ders-Notu.pdf) | [PDF](PDF/H02-Uygulama.pdf) | [PDF](PDF/H02-Detay.pdf) | [Hafta-02](Hafta-02/) |
 | 03 | Razor Syntax, View Component, Layout | [PDF](PDF/H03-Ders-Notu.pdf) | [PDF](PDF/H03-Uygulama.pdf) | [PDF](PDF/H03-Detay.pdf) | [Hafta-03](Hafta-03/) |
 | 04 | Web Formlar | [PDF](PDF/H04-Ders-Notu.pdf) | [PDF](PDF/H04-Uygulama.pdf) | [PDF](PDF/H04-Detay.pdf) | [Hafta-04](Hafta-04/) |
-| 05 | Tag Helper’lar | [PDF](PDF/H05-Ders-Notu.pdf) | [PDF](PDF/H05-Uygulama.pdf) | [PDF](PDF/H05-Detay.pdf) | [Hafta-05](Hafta-05/) |
+| 05 | Tag Helper’lar | [PDF](PDF/H05-Ders-Notu.pdf) | [PDF](PDF/H05-Uygulama.pdf) | [PDF](PDF/H05-Detay.pdf) | [Başlangıç](Hafta-05/Baslangic/) · [Bitmiş](Hafta-05/Bitmis/) |
 
 > Haftalar ders ilerledikçe eklenir. Aşağıdaki plan dönem başında duyurulmuştur.
 
@@ -54,8 +54,26 @@ Ardından terminalde yazan `https://localhost:7xxx` adresini açın.
 | .NET SDK | **10.0** veya üzeri (`dotnet --version` ile kontrol edin) |
 | Veritabanı | Yok — Hafta 8'e kadar veri bellekte tutulur, sonra **SQLite** (kurulum gerektirmez) |
 
-> 💡 Her hafta klasörü **kendi başına çalışır.** Hafta 5'ten başlamak isterseniz
-> doğrudan o klasöre girip `dotnet run` diyebilirsiniz.
+> 💡 Her hafta klasörü **kendi başına çalışır.** İstediğiniz haftadan başlayabilirsiniz.
+
+### Hafta 5'ten itibaren: Başlangıç ve Bitmiş
+
+Hafta 5'ten itibaren her haftanın projesi **iki klasörde** gelir:
+
+| Klasör | Ne | Port |
+|---|---|---|
+| **`Hafta-NN/Baslangic/`** | **Buradan başlayın.** Haftanın konusu olan yerler boş ve `TODO N.x` ile işaretli. Derlenir, çalışır; boşlukları doldurdukça değişikliği görürsünüz. | 5072 |
+| **`Hafta-NN/Bitmis/`** | Aynı projenin tamamlanmış hâli. Her doldurulmuş yerin üstünde `✔ TODO N.x` izi var. | 5073 |
+
+```bash
+cd Hafta-05/Baslangic
+dotnet run
+```
+
+Her haftanın `README.md` dosyasında **doldurulacak yerlerin tablosu** vardır.
+Takıldığınızda Bitmiş'te aynı `TODO` numarasını aratın — **ama önce kendiniz deneyin.**
+
+> Hafta 1 – 4 tek klasördür (`Hafta-NN/KampusKitap/`).
 
 ### Bir hafta çalışmazsa
 
