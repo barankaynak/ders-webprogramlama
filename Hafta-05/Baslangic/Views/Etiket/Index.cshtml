@@ -8,6 +8,20 @@
     Sunucunun gönderdiği baytların birebir hâli için Ctrl+U.
 *@
 @model KampusKitap.ViewModels.EtiketVM
+@{
+    // List<int> özelliğe bağlı select için: Hafta 5 ders notu bölüm 3.4
+    var kategoriler = new SelectList(KampusKitap.Data.KitapDeposu.Kategoriler, "Key", "Value");
+
+    // <optgroup> üretmek için her seçeneğe bir grup verilir
+    var lisans = new SelectListGroup { Name = "Lisans" };
+    var yuksek = new SelectListGroup { Name = "Yüksek lisans" };
+    var dersler = new List<SelectListItem>
+    {
+        new() { Value = "1", Text = "Web Programlama",      Group = lisans },
+        new() { Value = "2", Text = "Veri Yapıları",        Group = lisans },
+        new() { Value = "3", Text = "İleri Web Mimarileri", Group = yuksek }
+    };
+}
 
 <h1><code>asp-for</code> ne üretiyor?</h1>
 
@@ -41,6 +55,10 @@
         <tr>
             <td><code>&lt;input asp-for="Fiyat" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">decimal</span></td>
             <td><input asp-for="Fiyat" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Fiyat"<br />&nbsp;&nbsp;asp-format="{0:N4}" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">value'nun biçimi · data-val neden yok?</span></td>
+            <td><input asp-for="Fiyat" asp-format="{0:N4}" data-goster /></td>
         </tr>
         <tr>
             <td><code>&lt;input asp-for="Tarih" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">DateTime</span></td>
@@ -78,10 +96,26 @@
             <td><code>&lt;select asp-for="Kategori"<br />&nbsp;&nbsp;asp-items="Html.GetEnumSelectList&lt;KategoriTuru&gt;()"&gt;</code></td>
             <td><select asp-for="Kategori" asp-items="Html.GetEnumSelectList<KampusKitap.ViewModels.KategoriTuru>()" data-goster></select></td>
         </tr>
+        <tr>
+            <td><code>&lt;select asp-for="SecilenKategoriler"<br />&nbsp;&nbsp;asp-items="…"&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">List&lt;int&gt;</span></td>
+            <td><select asp-for="SecilenKategoriler" asp-items="kategoriler" data-goster></select></td>
+        </tr>
+        <tr>
+            <td><code>&lt;select asp-for="DersId"<br />&nbsp;&nbsp;asp-items="dersler"&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">SelectListGroup</span></td>
+            <td><select asp-for="DersId" asp-items="dersler" data-goster></select></td>
+        </tr>
+        <tr>
+            <td><code>&lt;span asp-validation-for="Metin"&gt;&lt;/span&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">alanın hata yeri</span></td>
+            <td><span asp-validation-for="Metin" data-goster></span></td>
+        </tr>
+        <tr>
+            <td><code>&lt;div asp-validation-summary="All"&gt;&lt;/div&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">bütün hataların listesi</span></td>
+            <td><div asp-validation-summary="All" data-goster></div></td>
+        </tr>
     </tbody>
 </table>
 
-<h2>Dört gözlem</h2>
+<h2>Yedi gözlem</h2>
 
 <div class="ipucu">
     <ol style="margin:0;padding-left:20px">
@@ -95,6 +129,13 @@
             çatı onu <code>Adres_Sehir</code> yapar.</li>
         <li><strong><code>[DataType(Password)]</code> alanında <code>value</code> YOK.</strong>
             Çatı parolayı HTML'e geri yazmaz.</li>
+        <li><strong>Özellik bir liste ise <code>multiple</code> kendiliğinden gelir</strong>;
+            listedeki değerler (<code>1</code> ve <code>3</code>) <code>selected</code> olur.</li>
+        <li><strong>Aynı alan ikinci kez çizilince <code>data-val-*</code> gelmez.</strong>
+            <code>asp-format</code>'lı <code>Fiyat</code> satırına bakın: çatı doğrulama
+            attribute'lerini bir alan için yalnızca bir kez yazar.</li>
+        <li><strong>Doğrulama etiketleri şimdilik boş.</strong> Yer tutucu olarak üretilirler;
+            içlerini Hafta 6'da sunucunun bulduğu hatalar dolduracak.</li>
     </ol>
 </div>
 
@@ -155,22 +196,14 @@
     <thead><tr><th style="width:300px">Yazılan</th><th>Üretilen</th></tr></thead>
     <tbody>
         <tr><td><code>&lt;fiyat deger="@@(120.50m)" /&gt;</code></td><td><fiyat deger="@(120.50m)" data-goster /></td></tr>
-        <tr><td><code>&lt;fiyat deger="99" para-birimi="$" /&gt;</code></td><td><fiyat deger="99" para-birimi="$" data-goster /></td></tr>
     </tbody>
 </table>
 
-<div class="ipucu">
-    Sınıf adı <code>FiyatTagHelper</code> → etiket adı <code>&lt;fiyat&gt;</code>.
-    Özellik adı <code>ParaBirimi</code> → attribute adı <code>para-birimi</code>.
-    <div style="margin-top:6px">
-        <strong>Neden <code>@@(120.50m)</code>?</strong> Tırnak içindeki değer bir
-        <strong>C# literali</strong> olarak derlenir; <code>120.50</code> ise
-        <code>double</code> demektir. <code>decimal</code> özelliğe atamak için
-        <code>m</code> eki gerekir. Düz metin alan attribute'lerde (örneğin
-        <code>para-birimi</code>) böyle bir sorun yoktur.
-    </div>
-    Ayrıntısı <code>H05-detay.md</code> bölüm 1'de.
-</div>
+<p class="ipucu">
+    Bu ve Microsoft Learn'deki üç örnek (<code>&lt;email&gt;</code>, <code>bold</code>,
+    <code>condition</code>) <a asp-action="Ozel">Özel Tag Helper'lar</a> sayfasında;
+    nasıl yazıldıkları ders notu bölüm 5'te.
+</p>
 
 <p><a asp-action="Baglanti">→ Sıradaki: URL üreten Tag Helper'lar</a></p>
 

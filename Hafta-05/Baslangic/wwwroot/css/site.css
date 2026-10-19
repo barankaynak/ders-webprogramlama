@@ -66,3 +66,9 @@ body {
          border-radius:0 6px 6px 0; margin:1rem 0; }
 
 .tuzak-liste, .kategori-liste { line-height:1.8; }
+
+/* ===== Hafta 5 — /Etiket/Sayfa ===== */
+/* Yedek CSS gelmezse görünen hâl; gelirse yedek-demo.css tersine çevirir. */
+.yedek-kutu .hayir { color:#a4231b; font-weight:700; }
+.yedek-kutu .evet  { display:none; }
+.cikti { border:1px dashed #ddd6ca; border-radius:6px; padding:.5rem .8rem; margin:.5rem 0; }

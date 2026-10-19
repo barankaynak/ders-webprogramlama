@@ -1,0 +1,9 @@
+@* HAFTA 5 — Learn örneğinin Detail görünümü (Hafta 5 ders notu bölüm 2.5). *@
+@model KampusKitap.Controllers.Speaker?
+
+<h1>Speaker @(Model?.SpeakerId.ToString() ?? "(bulunamadı)")</h1>
+<p class="ipucu">
+    Bu sayfaya <code>[Route("Speaker/{id:int}")]</code> attribute route'u ile gelindi.
+    Adres çubuğuna bakın.
+</p>
+<p><a asp-action="Index">← Learn örnekleri</a></p>

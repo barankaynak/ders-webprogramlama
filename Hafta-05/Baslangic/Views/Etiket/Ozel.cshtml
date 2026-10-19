@@ -1,0 +1,124 @@
+@*
+    HAFTA 5 — KENDİ Tag Helper'larımız (Hafta 5 ders notu bölüm 5).
+
+    İlk üçü Microsoft Learn'deki örneklerin birebir aynısı:
+    https://learn.microsoft.com/aspnet/core/mvc/views/tag-helpers/authoring?view=aspnetcore-10.0
+    Dördüncüsü projenin FiyatTagHelper'ı (TODO 5.8).
+
+    Sınıflar TagHelpers/ klasöründe. Görünümlerin onları tanıması için
+    _ViewImports.cshtml'deki "@addTagHelper *, KampusKitap" satırı yeterli.
+*@
+
+<h1>Kendi Tag Helper'ımızı yazmak</h1>
+
+<p class="ipucu">
+    Çatının Tag Helper'ları sihir değildir: hepsi <code>TagHelper</code> sınıfından türeyen,
+    <code>Process</code> metodu olan sıradan C# sınıflarıdır. Aynısını biz de yazabiliriz.
+    Aşağıdaki her satırda solda <strong>yazdığımız</strong>, sağda <strong>tarayıcıya giden</strong> var.
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:360px">Yazdığımız</th><th>Tarayıcıya giden</th></tr></thead>
+    <tbody>
+        <tr>
+            <td>
+                <code>&lt;email mail-to="Support"&gt;&lt;/email&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">
+                    <code>EmailTagHelper</code> · yeni bir etiket <strong>icat eder</strong>
+                </div>
+            </td>
+            <td><div data-cikti><email mail-to="Support"></email></div></td>
+        </tr>
+        <tr>
+            <td>
+                <code>&lt;email mail-to="Support" /&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">aynısı, kendini kapatan yazımla — <strong>Ctrl+U'ya bakın</strong></div>
+            </td>
+            <td><div data-cikti><email mail-to="Support" /></div></td>
+        </tr>
+        <tr>
+            <td>
+                <code>&lt;p bold&gt;Kalın yazı&lt;/p&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">
+                    <code>BoldTagHelper</code> · var olan etikete <strong>attribute'le</strong> bağlanır
+                </div>
+            </td>
+            <td><div data-cikti><p bold>Kalın yazı</p></div></td>
+        </tr>
+        <tr>
+            <td>
+                <code>&lt;bold&gt;Kalın mı?&lt;/bold&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">sınıfın adı Bold — ama etiket olarak?</div>
+            </td>
+            <td><div data-cikti><bold>Kalın mı?</bold></div></td>
+        </tr>
+        <tr>
+            <td>
+                <code>&lt;div condition="true"&gt;Görünür&lt;/div&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">
+                    <code>ConditionTagHelper</code> · koşul tutarsa etiket kalır
+                </div>
+            </td>
+            <td><div data-cikti><div condition="true">Görünür</div></div></td>
+        </tr>
+        <tr>
+            <td>
+                <code>&lt;div condition="false"&gt;Görünmez&lt;/div&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">koşul tutmazsa <strong>hiçbir şey</strong></div>
+            </td>
+            <td><div data-cikti><div condition="false">Görünmez</div></div></td>
+        </tr>
+        <tr>
+            <td>
+                <code>&lt;fiyat deger="@@(120.50m)" /&gt;</code>
+                <div class="ipucu" style="padding:2px 6px;margin-top:4px">
+                    <code>FiyatTagHelper</code> · projenin kendi Tag Helper'ı (TODO 5.8)
+                </div>
+            </td>
+            <td><div data-cikti><fiyat deger="@(120.50m)" /></div></td>
+        </tr>
+        <tr>
+            <td><code>&lt;fiyat deger="99" para-birimi="$" /&gt;</code></td>
+            <td><div data-cikti><fiyat deger="99" para-birimi="$" /></div></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Beş soru</h2>
+
+<div class="ipucu">
+    <ol style="margin:0;padding-left:20px">
+        <li><code>MailTo</code> özelliği neden <code>mail-to</code> diye yazıldı?</li>
+        <li>Kendini kapatan <code>&lt;email … /&gt;</code> neden <strong>yazısız</strong> bir bağlantı oldu?
+            (Ders notu bölüm 5.2'deki <code>TagMode</code>'a bakın.)</li>
+        <li><code>&lt;p bold&gt;</code> çıktısında <code>bold</code> attribute'ü nereye gitti?
+            (<code>BoldTagHelper.cs</code> içindeki <code>RemoveAll</code> satırına bakın.)</li>
+        <li><code>&lt;bold&gt;</code> neden olduğu gibi kaldı? (<code>[HtmlTargetElement]</code>'e bakın.)</li>
+        <li><code>condition="false"</code> satırında Ctrl+U'da ne var?</li>
+    </ol>
+</div>
+
+<div class="uyari">
+    <strong>Tag Helper çalışmıyorsa önce Ctrl+U.</strong> Kaynakta <code>&lt;email&gt;</code>
+    ya da <code>&lt;fiyat&gt;</code> <em>olduğu gibi</em> duruyorsa Tag Helper hiç eşleşmemiştir:
+    <code>@@addTagHelper *, KampusKitap</code> satırını, sınıfın <code>public</code> olduğunu ve
+    adının <code>TagHelper</code> ile bittiğini kontrol edin. Sayfa yine <strong>200</strong> döner.
+</div>
+
+<p>
+    <a asp-action="Sayfa">← Sayfa düzeyindeki Tag Helper'lar</a> &nbsp;·&nbsp;
+    <a asp-action="Index">asp-for galerisi</a>
+</p>
+
+@section Scripts {
+    <script>
+        // Her [data-cikti] kutusunun altına KENDİ innerHTML'ini yazar.
+        document.querySelectorAll('[data-cikti]').forEach(function (el) {
+            var kod = document.createElement('pre');
+            kod.style.cssText = 'margin:6px 0 0;white-space:pre-wrap;word-break:break-all;font-size:.85em';
+            var ic = el.innerHTML.trim();
+            kod.textContent = ic || '(boş — hiçbir şey üretilmedi)';
+            el.insertAdjacentElement('afterend', kod);
+        });
+    </script>
+}

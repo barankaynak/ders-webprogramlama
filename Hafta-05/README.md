@@ -12,11 +12,13 @@
 
 - **Tag Helper nedir** — HTML gibi görünen C#; `@Html` yardımcılarından farkı
 - **`@addTagHelper`** ve `_ViewImports.cshtml`
-- **URL üreten Tag Helper'lar** — `asp-controller`, `asp-action`, `asp-route-*`
+- **Çatıdaki 18 Tag Helper** ve sayfa düzeyindekiler — `<environment>`, `<cache>`, `asp-append-version`, `asp-fallback-*`, `<partial for>`
+- **URL üreten Tag Helper'lar** — `asp-controller`, `asp-action`, `asp-route-*`; Microsoft Learn'deki Anchor örnekleri ve `formaction`
 - **`asp-for`** — `name`, `id`, `type`, `value` üretimi
 - **`<label asp-for>`, `<textarea asp-for>`, `<select asp-items>`**
 - **CSRF** ve Tag Helper'ın sessiz katkısı: `__RequestVerificationToken`
 - **`[ValidateAntiForgeryToken]`** — üretmek yetmez, doğrulamayı da istemek gerekir
+- **Kendi Tag Helper'ınızı yazmak** — ad kuralı, `Process`, `TagMode`, `[HtmlTargetElement]`
 
 🧩 **Haftanın ilkesi — Çerçeve, doğru olanı kolay yapar.**
 Tag Helper bir kısaltma değildir. Yazmadığınız `name`'i, yazmadığınız `action`'ı ve
@@ -65,10 +67,8 @@ Editörde **`TODO 5.`** diye aratın. Sırayla gidin — bazı görevler bir ön
 | **TODO 5.5** | Dört özelliğe `[Display(Name = "…")]` ekleyin: Başlık, Yazar, Fiyat (TL), Kategori | `ViewModels/KitapEkleVM.cs` | ders notu bölüm 3.3 — `/Kitap/EkleTH`'deki etiketler "Baslik", "KategoriId" yerine Türkçe adları gösterir |
 | **TODO 5.6** | Kategori listesini `<select asp-for asp-items>` yapın; kaynak: `KitapDeposu.Kategoriler` | `Views/Kitap/EkleTH.cshtml` | ders notu bölüm 3.4 — "— seçiniz —" satırını siz bırakın, Tag Helper diğerlerini arkasına ekler |
 | **TODO 5.7** | Bu POST action'ının anti-forgery token'ını doğrulatın | `Controllers/KitapController.cs` | ders notu bölüm 4.3 — tek satırlık bir attribute. Önce TODO 5.2'yi bitirin; sırayı ters yaparsanız ne olur? (Uygulama C) |
-| **TODO 5.8** | (İLERİ) `Process` gövdesini yazın: `<fiyat>` etiketini `<span class="fiyat">120,50 ₺</span>` yapın | `TagHelpers/FiyatTagHelper.cs` | H05-detay.md bölüm 1 — `output.TagName`, `TagMode`, `Attributes.SetAttribute`, `Content.SetContent`. `/Etiket` sayfasının en altındaki satır dolar |
+| **TODO 5.8** | `Process` gövdesini yazın: `<fiyat>` etiketini `<span class="fiyat">120,50 ₺</span>` yapın | `TagHelpers/FiyatTagHelper.cs` | ders notu bölüm 5.2 — `output.TagName`, `TagMode`, `Attributes.SetAttribute`, `Content.SetContent`. `/Etiket/Ozel` sayfasındaki son iki satır dolar |
 <!-- GOREVLER-SON -->
-
-> **TODO 5.8 isteğe bağlıdır** (ileri düzey, sınav kapsamı dışı).
 
 ### Bu hafta eklenenler
 
@@ -81,7 +81,12 @@ Editörde **`TODO 5.`** diye aratın. Sırayla gidin — bazı görevler bir ön
 | `Views/Etiket/Csrf.cshtml` | Üç form: TH+POST, TH+GET, elle POST |
 | `Views/Etiket/Eksik.cshtml` | 🐛 `@addTagHelper` olmayınca ne oluyor |
 | `ViewModels/EtiketVM.cs` | `asp-for` çıktısını göstermek için kurulmuş gösteri sınıfı |
-| `TagHelpers/FiyatTagHelper.cs` | Projenin **kendi** Tag Helper'ı (TODO 5.8, ileri) |
+| `TagHelpers/FiyatTagHelper.cs` | Projenin **kendi** Tag Helper'ı (TODO 5.8) |
+| `TagHelpers/EmailTagHelper.cs`, `BoldTagHelper.cs`, `ConditionTagHelper.cs` | Microsoft Learn'ün *Author Tag Helpers* örnekleri, birebir |
+| `Views/Etiket/Sayfa.cshtml`, `Views/Shared/_KitapAlan.cshtml` | Sayfa düzeyindeki Tag Helper'lar: `<environment>`, `<cache>`, `<img>`, `<link>`/`<script>` yedeği, `<partial model/for>` |
+| `wwwroot/css/yedek-demo.css`, `wwwroot/js/yedek-demo.js` | `asp-fallback-*`'ın yüklediği **yedek** dosyalar |
+| `Views/Etiket/Ozel.cshtml` | Kendi Tag Helper'larımızın çıktıları |
+| `Controllers/SpeakerController.cs`, `Views/Speaker/` | Learn'ün *Anchor Tag Helper* sayfasındaki örneklerin **birebir aynısı** |
 
 > `Etiket` sayfaları **ölçüm aracıdır**, alıştırma değil — iki projede de eksiksizdir.
 > `Views/Kitap/Ekle.cshtml` (Hafta 4'ün elle yazılmış formu) **bilerek değiştirilmedi**.
@@ -94,6 +99,9 @@ Editörde **`TODO 5.`** diye aratın. Sırayla gidin — bazı görevler bir ön
 | `/Etiket/Baglanti` | `asp-route-*` yola mı query string'e mi gidiyor |
 | `/Etiket/Csrf` | Token'ı kim koyuyor, GET'te neden yok |
 | `/Etiket/Eksik` | 🐛 `@addTagHelper` yoksa: **200 döner, hiçbir şey çalışmaz** |
+| `/Etiket/Sayfa` | `<environment>`, `<cache>` (F5'e basın), dosya yedeği, `<partial for>` |
+| `/Etiket/Ozel` | `<email>`, `<p bold>`, `condition`, `<fiyat>` — kendi Tag Helper'larımız |
+| `/Speaker` | Learn'deki bütün Anchor örnekleri ve **bu projede ürettikleri adres** |
 | `/Kitap/Ekle` | Hafta 4 — **elle** yazılmış form |
 | `/Kitap/EkleTH` | Aynı form — Başlangıç'ta elle, doldurdukça **Tag Helper** |
 
@@ -116,6 +124,9 @@ kendi projenizde de aynısını yapabilirsiniz.
 | `<form asp-action>` → `<form action="/Kitap/EkleTH">` | `EkleTH.cshtml` | Token **üretilmez** → POST **400** |
 | `method="post"` → `method="get"` | aynı form | Token **kaybolur** — GET'te üretilmiyor |
 | `@addTagHelper` satırını sil | `Views/_ViewImports.cshtml` | Bütün `asp-*` **metin olarak** tarayıcıya gider |
+| `TagMode` satırını sil | `TagHelpers/FiyatTagHelper.cs` | `<span class="fiyat" />` — **fiyat yazılmaz** |
+| `deger="@(120.50m)"` → `deger="120.50"` | `Views/Etiket/Ozel.cshtml` | `error CS0664` — tırnak içi bir C# literalidir |
+| `dotnet run -e ASPNETCORE_ENVIRONMENT=Production` | terminal | `/Etiket/Sayfa`'da öbür iki `<environment>` bloğu üretilir |
 
 > Son satır bu haftanın en sinsi hatasıdır: **sayfa açılır, hata yoktur, hiçbir şey çalışmaz.**
 > Teşhis kuralı: kaynakta `asp-` görüyorsanız o Tag Helper çalışmamıştır.
@@ -124,12 +135,14 @@ kendi projenizde de aynısını yapabilirsiniz.
 
 ## 🏠 Ev görevi
 
-0. Derste **Başlangıç** projesindeki TODO 5.1 – 5.7'yi tamamlayın (5.8 isteğe bağlı).
+0. Derste **Başlangıç** projesindeki TODO 5.1 – 5.8'i tamamlayın.
 1. Kendi projenizde, Hafta 4'te **elle** yazdığınız formu bu kez **Tag Helper'larla** yeniden yazın.
    Eski dosyayı **silmeyin**; ikisi yan yana dursun.
 2. İki formun ürettiği HTML'i **Ctrl+U** ile alıp yan yana koyun. **Farkları işaretleyin.**
 3. `name`, `id` ve `type` değerlerinin Tag Helper'lı sürümde **nereden geldiğini** yazın.
-4. `[Display(Name = "…")]` ekleyip `<label asp-for>` çıktısının değiştiğini gösterin.
+4. **Kendi Tag Helper'ınızı yazın:** `<kategori-rozeti kategori-id="2" />` →
+   `<span class="rozet">Bilgisayar</span>` (kategori adını `KitapDeposu.KategoriAdi` verir).
+   Ctrl+U çıktısını ekran görüntüsüyle kaydedin.
 5. Bir `asp-for` değerini **bilerek yanlış** yazın. Derleyicinin ne dediğini ekran
    görüntüsüyle kaydedin ve Hafta 4'teki davranışla **karşılaştırın**.
 6. POST action'ınıza `[ValidateAntiForgeryToken]` ekleyin. Sonra formu
@@ -138,7 +151,7 @@ kendi projenizde de aynısını yapabilirsiniz.
    hangileri kırıldı?
 
 **Teslim:** proje klasörü + iki HTML çıktısının işaretlenmiş karşılaştırması +
-5., 6. ve 7. maddelerin ekran görüntüleri + şu soruya **iki cümlelik** cevap:
+4., 5., 6. ve 7. maddelerin ekran görüntüleri + şu soruya **iki cümlelik** cevap:
 *"Tag Helper bir kısaltma mı, yoksa başka bir şey mi?"*
 
 ---

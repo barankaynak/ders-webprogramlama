@@ -1,7 +1,9 @@
 # Web Programlama
 
 **2026 · Bahar Dönemi** · ASP.NET Core MVC (.NET 10 LTS)
-Dr. Öğr. Üyesi Baran Kaynak
+Hazırlayan: **Dr. Öğr. Üyesi Baran Kaynak** (Bilişim Sistemleri Mühendisliği)  
+Ortak yürütücüler: **Can Yüzkollar**, **Ahmet Şanslı** (Bilgisayar Mühendisliği)  
+Sakarya Üniversitesi
 
 Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 **hafta hafta büyüyen örnek projeyi** içerir.

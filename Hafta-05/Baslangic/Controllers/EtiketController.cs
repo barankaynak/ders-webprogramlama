@@ -60,4 +60,22 @@ public class EtiketController : Controller
         ViewData["Title"] = "addTagHelper olmayınca";
         return View(new EtiketVM());
     }
+
+    // GET /Etiket/Sayfa
+    // Formun DIŞINDAKİ Tag Helper'lar: environment, cache, link, script,
+    // img ve partial (Hafta 5 ders notu bölüm 1.6).
+    public IActionResult Sayfa()
+    {
+        ViewData["Title"] = "Sayfa düzeyindeki Tag Helper'lar";
+        return View(new SayfaVM { OneCikan = KampusKitap.Data.KitapDeposu.Hepsi[0] });
+    }
+
+    // GET /Etiket/Ozel
+    // KENDİ yazdığımız Tag Helper'lar: Learn'deki Email, Bold, Condition
+    // örnekleri ve projenin FiyatTagHelper'ı (Hafta 5 ders notu bölüm 5).
+    public IActionResult Ozel()
+    {
+        ViewData["Title"] = "Özel Tag Helper'lar";
+        return View();
+    }
 }

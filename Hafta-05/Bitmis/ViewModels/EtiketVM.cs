@@ -46,6 +46,21 @@ public class EtiketVM
     public KategoriTuru Kategori { get; set; }       // <select asp-items> ile
 
     public AdresVM Adres { get; set; } = new();      // → name="Adres.Sehir"
+
+    // Liste tipi → <select> kendiliğinden multiple="multiple" olur
+    public List<int> SecilenKategoriler { get; set; } = [1, 3];
+
+    // optgroup gösterisi için
+    public int DersId { get; set; } = 2;
+}
+
+/// <summary>
+/// HAFTA 5 — /Etiket/Sayfa için: &lt;partial for="OneCikan"&gt; bir model
+/// özelliği ister (Hafta 5 ders notu bölüm 1.6).
+/// </summary>
+public class SayfaVM
+{
+    public KampusKitap.Models.Kitap OneCikan { get; set; } = new();
 }
 
 /// <summary>İç içe nesnenin <c>name</c>/<c>id</c> üretimini göstermek için.</summary>
