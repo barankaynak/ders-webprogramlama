@@ -1,0 +1,14 @@
+@*
+    VIEW COMPONENT GÖRÜNÜMÜ — ders notu bölüm 3.2
+
+    Yol sözleşmedir:  Views/Shared/Components/{BileşenAdı}/Default.cshtml
+    Bileşen adı       = sınıf adından "ViewComponent" soneki atılmış hâli.
+
+    Bu dosyayı Views/Shared/ZiyaretRozeti.cshtml gibi başka bir yere koyarsanız
+    çatı bulamaz ve aradığı yolları listeleyen bir hata verir — deneyin.
+*@
+@model int
+
+<span class="sayac-rozet" title="Bu rozet bir View Component'tir; veriyi kendi getirir.">
+    bu sayfa @Model kez gösterildi
+</span>

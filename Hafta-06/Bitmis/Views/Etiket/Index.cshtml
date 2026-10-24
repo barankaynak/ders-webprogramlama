@@ -1,0 +1,221 @@
+@*
+    HAFTA 5 — asp-for ne üretiyor? (Hafta 5 ders notu bölüm 3)
+
+    Soldaki sütun YAZDIĞIMIZ Razor, sağdaki sütun TARAYICIYA GİDEN HTML.
+    Sağ sütunu elle yazmadık: sayfadaki küçük betik her denetimin kendi
+    outerHTML'ini okuyup basıyor. Yani bu tablo asla eskimez.
+
+    Sunucunun gönderdiği baytların birebir hâli için Ctrl+U.
+*@
+@model KampusKitap.ViewModels.EtiketVM
+@{
+    // List<int> özelliğe bağlı select için: Hafta 5 ders notu bölüm 3.4
+    var kategoriler = new SelectList(KampusKitap.Data.KitapDeposu.Kategoriler, "Key", "Value");
+
+    // <optgroup> üretmek için her seçeneğe bir grup verilir
+    var lisans = new SelectListGroup { Name = "Lisans" };
+    var yuksek = new SelectListGroup { Name = "Yüksek lisans" };
+    var dersler = new List<SelectListItem>
+    {
+        new() { Value = "1", Text = "Web Programlama",      Group = lisans },
+        new() { Value = "2", Text = "Veri Yapıları",        Group = lisans },
+        new() { Value = "3", Text = "İleri Web Mimarileri", Group = yuksek }
+    };
+}
+
+<h1><code>asp-for</code> ne üretiyor?</h1>
+
+<p class="ipucu">
+    <code>asp-for</code>, bir model özelliğini gösterip çatıya
+    <strong>"bu alan şu özellik için"</strong> demenin yoludur. Gerisini —
+    <code>name</code>, <code>id</code>, <code>type</code>, <code>value</code> —
+    çatı yazar.
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th style="width:260px">Yazdığımız</th>
+            <th>Tarayıcıya giden</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>&lt;input asp-for="Metin" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">string</span></td>
+            <td><input asp-for="Metin" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="MetinNullable" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">string?</span></td>
+            <td><input asp-for="MetinNullable" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Sayi" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">int</span></td>
+            <td><input asp-for="Sayi" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Fiyat" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">decimal</span></td>
+            <td><input asp-for="Fiyat" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Fiyat"<br />&nbsp;&nbsp;asp-format="{0:N4}" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">value'nun biçimi · data-val neden yok?</span></td>
+            <td><input asp-for="Fiyat" asp-format="{0:N4}" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Tarih" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">DateTime</span></td>
+            <td><input asp-for="Tarih" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Onayli" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">bool</span></td>
+            <td><input asp-for="Onayli" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Sinirli" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">[StringLength(50, 3)]</span></td>
+            <td><input asp-for="Sinirli" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Parola" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">[DataType(Password)]</span></td>
+            <td><input asp-for="Parola" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Eposta" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">[DataType(EmailAddress)]</span></td>
+            <td><input asp-for="Eposta" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;input asp-for="Adres.Sehir" /&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">iç içe nesne</span></td>
+            <td><input asp-for="Adres.Sehir" data-goster /></td>
+        </tr>
+        <tr>
+            <td><code>&lt;label asp-for="Gosterim"&gt;&lt;/label&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">[Display(Name = "…")]</span></td>
+            <td><label asp-for="Gosterim" data-goster></label></td>
+        </tr>
+        <tr>
+            <td><code>&lt;textarea asp-for="Aciklama"&gt;&lt;/textarea&gt;</code></td>
+            <td><textarea asp-for="Aciklama" data-goster></textarea></td>
+        </tr>
+        <tr>
+            <td><code>&lt;select asp-for="Kategori"<br />&nbsp;&nbsp;asp-items="Html.GetEnumSelectList&lt;KategoriTuru&gt;()"&gt;</code></td>
+            <td><select asp-for="Kategori" asp-items="Html.GetEnumSelectList<KampusKitap.ViewModels.KategoriTuru>()" data-goster></select></td>
+        </tr>
+        <tr>
+            <td><code>&lt;select asp-for="SecilenKategoriler"<br />&nbsp;&nbsp;asp-items="…"&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">List&lt;int&gt;</span></td>
+            <td><select asp-for="SecilenKategoriler" asp-items="kategoriler" data-goster></select></td>
+        </tr>
+        <tr>
+            <td><code>&lt;select asp-for="DersId"<br />&nbsp;&nbsp;asp-items="dersler"&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">SelectListGroup</span></td>
+            <td><select asp-for="DersId" asp-items="dersler" data-goster></select></td>
+        </tr>
+        <tr>
+            <td><code>&lt;span asp-validation-for="Metin"&gt;&lt;/span&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">alanın hata yeri</span></td>
+            <td><span asp-validation-for="Metin" data-goster></span></td>
+        </tr>
+        <tr>
+            <td><code>&lt;div asp-validation-summary="All"&gt;&lt;/div&gt;</code><br /><span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">bütün hataların listesi</span></td>
+            <td><div asp-validation-summary="All" data-goster></div></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Yedi gözlem</h2>
+
+<div class="ipucu">
+    <ol style="margin:0;padding-left:20px">
+        <li><strong><code>name</code> ile <code>id</code>'yi çatı yazdı.</strong> Hafta 4'te bunları
+            elle yazıyor ve doğruluğundan kendimiz sorumlu oluyorduk.</li>
+        <li><strong><code>type</code> tipten çıkarıldı:</strong> <code>int</code> → <code>number</code>,
+            <code>DateTime</code> → <code>datetime-local</code>, <code>bool</code> → <code>checkbox</code>.
+            Ama <code>decimal</code> → <code>text</code>; sebebi aşağıda.</li>
+        <li><strong>İç içe nesne noktayla gelir:</strong> <code>name="Adres.Sehir"</code>.
+            <code>id</code> olamaz çünkü HTML <code>id</code>'sinde nokta sorun çıkarır —
+            çatı onu <code>Adres_Sehir</code> yapar.</li>
+        <li><strong><code>[DataType(Password)]</code> alanında <code>value</code> YOK.</strong>
+            Çatı parolayı HTML'e geri yazmaz.</li>
+        <li><strong>Özellik bir liste ise <code>multiple</code> kendiliğinden gelir</strong>;
+            listedeki değerler (<code>1</code> ve <code>3</code>) <code>selected</code> olur.</li>
+        <li><strong>Aynı alan ikinci kez çizilince <code>data-val-*</code> gelmez.</strong>
+            <code>asp-format</code>'lı <code>Fiyat</code> satırına bakın: çatı doğrulama
+            attribute'lerini bir alan için yalnızca bir kez yazar.</li>
+        <li><strong>Doğrulama etiketleri şimdilik boş.</strong> Yer tutucu olarak üretilirler;
+            içlerini Hafta 6'da sunucunun bulduğu hatalar dolduracak.</li>
+    </ol>
+</div>
+
+<div class="uyari">
+    <strong><code>decimal</code> neden <code>number</code> değil?</strong>
+    Yukarıdaki kutuda fiyat <code>120,50</code> yazıyor — <strong>virgülle</strong>, çünkü
+    sunucu Türkçe kültürde çalışıyor. HTML'in <code>type="number"</code> alanı ise yalnızca
+    <strong>noktayı</strong> kabul eder. Çatı, kullanıcının yazdığı virgülü kaybetmemek için
+    <code>text</code> tercih ediyor. Bu, Hafta 4'te gördüğümüz ondalık ayracı sorununun
+    (<code>H04-detay.md</code> bölüm 5) HTML tarafındaki yüzü.
+</div>
+
+<div class="uyari">
+    <strong><code>data-val-*</code> attribute'leri nereden çıktı?</strong>
+    Bunları hiçbir yerde yazmadık; çatı modelin tipinden ve attribute'lerinden üretti.
+    <strong>Şu an bunları okuyan hiçbir şey yok</strong> — sayfada doğrulama betiği
+    yüklü değil. Onları okuyan betik ve sunucu tarafı doğrulama <strong>Hafta 6</strong>'nın
+    konusu. Bu hafta yalnızca <em>üretildiklerini</em> görüyoruz.
+</div>
+
+<div class="uyari">
+    <strong><code>string</code> ile <code>string?</code> arasındaki fark.</strong>
+    İkisi de <code>type="text"</code> üretti, ama yalnızca <code>string</code> olan
+    <code>data-val-required</code> aldı. Bunu yapan bir attribute değil, C#'ın
+    <strong>nullable reference types</strong> özelliğidir: <code>string</code> "boş olamaz"
+    demektir.
+</div>
+
+<h2>Formun sonunda ne var?</h2>
+
+<p>
+    Yukarıdaki denetimler bir <code>&lt;form&gt;</code> içinde değil. Gerçek bir Tag Helper
+    formunda, denetimlerin yanında <strong>görünmeyen iki alan</strong> daha olur:
+</p>
+
+<ul>
+    <li><code>&lt;input name="Onayli" type="hidden" value="false" /&gt;</code> —
+        onay kutusunun <strong>işaretsiz hâli</strong> için. Hafta 4'te "işaretlenmemiş
+        kutu gövdede hiç gelmez" demiştik; Tag Helper bu açığı böyle kapatıyor.</li>
+    <li><code>&lt;input name="__RequestVerificationToken" type="hidden" value="…" /&gt;</code> —
+        bölüm 4'ün konusu.</li>
+</ul>
+
+<p>
+    İkisini de <a asp-action="Csrf">Anti-forgery token sayfasında</a> ve
+    <a asp-controller="Kitap" asp-action="EkleTH">Tag Helper'lı kitap formunda</a>
+    canlı görebilirsiniz.
+</p>
+
+<h2>Projenin kendi Tag Helper'ı</h2>
+
+<p>
+    Tag Helper'lar çatıya özel değildir; kendiniz de yazabilirsiniz.
+    <code>TagHelpers/FiyatTagHelper.cs</code> şunu tanımlıyor:
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:300px">Yazılan</th><th>Üretilen</th></tr></thead>
+    <tbody>
+        <tr><td><code>&lt;fiyat deger="@@(120.50m)" /&gt;</code></td><td><fiyat deger="@(120.50m)" data-goster /></td></tr>
+    </tbody>
+</table>
+
+<p class="ipucu">
+    Bu ve Microsoft Learn'deki üç örnek (<code>&lt;email&gt;</code>, <code>bold</code>,
+    <code>condition</code>) <a asp-action="Ozel">Özel Tag Helper'lar</a> sayfasında;
+    nasıl yazıldıkları ders notu bölüm 5'te.
+</p>
+
+<p><a asp-action="Baglanti">→ Sıradaki: URL üreten Tag Helper'lar</a></p>
+
+@section Scripts {
+    <script>
+        // Sağ sütundaki her denetimin KENDİ outerHTML'ini altına yazar.
+        // Böylece tablo elle güncellenmek zorunda kalmaz.
+        document.querySelectorAll('[data-goster]').forEach(function (el) {
+            var kod = document.createElement('pre');
+            kod.style.cssText = 'margin:6px 0 0;white-space:pre-wrap;word-break:break-all;font-size:.85em';
+            kod.textContent = el.outerHTML.replace(' data-goster=""', '').replace(' data-goster', '');
+            el.insertAdjacentElement('afterend', kod);
+        });
+    </script>
+}

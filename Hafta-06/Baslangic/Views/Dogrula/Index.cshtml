@@ -1,0 +1,83 @@
+@*
+    HAFTA 6 — hazır doğrulama attribute'leri ve ModelState (Hafta 6 ders notu bölüm 2 ve 3).
+
+    Mesajlar bilerek VARSAYILAN: çatının kendi cümlesini görmek için.
+    ?istemci=1 ile açılırsa sayfaya _ValidationScriptsPartial eklenir ve aynı
+    kurallar tarayıcıda da çalışır (bölüm 4).
+*@
+@model KampusKitap.ViewModels.UyeVM
+@{
+    var istemci = ViewData["Istemci"] is true;
+    var ham = ViewData["Ham"] is true;
+}
+
+<h1>Doğrulama attribute'leri</h1>
+
+<p class="ipucu">
+    Formu <strong>boş</strong>, sonra <strong>hatalı</strong> gönderin. Aşağıdaki tablo,
+    action'ın ilk satırı çalıştığında <code>ModelState</code>'in içinde ne olduğunu gösterir.
+    İstemci doğrulaması şu an
+    <strong>@(!istemci ? "KAPALI" : ham ? "AÇIK, Türkçe sayı düzeltmesi YOK" : "AÇIK")</strong> —
+    <a asp-action="Index">kapalı</a> ·
+    <a asp-action="Index" asp-route-istemci="true">açık</a> ·
+    <a asp-action="Index" asp-route-istemci="true" asp-route-ham="true">açık, düzeltmesiz</a>.
+</p>
+
+@if (TempData["Mesaj"] is string mesaj)
+{
+    <p class="ipucu">✓ @mesaj</p>
+}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div>
+        <strong><code>asp-validation-summary="ModelOnly"</code></strong>
+        <div asp-validation-summary="ModelOnly"></div>
+    </div>
+    <div>
+        <strong><code>asp-validation-summary="All"</code></strong>
+        <div asp-validation-summary="All"></div>
+    </div>
+</div>
+
+<form asp-action="Index" asp-route-istemci="@istemci" asp-route-ham="@ham" method="post">
+    <table class="table">
+        <tbody>
+            <tr><td style="width:180px"><label asp-for="Ad"></label></td><td><input asp-for="Ad" /> <span asp-validation-for="Ad"></span></td><td><code>[Required] [StringLength(30, MinimumLength = 2)]</code></td></tr>
+            <tr><td><label asp-for="Eposta"></label></td><td><input asp-for="Eposta" /> <span asp-validation-for="Eposta"></span></td><td><code>[Required] [EmailAddress]</code></td></tr>
+            <tr><td><label asp-for="Yas"></label></td><td><input asp-for="Yas" /> <span asp-validation-for="Yas"></span></td><td><code>[Range(18, 99)]</code></td></tr>
+            <tr><td><label asp-for="Parola"></label></td><td><input asp-for="Parola" /> <span asp-validation-for="Parola"></span></td><td><code>[Required] [StringLength(20, MinimumLength = 6)]</code></td></tr>
+            <tr><td><label asp-for="ParolaTekrar"></label></td><td><input asp-for="ParolaTekrar" /> <span asp-validation-for="ParolaTekrar"></span></td><td><code>[Compare(nameof(Parola))]</code></td></tr>
+            <tr><td><label asp-for="Telefon"></label></td><td><input asp-for="Telefon" /> <span asp-validation-for="Telefon"></span></td><td><code>[RegularExpression(@@"^05\d{9}$")]</code></td></tr>
+            <tr><td><label asp-for="WebSitesi"></label></td><td><input asp-for="WebSitesi" /> <span asp-validation-for="WebSitesi"></span></td><td><code>[Url]</code></td></tr>
+            <tr><td><label asp-for="Boy"></label></td><td><input asp-for="Boy" /> <span asp-validation-for="Boy"></span></td><td><code>[Range(0.5, 2.5)]</code> · <code>decimal?</code> — <code>1,75</code> yazın</td></tr>
+        </tbody>
+    </table>
+    <button type="submit">Gönder</button>
+</form>
+
+<div class="ipucu" style="margin-top:1rem">
+    <strong>İki iş kuralı da var</strong> — attribute değil, action'da <code>AddModelError</code> ile:
+    e-posta <code>ali@@ornek.com</code> ise hata <strong>alana</strong> bağlanır;
+    ad <code>admin</code> ise anahtar boştur ve hata yalnızca <strong>özette</strong> görünür.
+</div>
+
+<partial name="_ModelStateTablosu" />
+
+<p>
+    <a asp-action="Ortuk">→ Attribute yazmadan gelen hatalar</a> &nbsp;·&nbsp;
+    <a asp-action="Tuzak">→ IsValid neden hep false?</a> &nbsp;·&nbsp;
+    <a asp-action="Sira">→ Doğrulamanın sırası</a>
+</p>
+
+@section Scripts {
+    @if (istemci && ham)
+    {
+        @* Düzeltmesiz: yalnızca iki kütüphane — "1,75" İngilizce biçimle denetlenir *@
+        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+    }
+    else if (istemci)
+    {
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

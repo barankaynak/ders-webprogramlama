@@ -30,10 +30,11 @@ Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 | 03 | Razor Syntax, View Component, Layout | [PDF](PDF/H03-Ders-Notu.pdf) | [PDF](PDF/H03-Uygulama.pdf) | [PDF](PDF/H03-Detay.pdf) | [Hafta-03](Hafta-03/) |
 | 04 | Web Formlar | [PDF](PDF/H04-Ders-Notu.pdf) | [PDF](PDF/H04-Uygulama.pdf) | [PDF](PDF/H04-Detay.pdf) | [Hafta-04](Hafta-04/) |
 | 05 | Tag Helper’lar | [PDF](PDF/H05-Ders-Notu.pdf) | [PDF](PDF/H05-Uygulama.pdf) | [PDF](PDF/H05-Detay.pdf) | [Başlangıç](Hafta-05/Baslangic/) · [Bitmiş](Hafta-05/Bitmis/) |
+| 06 | Model Doğrulama | [PDF](PDF/H06-Ders-Notu.pdf) | [PDF](PDF/H06-Uygulama.pdf) | [PDF](PDF/H06-Detay.pdf) | [Başlangıç](Hafta-06/Baslangic/) · [Bitmiş](Hafta-06/Bitmis/) |
 
 > Haftalar ders ilerledikçe eklenir. Aşağıdaki plan dönem başında duyurulmuştur.
 
-**Planlanan konular:** 06 Model doğrulama · 07 State management ·
+**Planlanan konular:** 07 State management ·
 **ara sınav** · 08 EF Core ve Code First · 09–10 LINQ · 11 Authentication/Authorization ·
 12 Web API ve MCP · 13 Uygulama geliştirme
 

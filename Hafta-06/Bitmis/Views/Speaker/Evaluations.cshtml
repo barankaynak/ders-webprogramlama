@@ -1,0 +1,11 @@
+@* HAFTA 5 — Learn örneğinin Evaluations görünümü (Hafta 5 ders notu bölüm 2.5). *@
+<h1>Speaker Evaluations</h1>
+@if (ViewData["Parametreler"] is string p)
+{
+    <p class="ipucu">Adlı route <code>speakerevalscurrent</code> · gelen değerler: <code>@p</code></p>
+}
+<h2 id="SpeakerEvaluations">#SpeakerEvaluations</h2>
+<p class="ipucu">
+    <code>asp-fragment="SpeakerEvaluations"</code> ile gelindiyse tarayıcı bu başlığa kaydırdı.
+</p>
+<p><a asp-action="Index">← Learn örnekleri</a></p>

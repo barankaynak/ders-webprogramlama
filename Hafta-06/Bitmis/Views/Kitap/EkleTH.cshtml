@@ -1,0 +1,85 @@
+@*
+    HAFTA 5 — Hafta 4'teki formun Tag Helper'lı hâli (Hafta 5 ders notu bölüm 3).
+    HAFTA 6 — aynı forma doğrulama: hatalar alanların altında, kurallar modelde
+    (Hafta 6 ders notu bölüm 3 ve 4).
+
+    Views/Kitap/Ekle.cshtml ile YAN YANA okunmak üzere yazıldı:
+    aynı form, aynı ViewModel — dolayısıyla AYNI KURALLAR.
+*@
+@model KampusKitap.ViewModels.KitapEkleVM
+
+<h1>Kitap ekle <span class="ipucu" style="display:inline-block;padding:2px 8px;font-size:.6em">Tag Helper</span></h1>
+
+<p class="ipucu">
+    Bu sayfa, Hafta 4'teki <a asp-action="Ekle">elle yazılmış formun</a> Tag Helper
+    karşılığıdır. Hafta 6'nın Başlangıç projesinde <strong>TODO 6.1 – 6.7</strong> ile
+    doğrulama eklenir. Her adımdan sonra formu <strong>boş</strong> ve <strong>hatalı</strong>
+    gönderip ne değiştiğine bakın.
+</p>
+
+@* ✔ TODO 6.3 · Hataları gösterin: formun üstüne `asp-validation-summary`, her alanın altına `asp-validation-for` *@
+<div asp-validation-summary="ModelOnly" class="hata-ozet"></div>
+
+<form asp-controller="Kitap" asp-action="EkleTH" method="post">
+    <p>
+        <label asp-for="Baslik"></label><br />
+        <input asp-for="Baslik" size="40" />
+        @* ✔ TODO 6.3 · Hataları gösterin: formun üstüne `asp-validation-summary`, her alanın altına `asp-validation-for` *@
+        <br /><span asp-validation-for="Baslik" class="hata"></span>
+    </p>
+    <p>
+        <label asp-for="Yazar"></label><br />
+        <input asp-for="Yazar" size="40" />
+        @* ✔ TODO 6.3 · Hataları gösterin: formun üstüne `asp-validation-summary`, her alanın altına `asp-validation-for` *@
+        <br /><span asp-validation-for="Yazar" class="hata"></span>
+    </p>
+    <p>
+        <label asp-for="Fiyat"></label><br />
+        <input asp-for="Fiyat" />
+        @* ✔ TODO 6.3 · Hataları gösterin: formun üstüne `asp-validation-summary`, her alanın altına `asp-validation-for` *@
+        <br /><span asp-validation-for="Fiyat" class="hata"></span>
+    </p>
+    <p>
+        <label asp-for="KategoriId"></label><br />
+        <select asp-for="KategoriId"
+                asp-items="@(new SelectList(KampusKitap.Data.KitapDeposu.Kategoriler, "Key", "Value"))">
+            <option value="">— seçiniz —</option>
+        </select>
+        @* ✔ TODO 6.3 · Hataları gösterin: formun üstüne `asp-validation-summary`, her alanın altına `asp-validation-for` *@
+        <br /><span asp-validation-for="KategoriId" class="hata"></span>
+    </p>
+    <p>
+        <button type="submit">Kaydet</button>
+    </p>
+</form>
+
+<h2>Denemeye değer</h2>
+
+<table class="table">
+    <thead><tr><th style="width:330px">Gönderin</th><th>Hangi kural yakalar</th><th style="width:150px">Nerede</th></tr></thead>
+    <tbody>
+        <tr><td>Hepsi boş</td><td><code>[Required]</code>, <code>[Range]</code></td><td>attribute</td></tr>
+        <tr><td>Fiyat: <code>abc</code></td><td>Model Binding — değer çevrilemedi</td><td>bağlama</td></tr>
+        <tr><td>Başlık: <code>suç ve ceza</code></td><td><code>[BuyukHarfleBaslar]</code></td><td>kendi attribute'ümüz</td></tr>
+        <tr><td>Başlık: <code>Suç ve Ceza</code></td><td>"Bu başlıkta bir kitap zaten var."</td><td>controller</td></tr>
+        <tr><td>Başlık ve yazar aynı</td><td><code>IValidatableObject</code></td><td>model</td></tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong>İstemci doğrulaması açıkken</strong> (TODO 6.5) boş form tarayıcıdan hiç çıkmaz.
+    F12 ile bir alanın <code>data-val="true"</code> attribute'ünü silip gönderin:
+    tarayıcı geçirir, <strong>sunucu yine yakalar</strong>. İstemci doğrulaması kullanıcıya
+    yardımdır; güvenlik sunucudadır.
+</div>
+
+<p>
+    <a asp-action="Ekle">← elle yazılmış hâli</a> &nbsp;·&nbsp;
+    <a asp-action="Index">listeye dön</a> &nbsp;·&nbsp;
+    <a asp-controller="Dogrula" asp-action="Index">→ ModelState'in içi</a>
+</p>
+
+@section Scripts {
+    @* ✔ TODO 6.5 · İstemci doğrulamasını açın: `_ValidationScriptsPartial`'ı sayfaya ekleyin *@
+    <partial name="_ValidationScriptsPartial" />
+}

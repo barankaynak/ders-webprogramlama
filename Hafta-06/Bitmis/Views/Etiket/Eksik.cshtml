@@ -1,0 +1,73 @@
+@*
+    HAFTA 5 — 🐛 Hata Köşesi: @addTagHelper olmayınca (ders notu bölüm 1.3).
+
+    Aşağıdaki satır bu görünümde Tag Helper'ları BİLEREK kapatıyor;
+    böylece _ViewImports.cshtml'de @addTagHelper unutulmuş gibi davranıyor.
+*@
+@removeTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model KampusKitap.ViewModels.EtiketVM
+
+<h1>🐛 <code>@@addTagHelper</code> olmayınca</h1>
+
+<div class="uyari">
+    <strong>Bu sayfa 200 döndü. Hiçbir hata yok. Ve hiçbir şey çalışmıyor.</strong>
+</div>
+
+<p>Aşağıdaki üç etiket, bir önceki sayfalardakilerin birebir aynısı:</p>
+
+<table class="table">
+    <tbody>
+        <tr><td style="width:300px"><code>&lt;input asp-for="Metin" /&gt;</code></td>
+            <td><input asp-for="Metin" data-goster /></td></tr>
+        <tr><td><code>&lt;a asp-controller="Kitap" asp-action="Index"&gt;</code></td>
+            <td><a asp-controller="Kitap" asp-action="Index" data-goster>bağlantı</a></td></tr>
+        <tr><td><code>&lt;form asp-action="Index" method="post"&gt;</code></td>
+            <td><form asp-action="Index" method="post" id="f" data-goster><button type="button">düğme</button></form></td></tr>
+    </tbody>
+</table>
+
+<h2>Ne oldu?</h2>
+
+<div class="uyari">
+    <ul style="margin:0;padding-left:20px">
+        <li><code>asp-for</code> işlenmedi; tarayıcıya <strong>olduğu gibi</strong> gitti.
+            Alanın <code>name</code>'i <strong>yok</strong> — Hafta 4'ten biliyoruz:
+            <code>name</code>'i olmayan alan sunucuya <strong>hiç ulaşmaz</strong>.</li>
+        <li>Bağlantının <code>href</code>'i <strong>yok</strong>; tıklanabilir bile değil.</li>
+        <li>Formun <code>action</code>'ı <strong>yok</strong> ve
+            <strong>token üretilmedi</strong>.</li>
+    </ul>
+</div>
+
+<div class="ipucu">
+    <strong>Teşhis:</strong> sayfada <code>asp-</code> ile başlayan bir attribute
+    <strong>görüyorsanız</strong> (Ctrl+U), o Tag Helper çalışmamıştır.
+    Çalışan Tag Helper kendi attribute'ünü <strong>siler</strong>.
+    <div style="margin-top:6px">
+        <strong>Çözüm:</strong> <code>Views/_ViewImports.cshtml</code> dosyasında
+        <code>@@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers</code> satırı olmalı.
+    </div>
+</div>
+
+<div class="uyari">
+    <strong>İkinci hata, bundan farklı davranır:</strong> <code>asp-for</code> yazdığınız
+    görünümde <code>@@model</code> yoksa sayfa <strong>hiç açılmaz</strong> — projeyi
+    derleyemezsiniz:
+    <pre><code>error CS1963: An expression tree may not contain a dynamic operation</code></pre>
+    Yani bu hata <strong>derlemede</strong> yakalanır. Haftanın ilkesi tam olarak budur.
+</div>
+
+<p><a asp-action="Index">← asp-for galerisi</a></p>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('[data-goster]').forEach(function (el) {
+            var kod = document.createElement('pre');
+            kod.style.cssText = 'margin:6px 0 0;white-space:pre-wrap;word-break:break-all;font-size:.85em';
+            var k = el.cloneNode(false);
+            k.removeAttribute('data-goster');
+            kod.textContent = k.outerHTML;
+            el.insertAdjacentElement('afterend', kod);
+        });
+    </script>
+}
