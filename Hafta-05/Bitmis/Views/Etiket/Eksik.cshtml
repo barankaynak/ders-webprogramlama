@@ -1,7 +1,7 @@
 @*
     HAFTA 5 — 🐛 Hata Köşesi: @addTagHelper olmayınca (ders notu bölüm 1.3).
 
-    Aşağıdaki satır bu görünümde Tag Helper'ları BİLEREK kapatıyor;
+    Aşağıdaki satır bu view'da Tag Helper'ları BİLEREK kapatıyor;
     böylece _ViewImports.cshtml'de @addTagHelper unutulmuş gibi davranıyor.
 *@
 @removeTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -51,7 +51,7 @@
 
 <div class="uyari">
     <strong>İkinci hata, bundan farklı davranır:</strong> <code>asp-for</code> yazdığınız
-    görünümde <code>@@model</code> yoksa sayfa <strong>hiç açılmaz</strong> — projeyi
+    view'da <code>@@model</code> yoksa sayfa <strong>hiç açılmaz</strong> — projeyi
     derleyemezsiniz:
     <pre><code>error CS1963: An expression tree may not contain a dynamic operation</code></pre>
     Yani bu hata <strong>derlemede</strong> yakalanır. Haftanın ilkesi tam olarak budur.

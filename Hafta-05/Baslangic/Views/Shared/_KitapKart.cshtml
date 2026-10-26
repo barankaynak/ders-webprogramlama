@@ -4,10 +4,10 @@
     Adı alt çizgiyle başlar: "bu dosya tek başına bir sayfa değildir".
     Views/Shared/ altında olduğu için HER controller kullanabilir.
 
-    Veriyi KENDİSİ GETİRMEZ. Çağıran görünüm ne verirse onu basar:
+    Veriyi KENDİSİ GETİRMEZ. Çağıran view ne verirse onu basar:
         <partial name="_KitapKart" model="k" />
 
-    model="k" yazmazsanız partial üst görünümün modelini alır ve
+    model="k" yazmazsanız partial üst view'ın modelini alır ve
     tip uyuşmadığı için InvalidOperationException fırlatır — deneyin.
 *@
 @model Kitap

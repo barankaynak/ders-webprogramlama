@@ -17,7 +17,7 @@ namespace KampusKitap.ViewModels;
 public class KitapEkleVM : IValidatableObject
 {
     // [Display] bir DOĞRULAMA attribute'ü değildir; yalnızca adı belirler.
-    // {0} yer tutucusu o adla dolar: "Başlık boş bırakılamaz."
+    // {0} placeholder'ı o adla dolar: "Başlık boş bırakılamaz."
     // TODO 6.1 · Başlık ve Yazar için doğrulama attribute'lerini ekleyin: `[Required]` ve `[StringLength]`, Türkçe `ErrorMessage` ile
     //      ipucu: Hafta 6 ders notu bölüm 2.2 — `{0}` alanın adı, `{1}` üst sınır, `{2}` alt sınırdır. Boş gönderin; `/Kitap/EkleTH`'deki hata listesinde mesajınız görünmeli
     [BuyukHarfleBaslar]

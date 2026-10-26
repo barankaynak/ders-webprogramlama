@@ -54,7 +54,7 @@ public class EtiketController : Controller
 
     // GET /Etiket/Eksik
     // 🐛 _ViewImports'ta @addTagHelper olmadığında ne oluyor?
-    // Görünüm @removeTagHelper ile bunu BİLEREK simüle ediyor.
+    // View @removeTagHelper ile bunu BİLEREK simüle ediyor.
     public IActionResult Eksik()
     {
         ViewData["Title"] = "addTagHelper olmayınca";

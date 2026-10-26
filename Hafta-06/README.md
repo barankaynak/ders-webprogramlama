@@ -11,7 +11,7 @@
 ## Bu haftanın konusu
 
 - **Doğrulama nerede çalışır** — Model Binding → doğrulama → action; `ModelState`'in içi
-- **Örtük doğrulama** — attribute yazmadan gelen hatalar: tip, nullable işareti, bağlama
+- **Örtük doğrulama** — attribute yazmadan gelen hatalar: tip, nullable işareti, Model Binding
 - **DataAnnotations** — `[Required]`, `[StringLength]`, `[Range]`, `[EmailAddress]`, `[Compare]`, `[RegularExpression]`, `[Url]`; `ErrorMessage` ile Türkçe mesaj
 - **`ModelState` ve sunucu tarafı doğrulama** — kanonik action kalıbı, `AddModelError`, `asp-validation-for`, `asp-validation-summary`
 - **İstemci doğrulaması** — `data-val-*` + jQuery Validation; atlatılabilir olduğu ve Türkçe ondalık ayracı

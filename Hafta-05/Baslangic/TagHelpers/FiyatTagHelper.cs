@@ -12,10 +12,10 @@ namespace KampusKitap.TagHelpers;
 /// FiyatTagHelper → &lt;fiyat&gt;. Attribute adları da aynı şekilde
 /// özellik adlarından türetilir (PascalCase → kebab-case).
 ///
-/// Bu sınıfın görünümlerde tanınması için _ViewImports.cshtml'deki
+/// Bu sınıfın view'larda tanınması için _ViewImports.cshtml'deki
 /// "@addTagHelper *, KampusKitap" satırı gerekir (ders notu bölüm 1.3).
 ///
-/// TagMode satırı neden var? Görünümde kendini kapatan yazım (&lt;fiyat … /&gt;)
+/// TagMode satırı neden var? View'da kendini kapatan yazım (&lt;fiyat … /&gt;)
 /// kullanılıyor. TagMode verilmezse çıktı da kendini kapatır ve içerik HİÇ
 /// yazılmaz: &lt;span class="fiyat" /&gt;. /Etiket/Ozel'deki &lt;email … /&gt;
 /// satırı bu durumun canlı örneği.

@@ -2,15 +2,15 @@
     HAFTA 4 — ViewData, ViewBag ve TempData aynı istekte (ders notu bölüm 1).
     Bu sayfada üçü de çalışır; aralarındaki fark burada GÖRÜNMEZ.
 *@
-<h1>Controller'dan görünüme veri taşımak</h1>
+<h1>Controller'dan view'a veri taşımak</h1>
 
 <p class="ipucu">
-    Controller üç değeri de doldurdu, görünüm üçünü de okuyor.
+    Controller üç değeri de doldurdu, view üçünü de okuyor.
     <strong>Tek istek içinde üçü de aynı işi yapıyor.</strong>
 </p>
 
 <table class="table">
-    <thead><tr><th style="width:260px">Yol</th><th>Görünümde okunuşu</th><th>Değer</th></tr></thead>
+    <thead><tr><th style="width:260px">Yol</th><th>View'da okunuşu</th><th>Değer</th></tr></thead>
     <tbody>
         <tr><td><code>ViewData</code></td><td><code>@@ViewData["Mesaj"]</code></td><td>@ViewData["Mesaj"]</td></tr>
         <tr><td><code>ViewBag</code></td><td><code>@@ViewBag.Sayi</code></td><td>@ViewBag.Sayi</td></tr>
@@ -30,11 +30,11 @@
     <tbody>
         <tr>
             <td style="width:260px">Controller'da <code>ViewData["Ortak"]</code></td>
-            <td>görünümde <code>@@ViewBag.Ortak</code> → <strong>@ViewBag.Ortak</strong></td>
+            <td>view'da <code>@@ViewBag.Ortak</code> → <strong>@ViewBag.Ortak</strong></td>
         </tr>
         <tr>
             <td>Controller'da <code>ViewBag.Ortak2</code></td>
-            <td>görünümde <code>@@ViewData["Ortak2"]</code> → <strong>@ViewData["Ortak2"]</strong></td>
+            <td>view'da <code>@@ViewData["Ortak2"]</code> → <strong>@ViewData["Ortak2"]</strong></td>
         </tr>
     </tbody>
 </table>

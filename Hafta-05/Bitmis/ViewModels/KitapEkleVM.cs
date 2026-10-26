@@ -31,6 +31,6 @@ public class KitapEkleVM
     public int KategoriId { get; set; }
 
     // Doğrulama attribute'leri ([Required], [Range] …) HAFTA 6'nın konusu.
-    // Bu hafta yalnızca bağlamanın başarısız olabileceğini ve bunun
+    // Bu hafta yalnızca binding'in başarısız olabileceğini ve bunun
     // ModelState'e yazıldığını biliyoruz (Hafta 4 ders notu bölüm 3.7).
 }

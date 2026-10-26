@@ -2,11 +2,11 @@
     LAYOUT — sayfanın DEĞİŞMEYEN bölümü: menü, başlık, footer (ders notu bölüm 2.2)
 
     Buradaki menü üç sayfada da görünür ve TEK bir dosyada durur.
-    Üç görünüme kopyalanmış olsaydı, menüye bağlantı eklemek üç dosya
+    Üç view'a kopyalanmış olsaydı, menüye bağlantı eklemek üç dosya
     düzenlemek demek olurdu — ve birini unutmak hata vermezdi.
     🧩 Haftanın ilkesi: tek doğruluk kaynağı.
 
-    Bu dosya _ViewStart.cshtml tarafından otomatik atanır; hiçbir görünümde
+    Bu dosya _ViewStart.cshtml tarafından otomatik atanır; hiçbir view'da
     Layout = "_Layout"; yazmadık.
 *@
 <!DOCTYPE html>
@@ -71,7 +71,7 @@
 
     @*
         BÖLÜM (section) — sayfaya özel parça buraya gelir (ders notu bölüm 2.6).
-        required: false → bölümü doldurmayan görünümler sorunsuz çalışır.
+        required: false → bölümü doldurmayan view'lar sorunsuz çalışır.
         true yapıp /Kategori'yi açarsanız hata alırsınız; deneyin.
     *@
     @await RenderSectionAsync("Scripts", required: false)

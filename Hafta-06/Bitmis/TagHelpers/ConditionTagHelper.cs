@@ -7,7 +7,7 @@ namespace KampusKitap.TagHelpers;
 ///
 ///   &lt;div condition="@Model.Onayli"&gt;…&lt;/div&gt;
 ///
-/// Koşul false ise etiket İÇERİĞİYLE BİRLİKTE hiç üretilmez. Görünümde
+/// Koşul false ise etiket İÇERİĞİYLE BİRLİKTE hiç üretilmez. View'da
 /// @if yazmanın attribute'le yapılmış hâli.
 /// </summary>
 [HtmlTargetElement(Attributes = nameof(Condition))]

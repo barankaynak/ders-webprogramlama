@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KampusKitap.Controllers;
 
 /// <summary>
-/// HAFTA 4 — Controller'dan görünüme veri taşımanın üç yolu:
+/// HAFTA 4 — Controller'dan view'a veri taşımanın üç yolu:
 /// ViewData, ViewBag ve TempData (ders notu bölüm 1).
 ///
 /// Burada BİLEREK form yok. Amaç yalnızca ÖMÜR farkını göstermek:

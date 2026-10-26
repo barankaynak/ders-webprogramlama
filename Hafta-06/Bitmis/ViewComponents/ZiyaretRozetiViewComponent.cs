@@ -29,7 +29,7 @@ public class ZiyaretRozetiViewComponent : ViewComponent
         _sayac = sayac;
     }
 
-    // Görünümü aranan yol SÖZLEŞMEDİR, isteğe bağlı değil:
+    // View'ı aranan yol SÖZLEŞMEDİR, isteğe bağlı değil:
     //   Views/Shared/Components/ZiyaretRozeti/Default.cshtml
     // Klasör adı = sınıf adından "ViewComponent" soneki atılmış hâli.
     public IViewComponentResult Invoke()

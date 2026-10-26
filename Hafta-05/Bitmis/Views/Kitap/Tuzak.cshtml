@@ -4,22 +4,22 @@
     Bu sayfa BİLEREK yanlış yazılmıştır ve DOĞRU ÇALIŞIR. Tuzağın tamamı bu:
     hiçbir aşamada hata vermez.
 
-    Controller bu görünüme hiç veri göndermiyor; görünüm veriyi @inject ile
+    Controller bu view'a hiç veri göndermiyor; view veriyi @inject ile
     kendisi çekiyor ve üstelik DÖNGÜNÜN İÇİNDE ikinci bir çağrı daha yapıyor.
 
     50 kitaplık bir listede: 1 liste sorgusu + 50 satır sorgusu = 51 sorgu.
     Adı: N+1 sorgu problemi. Hafta 8'de EF Core ile aynısıyla karşılaşacağız;
-    orada çözümü Include olacak, burada çözümü sorguyu görünümden ÇIKARMAK.
+    orada çözümü Include olacak, burada çözümü sorguyu view'dan ÇIKARMAK.
 
     Bedeli:
-      1) Test edilemez — görünüme birim testi yazılmaz
+      1) Test edilemez — view'a birim testi yazılmaz
       2) Hata yönetimi yok — sorgu patlarsa yarı çizilmiş sayfa; başlıklar gitmiştir
       3) Gizli N+1 — döngü içinde sorgu yazmak çok kolaydır
       4) "Bu veri nereden geliyor?" sorusunun cevabı artık tek yerde değil
 *@
 @using KampusKitap.Data
 
-<h1>🕳️ Klasik Tuzak: görünümün içinde sorgu</h1>
+<h1>🕳️ Klasik Tuzak: view'ın içinde sorgu</h1>
 
 <div class="uyari">
     <strong>Bu sayfa kasten yanlış yazılmıştır.</strong>
@@ -37,7 +37,7 @@
 </ul>
 
 <p class="ipucu">
-    Doğrusu: veri controller'da <strong>bir kez</strong> alınır, görünüme hazır verilir.
+    Doğrusu: veri controller'da <strong>bir kez</strong> alınır, view'a hazır verilir.
     Karşılaştırmak için <a asp-controller="Kitap" asp-action="Index">/Kitap</a> sayfasına bakın —
-    orada görünüm yalnızca <em>gösteriyor</em>.
+    orada view yalnızca <em>gösteriyor</em>.
 </p>

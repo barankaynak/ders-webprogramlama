@@ -4,7 +4,7 @@ namespace KampusKitap.Data;
 
 /// <summary>
 /// Bellekte duran basit veri kaynağı.
-/// Gerçek veritabanı Hafta 8'de (EF Core) gelecek; şimdilik görünümlere
+/// Gerçek veritabanı Hafta 8'de (EF Core) gelecek; şimdilik view'lara
 /// veri taşıyabilmek için bu yeter.
 /// </summary>
 public static class KitapDeposu

@@ -10,7 +10,7 @@ public class KategoriController : Controller
 
     // GET /Kategori
     //
-    // Bu görünüm @section Scripts TANIMLAMAZ. Layout'taki
+    // Bu view @section Scripts TANIMLAMAZ. Layout'taki
     // RenderSectionAsync("Scripts", required: false) sayesinde sorun çıkmaz.
     // required: true yaparsanız BU SAYFA hata verir — denemeye değer.
     public IActionResult Index()
