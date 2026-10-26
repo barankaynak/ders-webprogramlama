@@ -68,8 +68,9 @@
 
 <div class="ipucu">
     <strong>İstemci doğrulaması açıkken</strong> (TODO 6.5) boş form tarayıcıdan hiç çıkmaz.
-    F12 ile bir alanın <code>data-val="true"</code> attribute'ünü silip gönderin:
-    tarayıcı geçirir, <strong>sunucu yine yakalar</strong>. İstemci doğrulaması kullanıcıya
+    Konsoldan <code>document.forms[0].submit()</code> ile gönderin: tarayıcı ve jQuery
+    atlanır, <strong>sunucu yine yakalar</strong>. (F12 ile <code>data-val</code> silmek işe
+    yaramaz: kurallar sayfa açılırken bir kez kurulur.) İstemci doğrulaması kullanıcıya
     yardımdır; güvenlik sunucudadır.
 </div>
 

@@ -20,7 +20,8 @@ public class KitapEkleVM : IValidatableObject
     // {0} yer tutucusu o adla dolar: "Başlık boş bırakılamaz."
     // ✔ TODO 6.1 · Başlık ve Yazar için doğrulama attribute'lerini ekleyin: `[Required]` ve `[StringLength]`, Türkçe `ErrorMessage` ile
     [Required(ErrorMessage = "{0} boş bırakılamaz.")]
-    [StringLength(100, MinimumLength = 2, ErrorMessage = "{0} {2} ile {1} karakter arasında olmalıdır.")]
+    [StringLength(100, MinimumLength = 2,
+        ErrorMessage = "{0} {2} ile {1} karakter arasında olmalıdır.")]
     [BuyukHarfleBaslar]
     [Display(Name = "Başlık")]
     public string Baslik { get; set; } = "";
@@ -55,7 +56,8 @@ public class KitapEkleVM : IValidatableObject
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         // ✔ TODO 6.7 · Başlık ile yazar aynı olamaz: `Validate` gövdesini yazın
-        if (string.Equals((Baslik ?? "").Trim(), (Yazar ?? "").Trim(), StringComparison.CurrentCultureIgnoreCase))
+        if (string.Equals((Baslik ?? "").Trim(), (Yazar ?? "").Trim(),
+                StringComparison.CurrentCultureIgnoreCase))
             yield return new ValidationResult("Başlık ile yazar aynı olamaz.",
                 [nameof(Baslik), nameof(Yazar)]);
     }
