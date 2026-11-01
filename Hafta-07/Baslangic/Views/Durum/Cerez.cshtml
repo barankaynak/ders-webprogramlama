@@ -1,0 +1,56 @@
+@*
+    HAFTA 7 — cookie çeşitleri (Hafta 7 ders notu bölüm 2).
+    Her düğme bir cookie yazar ve PRG ile bu sayfaya döner. Solda sunucunun
+    aldığı, sağda JavaScript'in gördüğü liste: HttpOnly olan sağda görünmez.
+*@
+<h1>Cookie çeşitleri</h1>
+
+<div class="cerez-dugmeler">
+    <form asp-action="Cerez" method="post"><input type="hidden" name="tur" value="gecici" /><button type="submit">Geçici cookie</button></form>
+    <form asp-action="Cerez" method="post"><input type="hidden" name="tur" value="kalici" /><button type="submit">Kalıcı cookie (7 gün)</button></form>
+    <form asp-action="Cerez" method="post"><input type="hidden" name="tur" value="httponly" /><button type="submit">HttpOnly cookie</button></form>
+    <form asp-action="Cerez" method="post"><input type="hidden" name="tur" value="buyuk" /><button type="submit">5000 baytlık cookie</button></form>
+    <form asp-action="Cerez" method="post"><input type="hidden" name="tur" value="temizle" /><button type="submit">Deneme cookie'lerini sil</button></form>
+</div>
+
+<div class="iki-sutun">
+    <div>
+        <h2>Sunucunun aldığı</h2>
+        <p class="ipucu-satir"><code>Request.Cookies</code></p>
+        <ul>
+            @foreach (var c in Context.Request.Cookies.Where(c => c.Key.StartsWith("Deneme-")).OrderBy(c => c.Key))
+            {
+                <li><code>@c.Key</code> (@c.Value.Length karakter)</li>
+            }
+        </ul>
+    </div>
+    <div>
+        <h2>JavaScript'in gördüğü</h2>
+        <p class="ipucu-satir"><code>document.cookie</code></p>
+        <ul id="js-liste"><li class="bos">(betik çalışınca dolar)</li></ul>
+    </div>
+</div>
+
+<table class="table ms-tablo">
+    <thead><tr><th>Düğme</th><th>Yazılan seçenek</th><th>Ölçülen sonuç</th></tr></thead>
+    <tbody>
+        <tr><td>Geçici cookie</td><td><code>Expires</code> yok</td><td>F12 → Application'da Expires: <em>Session</em> — tarayıcı kapanınca silinir</td></tr>
+        <tr><td>Kalıcı cookie</td><td><code>Expires = +7 gün</code></td><td>Expires sütununda tarih var; tarayıcı kapansa da durur</td></tr>
+        <tr><td>HttpOnly cookie</td><td><code>HttpOnly = true</code></td><td>Solda var, sağda <strong>yok</strong>: JavaScript okuyamaz, üzerine de yazamaz</td></tr>
+        <tr><td>5000 baytlık cookie</td><td>değer 5000 karakter</td><td>İki listede de <strong>yok</strong>: tarayıcı ~4096 baytı aşan cookie'yi saklamaz; hata da vermez</td></tr>
+    </tbody>
+</table>
+
+<p><a asp-action="Index">← Sunucunun gördüğü bütün durum</a> · <a asp-action="AyniIstek">Aynı istekte okumak →</a></p>
+
+@section Scripts {
+    <script>
+        // document.cookie: tarayıcının bu sayfaya JavaScript'ten gösterdiği cookie'ler.
+        // HttpOnly olanlar burada YOKTUR.
+        const ul = document.getElementById('js-liste');
+        const adlar = document.cookie.split('; ').filter(c => c.startsWith('Deneme-'));
+        ul.innerHTML = adlar.length
+            ? adlar.map(c => '<li><code>' + c.split('=')[0] + '</code></li>').join('')
+            : '<li class="bos">(hiç yok)</li>';
+    </script>
+}

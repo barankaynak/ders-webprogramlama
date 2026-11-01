@@ -1,0 +1,7 @@
+@*
+    HAFTA 7 — sepet rozetinin view'ı (Hafta 7 ders notu bölüm 3.6).
+    Yol sözleşmedir: Views/Shared/Components/SepetRozeti/Default.cshtml
+*@
+@model int
+
+<span class="sepet-rozet@(Model > 0 ? " dolu" : "")" title="Sepetteki kitap adedi — session'dan okunuyor">@Model</span>

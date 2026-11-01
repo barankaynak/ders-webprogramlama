@@ -1,0 +1,19 @@
+@*
+    HAFTA 4 — TempData'yı köşeli parantezle okumak onu TÜKETİR (ders notu bölüm 1.2).
+*@
+<h1>TempData'yı okumak</h1>
+
+<p>
+    Bu sayfa <code>TempData["Not"]</code> yazdı, yani <strong>okudu</strong>:
+</p>
+
+<p><code style="font-size:1.2em">@ViewData["Okunan"]</code></p>
+
+<div class="uyari">
+    Değer bu isteğin sonunda <strong>silindi</strong>. Şimdi
+    <a href="/Tasima/Sonuc">/Tasima/Sonuc</a> sayfasına dönün: TempData artık
+    <code>(yok)</code> diyecek. Değeri bir istek daha yaşatmak isterseniz
+    <code>TempData.Keep("Not")</code> yazılır.
+</div>
+
+<p><a href="/Tasima">← Başa dön</a></p>

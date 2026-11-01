@@ -1,0 +1,38 @@
+@*
+    HAFTA 7 — 🕳️ Klasik Tuzak: kullanıcının rolünü cookie'de düz metin tutmak.
+    Rol nereden okunuyor? DurumController.Panel'e bakın (TODO 7.8).
+*@
+@model string
+
+<h1>🕳️ Panel</h1>
+
+<p>Rolünüz: <strong class="rol">@Model</strong></p>
+
+@if (Model == "yonetici")
+{
+    <div class="uyari">
+        <strong>🔓 Yönetici paneli</strong> — bütün kitapları silebilir, fiyatları değiştirebilir,
+        kullanıcıları engelleyebilirsiniz. (Gösteri: düğmeler bir şey yapmaz.)
+    </div>
+}
+else
+{
+    <p class="ipucu">Yönetici paneli yalnızca <code>yonetici</code> rolüne açılır.</p>
+}
+
+<div class="cerez-dugmeler">
+    <form asp-action="Giris" method="post"><button type="submit">Öğrenci olarak giriş yap</button></form>
+    <form asp-action="Cikis" method="post"><button type="submit">Çıkış</button></form>
+</div>
+
+<h2>Deneyin</h2>
+<ol>
+    <li><strong>Öğrenci olarak giriş yap</strong>'a basın: rolünüz <code>ogrenci</code>.</li>
+    <li>F12 → <em>Application</em> → <em>Cookies</em> → <code>Rol</code> satırının değerini
+        <code>yonetici</code> yapın ve sayfayı yenileyin.</li>
+    <li>Panel açıldıysa rol cookie'den okunuyor demektir. Cookie <strong>istemcidedir</strong>;
+        kullanıcı onu istediği gibi değiştirir. TODO 7.8 rolü session'a taşır: o zaman
+        <code>Rol</code> cookie'si hiç oluşmaz, değiştirilecek bir şey kalmaz.</li>
+</ol>
+
+<p><a asp-action="Index">← Sunucunun gördüğü durum</a></p>

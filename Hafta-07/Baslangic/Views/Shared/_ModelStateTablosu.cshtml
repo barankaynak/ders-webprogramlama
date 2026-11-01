@@ -1,0 +1,60 @@
+@*
+    HAFTA 6 — ModelState'in içi (Hafta 6 ders notu bölüm 1.2).
+
+    Action'ın ilk satırı çalıştığında Model Binding ve doğrulama BİTMİŞTİR.
+    Bu partial, o anda ModelState'te ne olduğunu olduğu gibi basar:
+    her anahtar için gelen ham metin, durum ve hatalar.
+
+    Kullanımı:  <partial name="_ModelStateTablosu" />
+*@
+@{
+    var ms = ViewData.ModelState;
+}
+
+<div class="ipucu" style="margin-top:1rem">
+    <code>ModelState.IsValid</code> =
+    <strong style="color:@(ms.IsValid ? "#2f6b2a" : "#a4231b")">@ms.IsValid.ToString().ToLowerInvariant()</strong>
+    &nbsp;·&nbsp; hata sayısı: <strong>@ms.ErrorCount</strong>
+    &nbsp;·&nbsp; anahtar sayısı: <strong>@ms.Count</strong>
+    &nbsp;·&nbsp; bu yanıtın durum kodu: <strong>@Context.Response.StatusCode</strong>
+</div>
+
+@if (ms.Count == 0)
+{
+    <p class="bos">ModelState boş — formdan hiçbir alan gelmedi ve hiçbir kural hata yazmadı.</p>
+}
+else
+{
+    <table class="table ms-tablo">
+        <thead>
+            <tr>
+                <th style="width:170px">Anahtar</th>
+                <th style="width:170px">Gelen ham metin</th>
+                <th style="width:110px">Durum</th>
+                <th>Hatalar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var (anahtar, g) in ms.OrderBy(g => g.Key))
+            {
+                var giris = g!;
+                <tr>
+                    <td><code>@(anahtar.Length == 0 ? "(boş anahtar)" : anahtar)</code></td>
+                    <td>@if (giris.AttemptedValue is null)
+                        {<span class="bos">gelmedi</span>}
+                        else if (giris.AttemptedValue.Length == 0)
+                        {<span class="bos">""</span>}
+                        else
+                        {<code>@giris.AttemptedValue</code>}</td>
+                    <td class="@(giris.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "gecersiz" : "gecerli")">@giris.ValidationState</td>
+                    <td>
+                        @foreach (var h in giris.Errors)
+                        {
+                            <div>@(string.IsNullOrEmpty(h.ErrorMessage) ? "(mesajsız: " + h.Exception?.GetType().Name + ")" : h.ErrorMessage)</div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,20 @@
+@*
+    HAFTA 7 — yazılan cookie aynı istekte okunabilir mi? (Hafta 7 ders notu bölüm 2.3)
+    Hayır: Response.Cookies.Append bu yanıta Set-Cookie başlığı ekler; Request.Cookies
+    tarayıcının BU İSTEKLE getirdiklerini gösterir. Sayfayı birkaç kez yenileyin.
+*@
+<h1>Aynı istekte okumak</h1>
+
+<table class="table ms-tablo">
+    <tbody>
+        <tr><th>Bu istekte yazılan (<code>Response.Cookies.Append</code>)</th><td><code>@ViewData["Yazilan"]</code></td></tr>
+        <tr><th>Bu istekte okunan (<code>Request.Cookies["Deneme-Ayni"]</code>)</th><td><code>@(ViewData["Okunan"] ?? "(yok)")</code></td></tr>
+    </tbody>
+</table>
+
+<p class="ipucu">
+    İlk açılışta okunan <strong>(yok)</strong>dur. Yenileyince okunan, bir önceki isteğin
+    yazdığı saattir — bu isteğinki değil. Cookie bir sonraki istekte gelir.
+</p>
+
+<p><a asp-action="Cerez">← Cookie çeşitleri</a> · <a asp-action="Index">Sunucunun gördüğü durum</a></p>

@@ -1,0 +1,46 @@
+@*
+    HAFTA 6 — doğrulama hangi sırayla çalışır? (Hafta 6 ders notu bölüm 5.3)
+
+    SiraVM: Ad [Required], Soyad serbest, ve IValidatableObject.Validate
+    "Ad == Soyad" ise hata veriyor. İki alan boşken ikisi de null'dır —
+    yani "aynıdır". Validate çağrılsaydı hata verirdi.
+*@
+@model KampusKitap.ViewModels.SiraVM
+
+<h1>Doğrulamanın sırası</h1>
+
+<pre><code>[Required] public string? Ad { get; set; }
+public string? Soyad { get; set; }
+
+public IEnumerable&lt;ValidationResult&gt; Validate(…)
+{
+    if (Ad == Soyad) yield return new ValidationResult("Validate çalıştı: …");
+}</code></pre>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <form asp-action="Sira" method="post">
+        <h3 style="font-size:1.1rem">1 · İkisi de boş</h3>
+        <input type="hidden" name="Ad" value="" />
+        <input type="hidden" name="Soyad" value="" />
+        <button type="submit">Gönder</button>
+    </form>
+    <form asp-action="Sira" method="post">
+        <h3 style="font-size:1.1rem">2 · İkisi de "Ali"</h3>
+        <input type="hidden" name="Ad" value="Ali" />
+        <input type="hidden" name="Soyad" value="Ali" />
+        <button type="submit">Gönder</button>
+    </form>
+</div>
+
+@if (ViewData["Gonderildi"] is true)
+{
+    <partial name="_ModelStateTablosu" />
+    <div class="ipucu">
+        Birinci gönderimde iki alan da <code>null</code> — yani <em>aynı</em>. Yine de
+        "Validate çalıştı" mesajı <strong>yok</strong>: <code>[Required]</code> düştüğü için
+        çatı <code>Validate</code>'i hiç çağırmadı. İkinci gönderimde özellik kuralları geçti,
+        <code>Validate</code> çalıştı.
+    </div>
+}
+
+<p><a asp-action="Index">← Doğrulama attribute'leri</a></p>

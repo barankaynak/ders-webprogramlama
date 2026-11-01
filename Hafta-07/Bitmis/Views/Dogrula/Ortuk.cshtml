@@ -1,0 +1,55 @@
+@*
+    HAFTA 6 — attribute YAZMADAN gelen doğrulama (Hafta 6 ders notu bölüm 1.3).
+
+    OrtukVM'de hiçbir doğrulama attribute'ü yok. Gelen hatalar tipten
+    (int, string), nullable işaretinden (string ile string?) ve Model
+    Binding'den geliyor.
+
+    İki form var: birincisi bütün alanları (boş da olsa) gönderir;
+    ikincisi YALNIZCA MetinNullable'ı gönderir — diğerleri istekte hiç yoktur.
+*@
+@model KampusKitap.ViewModels.OrtukVM
+
+<h1>Attribute yazmadan gelen hatalar</h1>
+
+<p class="ipucu">
+    <code>OrtukVM</code>'de <strong>hiçbir</strong> doğrulama attribute'ü yok
+    (<code>[DataType]</code> bir doğrulama attribute'ü değildir). Yine de hata gelir.
+    Önce boş gönderin, sonra <code>Sayi</code>'ya <code>abc</code>, e-postalara <code>xyz</code> yazın.
+</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <form asp-action="Ortuk" method="post">
+        <h3 style="font-size:1.1rem">1 · Bütün alanlar gönderilir</h3>
+        <table class="table">
+            <tr><td><code>int Sayi</code></td><td><input asp-for="Sayi" type="text" /></td></tr>
+            <tr><td><code>int? SayiNullable</code></td><td><input asp-for="SayiNullable" type="text" /></td></tr>
+            <tr><td><code>string Metin</code></td><td><input asp-for="Metin" /></td></tr>
+            <tr><td><code>string? MetinNullable</code></td><td><input asp-for="MetinNullable" /></td></tr>
+            <tr><td><code>[DataType(EmailAddress)]</code></td><td><input asp-for="EpostaDataType" type="text" /></td></tr>
+            <tr><td><code>[EmailAddress]</code></td><td><input asp-for="EpostaAttribute" type="text" /></td></tr>
+        </table>
+        <button type="submit">Gönder</button>
+    </form>
+
+    <form asp-action="Ortuk" method="post">
+        <h3 style="font-size:1.1rem">2 · Yalnızca <code>MetinNullable</code> gönderilir</h3>
+        <p class="ipucu">Diğer beş alan istekte <strong>hiç yok</strong> — boş değil, yok.</p>
+        <input name="MetinNullable" value="merhaba" />
+        <button type="submit">Gönder</button>
+    </form>
+</div>
+
+@if (ViewData["Gonderildi"] is true)
+{
+    <h2>Bağlanan değerler</h2>
+    <table class="table">
+        <tr><td style="width:220px"><code>Sayi</code></td><td><code>@Model.Sayi</code></td></tr>
+        <tr><td><code>SayiNullable</code></td><td><code>@(Model.SayiNullable?.ToString() ?? "null")</code></td></tr>
+        <tr><td><code>Metin</code></td><td><code>@(Model.Metin is null ? "null" : "\"" + Model.Metin + "\"")</code></td></tr>
+        <tr><td><code>MetinNullable</code></td><td><code>@(Model.MetinNullable is null ? "null" : "\"" + Model.MetinNullable + "\"")</code></td></tr>
+    </table>
+    <partial name="_ModelStateTablosu" />
+}
+
+<p><a asp-action="Index">← Doğrulama attribute'leri</a></p>

@@ -1,0 +1,42 @@
+@*
+    HAFTA 4 — yönlendirmeden SONRAKİ istek (ders notu bölüm 1.2).
+    ViewData ve ViewBag boş; TempData sağ.
+*@
+<h1>Yönlendirmeden sonra</h1>
+
+<p class="ipucu">
+    Buraya <code>/Tasima/Yonlendir</code> üzerinden geldiniz. Tarayıcı
+    <strong>302</strong> cevabını alıp bu adrese yeniden istek yaptı:
+    bu <strong>yeni bir istek</strong>.
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:260px">Yol</th><th>Şimdiki değer</th></tr></thead>
+    <tbody>
+        <tr><td><code>ViewData["Mesaj"]</code></td><td><code>@(ViewData["Mesaj"] ?? "(boş)")</code></td></tr>
+        <tr><td><code>ViewBag.Sayi</code></td><td><code>@(ViewBag.Sayi ?? "(boş)")</code></td></tr>
+        <tr><td><code>TempData["Not"]</code></td><td><code>@ViewData["Kalan"]</code></td></tr>
+    </tbody>
+</table>
+
+<div class="uyari">
+    <strong>ViewData ve ViewBag yönlendirmeden sağ çıkmaz.</strong> İkisi de o tek
+    isteğin nesnesine bağlıdır; istek bitince nesne de biter. TempData ise değeri
+    bir <strong>cookie</strong>'ye yazar, bir sonraki istekte geri okur.
+</div>
+
+<h2>TempData ne zaman silinir?</h2>
+
+<p>
+    Bu sayfa TempData'yı <code>TempData.Peek("Not")</code> ile okudu.
+    <strong>Peek okur ama silmez</strong> — bu yüzden <kbd>F5</kbd> yapsanız da değer durur.
+</p>
+
+<p>
+    Köşeli parantezle okumak farklıdır: <code>TempData["Not"]</code> değeri
+    <strong>okunmuş</strong> sayar ve isteğin sonunda siler.
+</p>
+
+<p><a href="/Tasima/Oku"><strong>/Tasima/Oku</strong> → köşeli parantezle oku, sonra buraya geri dön</a></p>
+
+<p><a href="/Tasima">← Başa dön</a></p>

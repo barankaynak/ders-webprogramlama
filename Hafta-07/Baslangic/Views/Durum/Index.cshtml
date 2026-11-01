@@ -1,0 +1,89 @@
+@*
+    HAFTA 7 — sunucunun gördüğü durum (Hafta 7 ders notu bölüm 1 ve 2.4).
+
+    Bu sayfa iki soruyu cevaplar:
+      1) Tarayıcı bu istekle hangi cookie'leri getirdi?
+      2) Bu kullanıcının session'ında ne var?
+*@
+@using KampusKitap.Controllers
+@{
+    var ses = DurumController.SessionVarsa(Context);
+    string Kisalt(string? s) => s is null ? "(yok)" : s.Length > 80 ? s[..80] + "…" : s;
+}
+
+<h1>Durum nerede?</h1>
+
+<p class="ipucu">
+    HTTP durumsuzdur (Hafta 1): her istek bağımsızdır. Bir kullanıcıyı hatırlamanın iki
+    yolu var — veriyi <strong>tarayıcıya</strong> bırakmak (cookie) ya da <strong>sunucuda</strong>
+    tutup tarayıcıya yalnızca bir anahtar vermek (session).
+</p>
+
+<h2>1. Tarayıcının bu istekle getirdiği cookie'ler</h2>
+
+<p><code>Cookie</code> başlığı, olduğu gibi:</p>
+<pre class="cikti">@(string.IsNullOrEmpty(Context.Request.Headers.Cookie.ToString()) ? "(başlık yok — hiç cookie gelmedi)" : Context.Request.Headers.Cookie.ToString())</pre>
+
+@if (Context.Request.Cookies.Count == 0)
+{
+    <p class="bos">Hiç cookie gelmedi. <a asp-action="Cerez">Cookie çeşitleri</a> sayfasından birkaç tane yazın.</p>
+}
+else
+{
+    <table class="table ms-tablo">
+        <thead><tr><th>Ad</th><th>Değer</th><th>Uzunluk</th></tr></thead>
+        <tbody>
+            @foreach (var c in Context.Request.Cookies.OrderBy(c => c.Key))
+            {
+                <tr><td><code>@c.Key</code></td><td><code>@Kisalt(c.Value)</code></td><td>@c.Value.Length</td></tr>
+            }
+        </tbody>
+    </table>
+}
+
+<p class="ipucu">
+    <strong>Tabloda Expires, HttpOnly, Secure sütunu neden yok?</strong> Çünkü sunucuya
+    gelmiyorlar. Tarayıcı yalnızca <code>ad=değer</code> çiftlerini gönderir; o seçenekler
+    yalnızca cookie <em>yazılırken</em> tarayıcıya verilen talimatlardır.
+</p>
+
+<h2>2. Bu kullanıcının session'ı</h2>
+
+@if (ses is null)
+{
+    <div class="uyari">
+        <strong>Session yapılandırılmamış.</strong> <code>Program.cs</code>'te
+        <code>AddSession</code> (TODO 7.3) ve <code>UseSession</code> (TODO 7.4) yok.
+        Bu hâlde session'a dokunan sayfalar (<a asp-action="SessionSayaci">/Durum/SessionSayaci</a>,
+        <a asp-controller="Sepet" asp-action="Index">/Sepet</a>) 500 döner.
+    </div>
+}
+else if (!ses.Keys.Any())
+{
+    <p class="bos">Session boş. <a asp-action="SessionSayaci">Sayacı</a> artırın ya da sepete bir kitap ekleyin.</p>
+}
+else
+{
+    <table class="table ms-tablo">
+        <thead><tr><th>Anahtar</th><th>Değer</th></tr></thead>
+        <tbody>
+            @foreach (var k in ses.Keys.OrderBy(k => k))
+            {
+                <tr><td><code>@k</code></td><td><code>@(k == "Sayac" ? ses.GetInt32(k)?.ToString() : Kisalt(ses.GetString(k)))</code></td></tr>
+            }
+        </tbody>
+    </table>
+    <p class="ipucu">
+        Bu değerler <strong>sunucunun belleğinde</strong>. Yukarıdaki cookie tablosunda
+        yalnızca <code>.AspNetCore.Session</code> var; içinde bu değerler değil, onları
+        bulmaya yarayan şifrelenmiş anahtar duruyor.
+    </p>
+}
+
+<h2>Ölçüm sayfaları</h2>
+<ul class="tuzak-liste">
+    <li><a asp-action="Cerez">Cookie çeşitleri</a> — geçici, kalıcı, HttpOnly, 5000 bayt</li>
+    <li><a asp-action="AyniIstek">Aynı istekte okumak</a> — yazılan cookie hemen okunur mu?</li>
+    <li><a asp-action="Panel">🕳️ Klasik Tuzak: rol cookie'de</a> (TODO 7.8)</li>
+    <li><a asp-action="SessionSayaci">Session sayacı</a> — zaman aşımı ve yeniden başlatma</li>
+</ul>
