@@ -4,7 +4,7 @@ namespace KampusKitap.Data;
 
 /// <summary>
 /// Bellekte duran basit veri kaynağı.
-/// Gerçek veritabanı Hafta 8'de (EF Core) gelecek; şimdilik view'lara
+/// Gerçek veritabanı ara sınavdan sonra (EF Core) gelecek; şimdilik view'lara
 /// veri taşıyabilmek için bu yeter.
 /// </summary>
 public static class KitapDeposu
@@ -18,7 +18,7 @@ public static class KitapDeposu
         new() { Id = 42, Baslik = "Otostopçunun Galaksi Rehberi", Yazar = "Douglas Adams", Fiyat = 95, KategoriId = 3 }
     ];
 
-    /// <summary>HAFTA 4 — form verisinin gideceği yer. Hafta 8'de veritabanı olacak.</summary>
+    /// <summary>HAFTA 4 — form verisinin gideceği yer. EF Core ile veritabanı olacak.</summary>
     public static Kitap Ekle(Kitap kitap)
     {
         kitap.Id = Hepsi.Count == 0 ? 1 : Hepsi.Max(k => k.Id) + 1;

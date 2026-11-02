@@ -1,8 +1,8 @@
 @*
-    HAFTA 7 — sunucunun gördüğü durum (Hafta 7 ders notu bölüm 1 ve 2.4).
+    HAFTA 7 — sunucunun gördüğü state (Hafta 7 ders notu bölüm 1 ve 2.4).
 
     Bu sayfa iki soruyu cevaplar:
-      1) Tarayıcı bu istekle hangi cookie'leri getirdi?
+      1) Tarayıcı bu request'le hangi cookie'leri getirdi?
       2) Bu kullanıcının session'ında ne var?
 *@
 @using KampusKitap.Controllers
@@ -11,15 +11,15 @@
     string Kisalt(string? s) => s is null ? "(yok)" : s.Length > 80 ? s[..80] + "…" : s;
 }
 
-<h1>Durum nerede?</h1>
+<h1>State nerede?</h1>
 
 <p class="ipucu">
-    HTTP durumsuzdur (Hafta 1): her istek bağımsızdır. Bir kullanıcıyı hatırlamanın iki
+    HTTP stateless'tır (Hafta 1): her request bağımsızdır. Bir kullanıcıyı hatırlamanın iki
     yolu var — veriyi <strong>tarayıcıya</strong> bırakmak (cookie) ya da <strong>sunucuda</strong>
     tutup tarayıcıya yalnızca bir anahtar vermek (session).
 </p>
 
-<h2>1. Tarayıcının bu istekle getirdiği cookie'ler</h2>
+<h2>1. Tarayıcının bu request'le getirdiği cookie'ler</h2>
 
 <p><code>Cookie</code> başlığı, olduğu gibi:</p>
 <pre class="cikti">@(string.IsNullOrEmpty(Context.Request.Headers.Cookie.ToString()) ? "(başlık yok — hiç cookie gelmedi)" : Context.Request.Headers.Cookie.ToString())</pre>
@@ -83,7 +83,7 @@ else
 <h2>Ölçüm sayfaları</h2>
 <ul class="tuzak-liste">
     <li><a asp-action="Cerez">Cookie çeşitleri</a> — geçici, kalıcı, HttpOnly, 5000 bayt</li>
-    <li><a asp-action="AyniIstek">Aynı istekte okumak</a> — yazılan cookie hemen okunur mu?</li>
+    <li><a asp-action="AyniIstek">Aynı request'te okumak</a> — yazılan cookie hemen okunur mu?</li>
     <li><a asp-action="Panel">🕳️ Klasik Tuzak: rol cookie'de</a> (TODO 7.8)</li>
     <li><a asp-action="SessionSayaci">Session sayacı</a> — zaman aşımı ve yeniden başlatma</li>
 </ul>

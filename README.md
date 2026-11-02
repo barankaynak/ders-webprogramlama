@@ -117,8 +117,8 @@ kapsamı da odur. Sunum, o metnin görsel anlatım aracıdır.
 
 | Sınav | Kapsam |
 |---|---|
-| **Ara sınav** (%30) | Hafta 1–7 |
-| **Final** (%40) | Hafta 8–13 ağırlıklı; Hafta 1–7 temel düzeyde |
+| **Ara sınav** (%30) | Hafta 1–6 |
+| **Final** (%40) | Hafta 7–13 ağırlıklı; Hafta 1–6 temel düzeyde |
 | **Dönem projesi** (%30) | Kod + video anlatım, teslim son hafta |
 
 > ⚠️ **Sınav kapsamı ders notlarıdır.** `H0N-Detay.pdf` dosyaları **kapsam dışıdır** ve

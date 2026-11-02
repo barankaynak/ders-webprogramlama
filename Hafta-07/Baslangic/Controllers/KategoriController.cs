@@ -4,7 +4,7 @@ namespace KampusKitap.Controllers;
 
 public class KategoriController : Controller
 {
-    // Bellek içi liste — Hafta 8'de bunun yerini veritabanı alacak
+    // Bellek içi liste — EF Core ile bunun yerini veritabanı alacak
     private static readonly string[] Kategoriler =
         ["Roman", "Ders Kitabı", "Bilim Kurgu", "Tarih", "Sınav Hazırlık"];
 

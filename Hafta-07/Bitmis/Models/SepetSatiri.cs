@@ -4,7 +4,7 @@ namespace KampusKitap.Models;
 /// HAFTA 7 — sepetteki bir satır. Sepetin tamamı session'da
 /// List&lt;SepetSatiri&gt; olarak, JSON metni hâlinde durur (Hafta 7 ders notu bölüm 3.5).
 ///
-/// Neden Kitap'ın kendisi değil? Session'a yalnızca gerekeni koyarız: her istekte
+/// Neden Kitap'ın kendisi değil? Session'a yalnızca gerekeni koyarız: her request'te
 /// sunucu belleğinden okunur, yazılır. Başlık ve fiyat eklenme anındaki hâliyle saklanır.
 /// </summary>
 public class SepetSatiri

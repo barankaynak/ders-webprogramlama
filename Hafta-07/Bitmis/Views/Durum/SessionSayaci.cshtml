@@ -14,12 +14,12 @@
 <table class="table ms-tablo">
     <thead><tr><th>Deneyin</th><th>Ne olur</th><th>Neden</th></tr></thead>
     <tbody>
-        <tr><td>Sayfayı yenileyin</td><td>Sayaç artar</td><td>Tarayıcı session cookie'sini her istekte getirir</td></tr>
+        <tr><td>Sayfayı yenileyin</td><td>Sayaç artar</td><td>Tarayıcı session cookie'sini her request'te getirir</td></tr>
         <tr><td>Yeni sekmede açın</td><td>Sayaç kaldığı yerden artar</td><td>Aynı tarayıcı, aynı cookie, aynı session</td></tr>
         <tr><td>Gizli pencerede açın</td><td>Sayaç 1'den başlar</td><td>Gizli pencerenin cookie'si ayrı → ayrı session</td></tr>
         <tr><td>Uygulamayı yeniden başlatın</td><td>Sayaç 1'den başlar</td><td>Veri sunucunun belleğindeydi; cookie duruyor ama işaret ettiği veri yok</td></tr>
-        <tr><td>20 dakika bekleyin</td><td>Sayaç 1'den başlar</td><td><code>IdleTimeout</code>: istek gelmeyen session silinir</td></tr>
+        <tr><td>20 dakika bekleyin</td><td>Sayaç 1'den başlar</td><td><code>IdleTimeout</code>: request gelmeyen session silinir</td></tr>
     </tbody>
 </table>
 
-<p><a asp-action="Index">← Sunucunun gördüğü durum</a></p>
+<p><a asp-action="Index">← Sunucunun gördüğü state</a></p>

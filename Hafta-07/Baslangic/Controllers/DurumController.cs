@@ -6,12 +6,12 @@ namespace KampusKitap.Controllers;
 /// <summary>
 /// HAFTA 7 — State Management ölçüm sayfaları.
 ///
-/// Hafta 6'daki /Dogrula ModelState'in içini gösteriyordu; bu controller durumun
+/// Hafta 6'daki /Dogrula ModelState'in içini gösteriyordu; bu controller state'in
 /// NEREDE tutulduğunu gösteriyor: tarayıcıda (cookie) mı, sunucuda (session) mı?
 ///
 ///   /Durum              sunucunun gördüğü cookie'ler ve session
 ///   /Durum/Cerez        cookie çeşitleri: geçici, kalıcı, HttpOnly, 5000 bayt
-///   /Durum/AyniIstek    yazılan cookie aynı istekte okunabilir mi?
+///   /Durum/AyniIstek    yazılan cookie aynı request'te okunabilir mi?
 ///   /Durum/Panel        🕳️ Klasik Tuzak: rol cookie'de (TODO 7.8)
 ///   /Durum/SessionSayaci  session sayacı: zaman aşımı, yeniden başlatma
 /// </summary>
@@ -24,7 +24,7 @@ public class DurumController : Controller
     // GET /Durum
     public IActionResult Index()
     {
-        ViewData["Title"] = "Durum nerede?";
+        ViewData["Title"] = "State nerede?";
         return View();
     }
 
@@ -37,7 +37,7 @@ public class DurumController : Controller
     }
 
     // POST /Durum/Cerez — seçilen cookie'yi yaz, sonra PRG ile aynı sayfaya dön.
-    // Yönlendirmeden sonraki GET isteği cookie'yi geri getirir; liste orada görünür.
+    // Yönlendirmeden sonraki GET request'i cookie'yi geri getirir; liste orada görünür.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Cerez(string tur)
@@ -67,11 +67,11 @@ public class DurumController : Controller
     }
 
     // GET /Durum/AyniIstek
-    // Yazılan cookie bu yanıtın Set-Cookie başlığında gider; Request.Cookies ise
-    // tarayıcının BU İSTEKLE getirdiklerini gösterir. Okunan, bir önceki yazılandır.
+    // Yazılan cookie bu response'un Set-Cookie başlığında gider; Request.Cookies ise
+    // tarayıcının BU REQUEST'LE getirdiklerini gösterir. Okunan, bir önceki yazılandır.
     public IActionResult AyniIstek()
     {
-        ViewData["Title"] = "Aynı istekte okumak";
+        ViewData["Title"] = "Aynı request'te okumak";
         var yazilan = DateTime.Now.ToString("HH:mm:ss");
         Response.Cookies.Append("Deneme-Ayni", yazilan);
         ViewData["Yazilan"] = yazilan;

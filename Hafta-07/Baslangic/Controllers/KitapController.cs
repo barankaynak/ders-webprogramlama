@@ -51,8 +51,8 @@ public class KitapController : Controller
         ViewData["Kategori"] = KitapDeposu.KategoriAdi(kitap.KategoriId);
 
         // HAFTA 7 — cookie yazmak (Hafta 7 ders notu bölüm 2.2).
-        // Cookie bu yanıtın Set-Cookie başlığıyla gider; tarayıcı onu SONRAKİ
-        // isteklerde geri getirir. Aynı istekte Request.Cookies'te YOKTUR (ölçüldü).
+        // Cookie bu response'un Set-Cookie başlığıyla gider; tarayıcı onu SONRAKİ
+        // request'lerde geri getirir. Aynı request'te Request.Cookies'te YOKTUR (ölçüldü).
         // TODO 7.1 · Bakılan kitabın Id'sini 30 gün yaşayan, HttpOnly bir cookie'ye yazın
         //      ipucu: Hafta 7 ders notu bölüm 2.2 — `Response.Cookies.Append("SonBakilan", …, new CookieOptions { … })`. F12 → Application → Cookies'te Expires ve HttpOnly sütunlarına bakın
 

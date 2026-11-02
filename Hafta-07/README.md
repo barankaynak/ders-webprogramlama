@@ -10,13 +10,13 @@
 
 ## Bu haftanın konusu
 
-- **Durum nerede tutulur** — HTTP hatırlamaz; query string, form, cookie, session, veritabanı
+- **State nerede tutulur** — HTTP hatırlamaz; query string, form, cookie, session, veritabanı
 - **Cookie** — `Set-Cookie` ve `Cookie` başlıkları; `Response.Cookies.Append`, `Request.Cookies["…"]`, `CookieOptions`; geçici ve kalıcı cookie; sınırlar
 - **Session** — veri sunucuda, anahtarı tarayıcıda; `AddSession` + `UseSession`; `SetString`/`SetInt32`; nesneyi JSON'a çevirerek saklamak
 - **Güvenlik** — cookie kullanıcının elindedir; `HttpOnly`, `Secure`, `SameSite` neyi korur, neyi korumaz
 - **Hangi veri nerede** — cookie, session, `TempData`, query string, veritabanı arasında karar
 
-🧩 **Haftanın ilkesi — Durum bir yerde tutulmak zorundadır; soru "nerede" ve "kime ait" sorusudur.**
+🧩 **Haftanın ilkesi — State bir yerde tutulmak zorundadır; soru "nerede" ve "kime ait" sorusudur.**
 Tarayıcıda duran veri kullanıcınındır: okur, değiştirir, siler. Sunucuda duran veri sizindir.
 
 > **Haftanın tek cümlelik özeti:** Hafta 1'de HTTP'nin hiçbir şeyi hatırlamadığını
@@ -80,9 +80,9 @@ Editörde **`TODO 7.`** diye aratın. Her görevden sonra F12 → **Network**'te
 
 | Adres | Ne gösteriyor |
 |---|---|
-| `/Durum` | Tarayıcının bu istekle getirdiği cookie'ler ve session'ın içi |
+| `/Durum` | Tarayıcının bu request'le getirdiği cookie'ler ve session'ın içi |
 | `/Durum/Cerez` | Geçici, kalıcı, `HttpOnly` ve 5000 baytlık cookie; sunucunun gördüğü ile JavaScript'in gördüğü yan yana |
-| `/Durum/AyniIstek` | Yazılan cookie aynı istekte okunabilir mi? |
+| `/Durum/AyniIstek` | Yazılan cookie aynı request'te okunabilir mi? |
 | `/Durum/SessionSayaci` | Session sayacı — yeni sekmede, gizli pencerede, yeniden başlatınca |
 | `/Durum/Panel` | 🕳️ Klasik Tuzak: rol cookie'de |
 | `/Kitap/Detay/3` → `/Kitap` | Son bakılan kitap cookie'si |
@@ -120,10 +120,13 @@ cevap: *"Sepetteki fiyatı neden cookie'de tutmadınız?"*
 
 ---
 
-## 🔜 Hafta 8 — Entity Framework Core
+## 🔜 Gelecek hafta ders yok: ara sınav
+
+Ara sınav **Hafta 1–6**'yı kapsar. Bu haftanın konuları (cookie, session) ara sınavda
+sorulmaz, **finalde** sorulur.
 
 Bu hafta sepet session'da duruyordu ve uygulama yeniden başlayınca **kayboldu**. Kitap
-listesi de baştan beri bellekteki bir liste. Hafta 8'de veriyi **kalıcı** yapıyoruz:
+listesi de baştan beri bellekteki bir liste. Sınavdan sonraki derste veriyi **kalıcı** yapıyoruz:
 Entity Framework Core ve Code First ile bir veritabanı.
 
 **Düşünerek gelin:** Uygulama iki ayrı bilgisayarda çalışsaydı, birinde eklenen kitap

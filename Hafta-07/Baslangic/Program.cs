@@ -14,7 +14,7 @@ builder.Services.AddControllersWithViews();
 
 // Yaşam döngüsünü değiştirip farkı gözleyin (ders notu bölüm 5.3):
 //   AddSingleton → sayaç artarak gider   (1, 2, 3, ...)
-//   AddScoped    → her istekte 1'den başlar
+//   AddScoped    → her request'te 1'den başlar
 //   AddTransient → her enjeksiyonda yeni nesne
 builder.Services.AddSingleton<IZiyaretSayaci, ZiyaretSayaci>();
 
@@ -45,8 +45,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 
 // Günlükleyen middleware (ders notu bölüm 4.4).
 // next() çağrısını yorum satırı yapıp short-circuit'i gözleyin:
-// sayfa bomboş gelir, durum kodu 200 olur, HATA ALMAZSINIZ.
-// HAFTA 4 — isteğin gövdesini HAM okuyabilmek için arabelleğe alma.
+// sayfa bomboş gelir, status code 200 olur, HATA ALMAZSINIZ.
+// HAFTA 4 — request'in gövdesini HAM okuyabilmek için arabelleğe alma.
 // Model binding gövdeyi bir kez okur ve akış biter; EnableBuffering()
 // olmadan geriye sarıp tekrar okuyamayız. Yalnızca öğretim amaçlı.
 app.Use(async (context, next) =>
@@ -72,7 +72,7 @@ app.UseHttpsRedirection();
 
 // DOĞRU SIRA: Routing → (Authentication) → Authorization
 // UseAuthorization'ı UseRouting'den ÖNCE koyarsanız bugün bir şey fark etmezsiniz;
-// [Authorize] taşıyan bir action'a gelen istek ise 500 ile düşer (Hafta 7'de ölçüldü):
+// [Authorize] taşıyan bir action'a gelen request ise 500 ile düşer (Hafta 7'de ölçüldü):
 //   InvalidOperationException: Endpoint … contains authorization metadata,
 //   but a middleware was not found that supports authorization.
 app.UseRouting();
