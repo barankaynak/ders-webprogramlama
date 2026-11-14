@@ -1,0 +1,29 @@
+@*
+    HAFTA 9 — çoka-çok ilişki (Hafta 9 ders notu bölüm 5.3, 5.4).
+
+    "Algoritmalara Giriş" iki derste okutuluyor; "Veri Yapıları" dersinde iki kitap var.
+    Veritabanında bunu DersKitap tablosu tutar: her satırı bir (ders, kitap) çifti.
+*@
+@model List<Ders>
+
+<h1>Dersler</h1>
+
+@if (TempData["Mesaj"] != null)
+{
+    <div class="ipucu"><strong>✓ @TempData["Mesaj"]</strong></div>
+}
+
+@foreach (var ders in Model)
+{
+    <section class="ders">
+        <h3>@ders.Kod — @ders.Ad</h3>
+
+        @* TODO 9.9 · Çoka-çok ilişkiyi kurun: Kitap'a Dersler, Ders'e Kitaplar; sonra Add-Migration DersKitap ve Update-Database *@
+        <p class="bos">Kitaplar görünmüyor: ilişki henüz kurulmadı (TODO 9.9).</p>
+
+        <form asp-controller="Ders" asp-action="KitapEkle" asp-route-id="@ders.Id" method="post">
+            <select name="kitapId" asp-items="@(ViewData["Kitaplar"] as SelectList)"></select>
+            <button type="submit">Derse ekle</button>
+        </form>
+    </section>
+}

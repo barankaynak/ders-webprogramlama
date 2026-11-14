@@ -1,0 +1,19 @@
+@*
+    HAFTA 9 — CRUD'un D'si (Hafta 9 ders notu bölüm 3.6).
+
+    GET /Kitap/Sil/3 yalnızca SORAR. Silme, aşağıdaki formun POST'unda olur:
+    veri değiştiren işlem GET'le yapılmaz (Hafta 4), token doğrulanır (Hafta 5).
+*@
+@model Kitap
+
+<h1>Silinsin mi?</h1>
+
+<div class="uyari">
+    <strong>@Model.Baslik</strong> (@Model.Yazar) veritabanından silinecek.
+    Bu işlem geri alınamaz.
+</div>
+
+<form asp-controller="Kitap" asp-action="Sil" asp-route-id="@Model.Id" method="post">
+    <button type="submit">Evet, sil</button>
+    &nbsp;<a asp-action="Detay" asp-route-id="@Model.Id">Vazgeç</a>
+</form>

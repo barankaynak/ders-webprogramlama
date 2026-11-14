@@ -32,12 +32,16 @@ Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 | 05 | Tag Helper’lar | [PDF](PDF/H05-Ders-Notu.pdf) | [PDF](PDF/H05-Uygulama.pdf) | [PDF](PDF/H05-Detay.pdf) | [Başlangıç](Hafta-05/Baslangic/) · [Bitmiş](Hafta-05/Bitmis/) |
 | 06 | Model Doğrulama | [PDF](PDF/H06-Ders-Notu.pdf) | [PDF](PDF/H06-Uygulama.pdf) | [PDF](PDF/H06-Detay.pdf) | [Başlangıç](Hafta-06/Baslangic/) · [Bitmiş](Hafta-06/Bitmis/) |
 | 07 | State Management: Cookie ve Session | [PDF](PDF/H07-Ders-Notu.pdf) | [PDF](PDF/H07-Uygulama.pdf) | [PDF](PDF/H07-Detay.pdf) | [Başlangıç](Hafta-07/Baslangic/) · [Bitmiş](Hafta-07/Bitmis/) |
+| 08 | 🔶 **Ara sınav — ders yok** | | | | |
+| 09 | Entity Framework Core: Code First, Migration ve İlişkiler | [PDF](PDF/H09-Ders-Notu.pdf) | [PDF](PDF/H09-Uygulama.pdf) | [PDF](PDF/H09-Detay.pdf) | [Başlangıç](Hafta-09/Baslangic/) · [Bitmiş](Hafta-09/Bitmis/) |
 
 > Haftalar ders ilerledikçe eklenir. Aşağıdaki plan dönem başında duyurulmuştur.
 
 **Planlanan konular:**
-**ara sınav** · 08 EF Core ve Code First · 09–10 LINQ · 11 Authentication/Authorization ·
-12 Web API ve MCP · 13 Uygulama geliştirme
+10–11 LINQ · 12 Authentication/Authorization · 13 Web API ve MCP · 14 Uygulama geliştirme
+
+> Hafta numaraları takvim haftasıdır: Hafta 8 ara sınav haftasıydı. Hafta 3–6 notlarında
+> EF Core "Hafta 8" diye geçer; o konu Hafta 9'dur.
 
 ---
 
@@ -56,9 +60,11 @@ Ardından terminalde yazan `https://localhost:7xxx` adresini açın.
 | İhtiyacınız olan | Sürüm |
 |---|---|
 | .NET SDK | **10.0** veya üzeri (`dotnet --version` ile kontrol edin) |
-| Veritabanı | Yok — Hafta 8'e kadar veri bellekte tutulur, sonra **SQLite** (kurulum gerektirmez) |
+| Veritabanı | Yok — Hafta 7'ye kadar veri bellekte tutulur; Hafta 9'dan itibaren **SQLite** (kurulum gerektirmez) |
 
 > 💡 Her hafta klasörü **kendi başına çalışır.** İstediğiniz haftadan başlayabilirsiniz.
+> Hafta 9'dan itibaren tek bir ön adım var: veritabanını kurmak. `Bitmis/` klasöründe bir kez
+> `Update-Database` (Visual Studio, Package Manager Console) ya da `dotnet ef database update`.
 
 ### Hafta 5'ten itibaren: Başlangıç ve Bitmiş
 
@@ -86,6 +92,15 @@ dotnet --version          # 10.x olmalı
 dotnet build              # hata mesajını okuyun
 dotnet dev-certs https --trust   # "bağlantınız gizli değil" diyorsa
 ```
+
+Hafta 9'dan itibaren (veritabanı):
+
+| Görülen | Yapılacak |
+|---|---|
+| `no such table: …` | Migration'lar uygulanmamış: `Update-Database` ya da `dotnet ef database update` |
+| `dotnet ef` bulunamıyor | `dotnet tool install --global dotnet-ef --version 10.0.15` |
+| `Unable to retrieve project metadata` | Proje hiç derlenmemiş: önce `dotnet build` |
+| Paket kurulmuyor: `NU1202 … not compatible with net10.0` | Sürüm verin: `--version 10.0.15` (sürümsüz kurulum EF Core 11'i seçer) |
 
 Hâlâ çalışmıyorsa o haftanın **ders notundaki 🐛 Hata Köşesi** tablosuna bakın;
 en sık karşılaşılan hatalar ve çözümleri orada.
@@ -118,7 +133,7 @@ kapsamı da odur. Sunum, o metnin görsel anlatım aracıdır.
 | Sınav | Kapsam |
 |---|---|
 | **Ara sınav** (%30) | Hafta 1–6 |
-| **Final** (%40) | Hafta 7–13 ağırlıklı; Hafta 1–6 temel düzeyde |
+| **Final** (%40) | Hafta 7 ve 9–14 ağırlıklı; Hafta 1–6 temel düzeyde |
 | **Dönem projesi** (%30) | Kod + video anlatım, teslim son hafta |
 
 > ⚠️ **Sınav kapsamı ders notlarıdır.** `H0N-Detay.pdf` dosyaları **kapsam dışıdır** ve

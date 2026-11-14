@@ -1,0 +1,52 @@
+@*
+    HAFTA 9 — CRUD'un U'su (Hafta 9 ders notu bölüm 3.5).
+
+    Form EkleTH ile aynı: aynı ViewModel, aynı kurallar (Hafta 6). Farkı adreste:
+    asp-route-id kitabın Id'sini yola koyar → POST /Kitap/Duzenle/3.
+    Id'yi gizli alanda taşımıyoruz; hangi kitabın güncelleneceğine adres karar verir,
+    hangi alanların değişebileceğine ViewModel.
+*@
+@model KampusKitap.ViewModels.KitapEkleVM
+
+<h1>Kitap düzenle</h1>
+
+<div asp-validation-summary="ModelOnly" class="hata-ozet"></div>
+
+<form asp-controller="Kitap" asp-action="Duzenle" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+    <p>
+        <label asp-for="Baslik"></label><br />
+        <input asp-for="Baslik" size="40" />
+        <br /><span asp-validation-for="Baslik" class="hata"></span>
+    </p>
+    <p>
+        <label asp-for="Yazar"></label><br />
+        <input asp-for="Yazar" size="40" />
+        <br /><span asp-validation-for="Yazar" class="hata"></span>
+    </p>
+    <p>
+        <label asp-for="Fiyat"></label><br />
+        <input asp-for="Fiyat" />
+        <br /><span asp-validation-for="Fiyat" class="hata"></span>
+    </p>
+    <p>
+        <label asp-for="KategoriId"></label><br />
+        <select asp-for="KategoriId" asp-items="@(ViewData["Kategoriler"] as SelectList)">
+            <option value="">— seçiniz —</option>
+        </select>
+        <br /><span asp-validation-for="KategoriId" class="hata"></span>
+    </p>
+    <p>
+        <button type="submit">Kaydet</button>
+    </p>
+</form>
+
+<p class="ipucu">
+    Yalnızca fiyatı değiştirip kaydedin ve konsola bakın: <code>UPDATE "Kitaplar" SET "Fiyat" = @@p0</code>.
+    Change tracking hangi sütunun değiştiğini bildiği için yalnızca onu yazar.
+</p>
+
+<p><a asp-action="Index">← listeye dön</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

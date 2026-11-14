@@ -1,0 +1,12 @@
+@model Kategori
+
+<h1>@Model.Ad</h1>
+<p class="ipucu">
+    Bu view <code>Views/Kategori/Detay.cshtml</code> yolunda bulundu.
+    Dosyayı silip sayfayı yenilerseniz, çatı aradığı iki yolu listeleyen
+    bir hata verir (ders notu bölüm 2.5 · 🐛 Hata Köşesi).
+    <br />
+    <strong>Hafta 9:</strong> kategori <code>Find(@Model.Id)</code> ile veritabanından geldi.
+    Olmayan bir Id deneyin (<code>/Kategori/Detay/99</code>): <code>Find</code> null döner, controller 404 verir.
+</p>
+<p><a asp-controller="Kategori" asp-action="Index">← Kategoriler</a></p>

@@ -1,0 +1,113 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
+using KampusKitap.Data;
+using KampusKitap.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ---------------------------------------------------------------
+// 2. EVRE — servis kaydı
+// Bu satırlar builder.Build()'dan ÖNCE olmak ZORUNDA.
+// Sonrasına yazarsanız proje derlenir ama uygulama AÇILIRKEN düşer (Hafta 7'de ölçüldü):
+//   InvalidOperationException: The service collection cannot be modified because it is read-only.
+// ---------------------------------------------------------------
+builder.Services.AddControllersWithViews();
+
+// Yaşam döngüsünü değiştirip farkı gözleyin (ders notu bölüm 5.3):
+//   AddSingleton → sayaç artarak gider   (1, 2, 3, ...)
+//   AddScoped    → her request'te 1'den başlar
+//   AddTransient → her enjeksiyonda yeni nesne
+builder.Services.AddSingleton<IZiyaretSayaci, ZiyaretSayaci>();
+
+// HAFTA 7 — Session (Hafta 7 ders notu bölüm 3.2).
+// Session verisi SUNUCUDA durur; tarayıcıda yalnızca anahtarı taşıyan bir cookie olur.
+// Verinin durduğu yer: sunucunun belleği. Bu projede satır olmadan da çalışıyor (MVC bellek
+// içi önbelleği zaten kaydediyor — ölçüldü); yine de yazıyoruz: Redis'e ya da SQL Server'a
+// geçerken değişecek satır budur.
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(o =>
+{
+    o.IdleTimeout = TimeSpan.FromMinutes(20);   // 20 dk request gelmezse silinir (varsayılan)
+});
+
+// HAFTA 9 — DbContext'i DI'ya kaydediyoruz (Hafta 9 ders notu bölüm 2.3).
+// Hafta 2'deki servis kaydının aynısı: controller kurucusunda KampusKitapContext
+// istediğinde nesneyi DI üretir. AddDbContext onu Scoped kaydeder: her request'e bir context.
+// UseSqlite → provider; bağlantı dizesi appsettings.json → ConnectionStrings:KampusKitap.
+// Satır yoksa /Kitap açılırken: "Unable to resolve service for type 'KampusKitap.Data.KampusKitapContext'".
+// ✔ TODO 9.1 · DbContext'i DI'ya kaydedin: provider SQLite, bağlantı dizesi appsettings.json'dan
+builder.Services.AddDbContext<KampusKitapContext>(o =>
+    o.UseSqlite(builder.Configuration.GetConnectionString("KampusKitap")));
+
+var app = builder.Build();
+
+// HAFTA 6 — kültürü sabitliyoruz (Hafta 6 ders notu bölüm 4.4).
+// Sunucu "120,50"yi her makinede aynı okusun: virgül ondalık, nokta binlik.
+// Sabitlemezsek kültür işletim sisteminden gelir; en-US bir makinede aynı
+// form başka sayı bağlar. İstemci tarafında wwwroot/js/dogrulama-tr.js aynı
+// biçimi konuşuyor — ikisi birlikte değişir.
+var trTR = new CultureInfo("tr-TR");
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(trTR),
+    SupportedCultures = [trTR],
+    SupportedUICultures = [trTR]
+});
+
+// ---------------------------------------------------------------
+// 4. EVRE — Middleware Pipeline
+// SIRA ÖNEMLİDİR. Bozmak çoğu zaman hata vermez; sessizce yanlış çalışır.
+// ---------------------------------------------------------------
+
+// Günlükleyen middleware (ders notu bölüm 4.4).
+// next() çağrısını yorum satırı yapıp short-circuit'i gözleyin:
+// sayfa bomboş gelir, status code 200 olur, HATA ALMAZSINIZ.
+// HAFTA 4 — request'in gövdesini HAM okuyabilmek için arabelleğe alma.
+// Model binding gövdeyi bir kez okur ve akış biter; EnableBuffering()
+// olmadan geriye sarıp tekrar okuyamayız. Yalnızca öğretim amaçlı.
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"→ GİRİŞ: {context.Request.Method} {context.Request.Path}");
+    await next();
+    Console.WriteLine($"← ÇIKIŞ: {context.Response.StatusCode}");
+});
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+// DOĞRU SIRA: Routing → (Authentication) → Authorization
+// UseAuthorization'ı UseRouting'den ÖNCE koyarsanız bugün bir şey fark etmezsiniz;
+// [Authorize] taşıyan bir action'a gelen request ise 500 ile düşer (Hafta 7'de ölçüldü):
+//   InvalidOperationException: Endpoint … contains authorization metadata,
+//   but a middleware was not found that supports authorization.
+app.UseRouting();
+app.UseAuthorization();
+
+// HAFTA 7 — Session middleware'i (Hafta 7 ders notu bölüm 3.3).
+// Kural: session'ı OKUYAN her şey bu satırdan SONRA gelir. Kendi middleware'iniz
+// session'a bu satırdan önce dokunursa "Session has not been configured" ile 500 alırsınız.
+app.UseSession();
+
+app.MapStaticAssets();
+
+// {id:int?} — route kısıtı (ders notu bölüm 3.3).
+// Kısıt sayesinde /Kitap/Detay/abc bu route'a EŞLEŞMEZ ve temiz bir 404 alırsınız.
+// Kısıtı kaldırıp deneyin: "abc" değeri int'e çevrilemediği için farklı bir hata çıkar.
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id:int?}")
+    .WithStaticAssets();
+
+app.Run();
