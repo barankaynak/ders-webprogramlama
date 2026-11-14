@@ -25,7 +25,7 @@ public class Kitap
     // Bilerek nullable: Include yazılmadıysa null gelir (hata vermez) ve entity bir
     // forma bağlanırsa [Required] gibi davranıp IsValid'i düşürmez (Hafta 6 Hata Köşesi — ölçüldü).
     // TODO 9.7 · Bire-çok ilişkiyi kurun: Kitap'a Kategori, Kategori'ye Kitaplar navigation property'si; sonra Add-Migration KategoriIliskisi ve Update-Database
-    //      ipucu: Hafta 9 ders notu bölüm 5.1 — migration dosyasında AddForeignKey ve CreateIndex görünür; /Kategori sayfası her kategorinin kitaplarını sayar (Include için TODO 9.8)
+    //      ipucu: Hafta 9 ders notu bölüm 5.1 — migration dosyasında AddForeignKey ve CreateIndex görünür; /Kategori sayfası her kategoride "0 kitap" der: kitaplar Include ile gelir (TODO 9.8)
 
     // HAFTA 4 — over-posting gösterimi için.
     // Kullanıcı formda OLMAYAN bu alanı el ile gönderebilir; entity doğrudan
