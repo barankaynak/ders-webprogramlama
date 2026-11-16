@@ -19,14 +19,6 @@ public class SepetController : Controller
 {
     private const string Anahtar = "Sepet";
 
-    // HAFTA 9 — kitabın başlığı ve fiyatı artık veritabanından.
-    private readonly KampusKitapContext _db;
-
-    public SepetController(KampusKitapContext db)
-    {
-        _db = db;
-    }
-
     // GET /Sepet
     public IActionResult Index()
     {
@@ -41,7 +33,7 @@ public class SepetController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Ekle(int id)
     {
-        var kitap = _db.Kitaplar.Find(id);
+        var kitap = KitapDeposu.Bul(id);
         if (kitap is null)
             return NotFound();
 

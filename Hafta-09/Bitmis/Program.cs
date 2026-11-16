@@ -1,7 +1,5 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
-using KampusKitap.Data;
 using KampusKitap.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,15 +28,6 @@ builder.Services.AddSession(o =>
 {
     o.IdleTimeout = TimeSpan.FromMinutes(20);   // 20 dk request gelmezse silinir (varsayılan)
 });
-
-// HAFTA 9 — DbContext'i DI'ya kaydediyoruz (Hafta 9 ders notu bölüm 2.3).
-// Hafta 2'deki servis kaydının aynısı: controller kurucusunda KampusKitapContext
-// istediğinde nesneyi DI üretir. AddDbContext onu Scoped kaydeder: her request'e bir context.
-// UseSqlite → provider; bağlantı dizesi appsettings.json → ConnectionStrings:KampusKitap.
-// Satır yoksa /Kitap açılırken: "Unable to resolve service for type 'KampusKitap.Data.KampusKitapContext'".
-// ✔ TODO 9.1 · DbContext'i DI'ya kaydedin: provider SQLite, bağlantı dizesi appsettings.json'dan
-builder.Services.AddDbContext<KampusKitapContext>(o =>
-    o.UseSqlite(builder.Configuration.GetConnectionString("KampusKitap")));
 
 var app = builder.Build();
 

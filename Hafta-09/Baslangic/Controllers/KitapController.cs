@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using KampusKitap.Data;
 using KampusKitap.Models;
 using KampusKitap.ViewModels;
@@ -8,21 +7,12 @@ namespace KampusKitap.Controllers;
 
 public class KitapController : Controller
 {
-    // HAFTA 9 — veri artık KitapDeposu'ndan değil, veritabanından (Hafta 9 ders notu bölüm 2).
-    // Context'i DI verir (Program.cs, TODO 9.1); her request'e yeni bir context.
-    private readonly KampusKitapContext _db;
-
-    public KitapController(KampusKitapContext db)
-    {
-        _db = db;
-    }
-
     // HAFTA 3 — Controller artık Content() değil View() döndürüyor.
     //
     // Hafta 2'de buradaki action'lar düz metin döndürüyordu. Değişen tek şey
     // dönüş tipi değil, SORUMLULUK: HTML üretimi artık view'ın işi.
     //
-    // DİKKAT (ders notu bölüm 3.5): veri burada, BİR KEZ alınır. View yalnızca
+    // DİKKAT (Hafta 3 ders notu bölüm 3.5): veri burada, BİR KEZ alınır. View yalnızca
     // gösterir. Sorguyu .cshtml içine taşırsanız kod çalışır ama N+1 problemi
     // doğar ve hiçbir hata almazsınız.
 
@@ -30,7 +20,11 @@ public class KitapController : Controller
     // View() dosya adı vermedi → çatı sırayla şunları arar (ders notu bölüm 2.5):
     //   1) /Views/Kitap/Index.cshtml
     //   2) /Views/Shared/Index.cshtml
-    public IActionResult Index()
+    //
+    // HAFTA 9 — üç parametre de query string'den gelir (Hafta 4, model binding):
+    //   /Kitap?kategori=1&sirala=fiyat-azalan&sayfa=2
+    // Hiçbiri zorunlu değil: /Kitap yine bütün kitapları açar.
+    public IActionResult Index(int? kategori, string? sirala, int sayfa = 1)
     {
         ViewData["Title"] = "Kitaplar";
 
@@ -38,15 +32,29 @@ public class KitapController : Controller
         // Cookie İSTEMCİ VERİSİDİR: kullanıcı F12'den "abc" ya da "999" yazabilir.
         // Bu yüzden değere güvenmeden çeviriyoruz (Hafta 4'ün ilkesi).
         if (int.TryParse(Request.Cookies["SonBakilan"], out var sonId))
-            ViewData["SonBakilan"] = _db.Kitaplar.Find(sonId);
+            ViewData["SonBakilan"] = KitapDeposu.Bul(sonId);
 
-        // HAFTA 9 — ToList() sorguyu ÇALIŞTIRIR: SELECT … FROM "Kitaplar" (konsolda görünür).
-        // DbSet'in kendisi bir sorgudur, liste değildir; veri ToList()'te gelir.
-        // TODO 9.3 · Kitapları veritabanından okuyun: liste için ToList, tek kitap için Find
-        //      ipucu: Hafta 9 ders notu bölüm 3.3 — `_db.Kitaplar.ToList()` ve `_db.Kitaplar.Find(id)`. Konsoldaki "Executed DbCommand" satırlarında SELECT'i görün; Find bulamazsa null döner → 404
-        var kitaplar = new List<Kitap>();   // şimdilik boş
+        // HAFTA 9 — sorgu ADIM ADIM kurulur (Hafta 9 ders notu bölüm 3.4).
+        // Bu satır hiçbir kitaba dokunmaz: "sorgu" henüz yalnızca bir tariftir.
+        // Tipi List<Kitap> değil IEnumerable<Kitap>: Where'in de OrderBy'ın da dönüşü buna sığar.
+        IEnumerable<Kitap> sorgu = KitapDeposu.Hepsi;
 
-        return View(kitaplar);
+        // TODO 9.1 · Listeyi seçilen kategoriye göre süzün
+        //      ipucu: Hafta 9 ders notu bölüm 3.1 — `sorgu = sorgu.Where(k => …)`; kategori seçilmediyse (null) sorguya dokunmayın. Deneyin: /Kitap?kategori=3
+
+        // TODO 9.2 · Listeyi sıralayın: "fiyat" artan, "fiyat-azalan" azalan, ikisi de değilse başlığa göre; fiyatı eşit olanlar başlığa göre
+        //      ipucu: Hafta 9 ders notu bölüm 3.3 — `OrderBy`, `OrderByDescending`, ikinci ölçüt için `ThenBy`. `switch` ifadesi Hafta 3'teki `KategoriAdi`'nda var
+
+        var vm = new KitapListeVM { KategoriId = kategori, Sirala = sirala };
+
+        // TODO 9.3 · Sayfa başına 4 kitap gösterin: toplam sayfa sayısını hesaplayın, istenen sayfanın kitaplarını alın
+        //      ipucu: Hafta 9 ders notu bölüm 3.5 — önce `Count()`, sonra `Skip((sayfa - 1) * 4).Take(4)`. Sayfa 0 ya da 99 gelirse `Math.Clamp` ile sınırlara çekin
+
+        // Sorgu BURADA çalışır (deferred execution, Hafta 9 ders notu bölüm 6).
+        // View'a tarif değil sonuç gider: ToList() yoksa sorgu view'ın foreach'inde çalışırdı.
+        vm.Kitaplar = sorgu.ToList();
+        if (vm.ToplamKitap == 0) vm.ToplamKitap = vm.Kitaplar.Count;   // TODO 9.3 yapılmadıysa
+        return View(vm);
     }
 
     // GET /Kitap/Detay/42
@@ -55,18 +63,20 @@ public class KitapController : Controller
         if (id is null)
             return View("Secilmedi");      // Views/Kitap/Secilmedi.cshtml
 
-        // Find: birincil anahtarla tek satır. Bulamazsa null döner, hata fırlatmaz (ölçüldü).
-        // TODO 9.3 · Kitapları veritabanından okuyun: liste için ToList, tek kitap için Find
-        Kitap? kitap = null;                // şimdilik hiçbir kitap bulunmuyor → 404
+        var kitap = KitapDeposu.Bul(id.Value);
         if (kitap is null)
             return NotFound();
 
         ViewData["Title"] = kitap.Baslik;
 
         // Kategori adını BURADA çözüyoruz, view'da değil.
-        // View'dan çağırsaydık kod yine çalışırdı — ve bölüm 3.5'teki tuzağa
+        // View'dan çağırsaydık kod yine çalışırdı — ve Hafta 3'ün bölüm 3.5'teki tuzağına
         // düşmüş olurduk. View'ın işi GÖSTERMEK; veri hazırlamak değil.
-        ViewData["Kategori"] = _db.Kategoriler.Find(kitap.KategoriId)?.Ad;
+        ViewData["Kategori"] = KitapDeposu.KategoriAdi(kitap.KategoriId);
+
+        // HAFTA 9 — "Aynı kategoriden" önerileri (Hafta 9 ders notu bölüm 3.6).
+        // TODO 9.4 · Aynı kategoriden, bu kitabın kendisi hariç, en ucuz üç kitabı önerin
+        //      ipucu: Hafta 9 ders notu bölüm 3.6 — `Where` (iki koşul, `&&`), `OrderBy`, `Take(3)`. Sonuna `ToList()`: view `List<Kitap>` bekliyor; view'a tarif değil sonuç gider
 
         // HAFTA 7 — cookie yazmak (Hafta 7 ders notu bölüm 2.2).
         // Cookie bu response'un Set-Cookie başlığıyla gider; tarayıcı onu SONRAKİ
@@ -87,16 +97,9 @@ public class KitapController : Controller
     {
         ViewData["Title"] = "Arama";
         ViewData["Kelime"] = kelime;
-        if (string.IsNullOrWhiteSpace(kelime))
-            return View(new List<Kitap>());
-
-        // HAFTA 9 — bütün tabloyu belleğe alıp C#'ta süzüyoruz. Doğru çalışır, ama
-        // 10.000 kitapta 10.000 satır taşınır. Süzmeyi veritabanına yaptırmak (WHERE)
-        // Hafta 10'un konusu: LINQ.
-        var hepsi = _db.Kitaplar.ToList();
-        return View(hepsi.Where(k => k.Baslik.Contains(kelime, StringComparison.OrdinalIgnoreCase)
-                                  || k.Yazar.Contains(kelime, StringComparison.OrdinalIgnoreCase))
-                         .ToList());
+        return View(string.IsNullOrWhiteSpace(kelime)
+            ? []
+            : KitapDeposu.Ara(kelime));
     }
 
     // ---------------------------------------------------------------
@@ -134,11 +137,7 @@ public class KitapController : Controller
             KategoriId = girdi.KategoriId ?? 0,
             Onayli = false               // ← istemciden GELMİYOR
         };
-
-        // HAFTA 9 — Add() yalnızca context'e "bunu ekle" der (durum: Added).
-        // INSERT, SaveChanges()'te gider; Id de o anda dolar (ölçüldü: 0 → 43).
-        // TODO 9.4 · Yeni kitabı veritabanına kaydedin: Add, sonra SaveChanges
-        //      ipucu: Hafta 9 ders notu bölüm 3.4 — `_db.Kitaplar.Add(kitap)` tek başına bir şey yazmaz; `_db.SaveChanges()` INSERT'i gönderir. Uygulamayı yeniden başlatın: kitap listede durur (Hafta 7'deki sepet durmuyordu)
+        KitapDeposu.Ekle(kitap);
 
         // PRG'nin R'si (Hafta 4 ders notu bölüm 4.2): View() dönersek F5 kaydı tekrar ekler.
         TempData["Mesaj"] = $"\"{kitap.Baslik}\" eklendi.";
@@ -157,7 +156,6 @@ public class KitapController : Controller
     public IActionResult EkleTH()
     {
         ViewData["Title"] = "Kitap ekle (Tag Helper)";
-        ViewData["Kategoriler"] = KategoriListesi();
         return View(new KitapEkleVM());
     }
 
@@ -176,19 +174,14 @@ public class KitapController : Controller
         //
         // İş kuralı ise attribute'e yazılmaz: veri deposuna bakmak gerekir.
         // Kontrolü burada yapıp sonucu AYNI yere, ModelState'e ekliyoruz.
-        //
-        // HAFTA 9 — tabloyu belleğe alıp bakıyoruz; sorguyu veritabanına yaptırmak Hafta 10.
-        if (_db.Kitaplar.ToList().Any(k => string.Equals(k.Baslik, girdi.Baslik?.Trim(),
+        if (KitapDeposu.Hepsi.Any(k => string.Equals(k.Baslik, girdi.Baslik?.Trim(),
                 StringComparison.CurrentCultureIgnoreCase)))
             ModelState.AddModelError(nameof(KitapEkleVM.Baslik), "Bu başlıkta bir kitap zaten var.");
 
         // Kanonik kalıp (Hafta 4'ten beri burada): geçersizse formu hatalarla
         // geri göster (200), geçerliyse kaydet ve yönlendir (302, PRG).
         if (!ModelState.IsValid)
-        {
-            ViewData["Kategoriler"] = KategoriListesi();
             return View(girdi);
-        }
 
         var kitap = new Kitap
         {
@@ -198,7 +191,7 @@ public class KitapController : Controller
             KategoriId = girdi.KategoriId ?? 0,
             Onayli = false
         };
-        // TODO 9.4 · Yeni kitabı veritabanına kaydedin: Add, sonra SaveChanges
+        KitapDeposu.Ekle(kitap);
 
         TempData["Mesaj"] = $"\"{kitap.Baslik}\" eklendi (Tag Helper formu).";
         return RedirectToAction(nameof(Index));
@@ -214,103 +207,47 @@ public class KitapController : Controller
         ViewData["Title"] = "PRG'siz ekleme";
         if (!ModelState.IsValid) return View("Ekle", girdi);
 
-        _db.Kitaplar.Add(new Kitap
+        KitapDeposu.Ekle(new Kitap
         {
             Baslik = girdi.Baslik, Yazar = girdi.Yazar,
             Fiyat = girdi.Fiyat ?? 0, KategoriId = girdi.KategoriId ?? 0
         });
-        _db.SaveChanges();
-        ViewData["Adet"] = _db.Kitaplar.Count();      // SELECT COUNT(*) — Hafta 10
+        ViewData["Adet"] = KitapDeposu.Hepsi.Count;
         return View("EkleYanlis");       // ⚠️ PRG yok
     }
-
-    // ---------------------------------------------------------------
-    // HAFTA 9 — CRUD'un U ve D'si: düzenlemek ve silmek (Hafta 9 ders notu bölüm 3.5, 3.6)
-    // Form yine KitapEkleVM'e bağlanır (over-posting, Hafta 4); entity'yi BİZ güncelleriz.
-    // ---------------------------------------------------------------
-
-    // GET /Kitap/Duzenle/3
-    [HttpGet]
-    public IActionResult Duzenle(int id)
-    {
-        var kitap = _db.Kitaplar.Find(id);
-        if (kitap is null)
-            return NotFound();
-
-        ViewData["Title"] = "Kitap düzenle";
-        ViewData["Kategoriler"] = KategoriListesi();
-        return View(new KitapEkleVM
-        {
-            Baslik = kitap.Baslik, Yazar = kitap.Yazar,
-            Fiyat = kitap.Fiyat, KategoriId = kitap.KategoriId
-        });
-    }
-
-    // POST /Kitap/Duzenle/3
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Duzenle(int id, KitapEkleVM girdi)
-    {
-        if (_db.Kitaplar.ToList().Any(k => k.Id != id && string.Equals(k.Baslik, girdi.Baslik?.Trim(),
-                StringComparison.CurrentCultureIgnoreCase)))
-            ModelState.AddModelError(nameof(KitapEkleVM.Baslik), "Bu başlıkta bir kitap zaten var.");
-
-        if (!ModelState.IsValid)
-        {
-            ViewData["Title"] = "Kitap düzenle";
-            ViewData["Kategoriler"] = KategoriListesi();
-            return View(girdi);
-        }
-
-        // Change tracking: Find'ın getirdiği nesne context'in GÖZETİMİNDEDİR (Unchanged).
-        // Özelliğini değiştirmek onu Modified yapar; Update() çağırmaya gerek yok.
-        // SaveChanges yalnızca DEĞİŞEN sütunları yazar (ölçüldü: UPDATE … SET "Fiyat" = @p0).
-        // TODO 9.5 · Kitabı güncelleyin: Find ile getirin, özelliklerini değiştirin, SaveChanges
-        //      ipucu: Hafta 9 ders notu bölüm 3.5 — `Update()` çağırmayın; Find'ın getirdiği nesneyi context zaten izliyor. Konsolda UPDATE'in yalnızca değiştirdiğiniz sütunları yazdığını görün
-
-        TempData["Mesaj"] = $"\"{girdi.Baslik}\" güncellendi.";
-        return RedirectToAction(nameof(Detay), new { id });
-    }
-
-    // GET /Kitap/Sil/3 → onay sayfası. Silmek veri değiştirir: GET'te SİLMEYİZ (Hafta 4).
-    [HttpGet]
-    public IActionResult Sil(int id)
-    {
-        var kitap = _db.Kitaplar.Find(id);
-        if (kitap is null)
-            return NotFound();
-
-        ViewData["Title"] = "Kitap sil";
-        return View(kitap);
-    }
-
-    // POST /Kitap/Sil/3
-    // GET ile POST'un parametreleri aynı (int id) olduğu için C# iki metoda aynı adı
-    // veremez; POST'u SilOnay diye adlandırıp [ActionName("Sil")] ile adresini koruyoruz.
-    [HttpPost, ActionName("Sil")]
-    [ValidateAntiForgeryToken]
-    public IActionResult SilOnay(int id)
-    {
-        // Remove → durum Deleted; DELETE SaveChanges'te gider; sonra nesne Detached (ölçüldü).
-        // TODO 9.6 · Kitabı silin: Find, Remove, SaveChanges
-        //      ipucu: Hafta 9 ders notu bölüm 3.6 — `_db.Kitaplar.Remove(kitap)`, sonra `_db.SaveChanges()`. Konsolda DELETE FROM "Kitaplar" WHERE "Id" = … satırına bakın
-
-        TempData["Mesaj"] = "Kitap silindi.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // Formlardaki kategori listesi artık veritabanından (Hafta 5'te KitapDeposu.Kategoriler'di).
-    private SelectList KategoriListesi() => new(_db.Kategoriler.ToList(), "Id", "Ad");
 
     // GET /Kitap/Sozdizimi — Razor sözdizimi kılavuzu (ders notu bölüm 1)
     // View veri almaz; amacı sözdizimini ve ürettiği HTML'i göstermektir.
     public IActionResult Sozdizimi() => View();
 
-    // GET /Kitap/Tuzak  — 🕳️ KLASİK TUZAK (ders notu bölüm 3.5)
+    // ---------------------------------------------------------------
+    // HAFTA 9 — İstatistik: listeyi tek değerlere ve gruplara indirmek
+    // (Hafta 9 ders notu bölüm 5). Bütün hesap burada; view yalnızca gösterir.
+    // ---------------------------------------------------------------
+
+    // GET /Kitap/Istatistik
+    public IActionResult Istatistik()
+    {
+        ViewData["Title"] = "İstatistik";
+        var kitaplar = KitapDeposu.Hepsi;
+        var vm = new IstatistikVM();
+
+        // TODO 9.5 · Özet sayıları hesaplayın: kitap sayısı, toplam/ortalama/en düşük/en yüksek fiyat, 150 TL altı kitap sayısı, 500 TL üstü kitap var mı, hepsi onaylı mı
+        //      ipucu: Hafta 9 ders notu bölüm 5.1 ve 4.3 — `Count()`, `Sum(k => k.Fiyat)`, `Average`, `Min`, `Max`; koşullu sayım `Count(k => …)`; evet/hayır için `Any` ve `All`
+
+        // TODO 9.6 · Kitapları kategoriye göre gruplayın; her grup için kategori adı, kitap sayısı ve ortalama fiyat; en kalabalık kategori üstte
+        //      ipucu: Hafta 9 ders notu bölüm 5.2 — `GroupBy(k => k.KategoriId)`; her grup `g.Key` ve kitaplarıyla gelir. `Select(g => new KategoriOzetVM { … })` içinde `g.Count()`, `g.Average(…)`; adı `KitapDeposu.KategoriAdi(g.Key)` verir
+
+        // TODO 9.7 · Yazar adlarını tekrarsız ve alfabetik sırayla listeleyin
+        //      ipucu: Hafta 9 ders notu bölüm 5.3 — önce `Select(k => k.Yazar)` ile kitaptan yazara geçin, sonra `Distinct()`, `OrderBy(y => y)`, `ToList()`
+
+        return View(vm);
+    }
+
+    // GET /Kitap/Tuzak  — 🕳️ KLASİK TUZAK (Hafta 3 ders notu bölüm 3.5)
     // Bu action BİLEREK eksiktir: view'a hiç veri göndermiyor.
     // Views/Kitap/Tuzak.cshtml veriyi @inject ile KENDİ çekiyor.
     // Kod çalışır. Neden yanlış olduğu view'ın içinde yazılı.
-    // HAFTA 9 — artık veritabanına gidiyor: konsolda her satır için bir SELECT görünür (N+1).
     public IActionResult Tuzak()
     {
         ViewData["Title"] = "Klasik Tuzak";

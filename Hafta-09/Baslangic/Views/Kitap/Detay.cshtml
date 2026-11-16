@@ -2,17 +2,6 @@
 
 <h1>@Model.Baslik</h1>
 
-@if (TempData["Mesaj"] != null)
-{
-    <div class="ipucu"><strong>✓ @TempData["Mesaj"]</strong></div>
-}
-
-@* HAFTA 9 — CRUD'un U ve D'si (TODO 9.5, 9.6) *@
-<p>
-    <a asp-controller="Kitap" asp-action="Duzenle" asp-route-id="@Model.Id">✎ Düzenle</a> &nbsp;·&nbsp;
-    <a asp-controller="Kitap" asp-action="Sil" asp-route-id="@Model.Id">🗑 Sil</a>
-</p>
-
 <dl class="detay">
     <dt>Yazar</dt><dd>@Model.Yazar</dd>
     <dt>Fiyat</dt><dd>@Model.Fiyat TL</dd>
@@ -38,6 +27,19 @@
 </form>
 <p class="ipucu-satir">Bu sayfayı açtığınızda <code>SonBakilan</code> cookie'si yazıldı (TODO 7.1).
     F12 → <em>Application</em> → <em>Cookies</em>.</p>
+
+@* HAFTA 9 — "Aynı kategoriden" (TODO 9.4). Liste controller'da hazırlandı;
+   ViewData'dan List<Kitap> olarak gelmiyorsa (TODO boş) bölüm hiç çizilmez. *@
+@if (ViewData["Benzer"] is List<Kitap> benzer && benzer.Count > 0)
+{
+    <h2>Aynı kategoriden</h2>
+    <div class="kart-liste">
+        @foreach (var k in benzer)
+        {
+            <partial name="_KitapKart" model="k" />
+        }
+    </div>
+}
 
 <hr />
 

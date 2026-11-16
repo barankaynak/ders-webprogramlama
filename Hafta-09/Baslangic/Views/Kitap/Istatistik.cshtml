@@ -1,0 +1,56 @@
+@*
+    HAFTA 9 — /Kitap/Istatistik (Hafta 9 ders notu bölüm 5)
+
+    Bu view HESAP YAPMAZ. Her sayı controller'da tek bir LINQ ifadesiyle
+    üretildi (TODO 9.5 – 9.7); burada yalnızca gösteriliyor.
+    Her kartın altındaki kod, o sayıyı üreten ifadedir.
+*@
+@model KampusKitap.ViewModels.IstatistikVM
+
+<h1>📊 İstatistik</h1>
+
+@if (Model.KitapSayisi == 0)
+{
+    <p class="ipucu">Sayılar henüz hesaplanmıyor (TODO 9.5).</p>
+}
+
+<div class="ozet-kartlar">
+    <div class="ozet-kart"><div class="deger">@Model.KitapSayisi</div>kitap<br /><code>Count()</code></div>
+    <div class="ozet-kart"><div class="deger">@Model.ToplamFiyat.ToString("N2") TL</div>toplam<br /><code>Sum(k =&gt; k.Fiyat)</code></div>
+    <div class="ozet-kart"><div class="deger">@Model.OrtalamaFiyat.ToString("N2") TL</div>ortalama<br /><code>Average(k =&gt; k.Fiyat)</code></div>
+    <div class="ozet-kart"><div class="deger">@Model.EnUcuz.ToString("N2") TL</div>en ucuz<br /><code>Min(k =&gt; k.Fiyat)</code></div>
+    <div class="ozet-kart"><div class="deger">@Model.EnPahali.ToString("N2") TL</div>en pahalı<br /><code>Max(k =&gt; k.Fiyat)</code></div>
+    <div class="ozet-kart"><div class="deger">@Model.UcuzKitapSayisi</div>150 TL altı<br /><code>Count(k =&gt; k.Fiyat &lt; 150)</code></div>
+    <div class="ozet-kart"><div class="deger">@(Model.PahaliVarMi ? "evet" : "hayır")</div>500 TL üstü var mı?<br /><code>Any(k =&gt; k.Fiyat &gt; 500)</code></div>
+    <div class="ozet-kart"><div class="deger">@(Model.HepsiOnayli ? "evet" : "hayır")</div>hepsi onaylı mı?<br /><code>All(k =&gt; k.Onayli)</code></div>
+</div>
+
+<h2>Kategoriye göre <small><code>GroupBy(k =&gt; k.KategoriId)</code></small></h2>
+@if (Model.Kategoriler.Count == 0)
+{
+    <p class="bos">Gruplama henüz yapılmıyor (TODO 9.6).</p>
+}
+else
+{
+    <table class="table">
+        <thead><tr><th>Kategori <small>(g.Key)</small></th><th>Kitap <small>g.Count()</small></th><th>Ortalama fiyat <small>g.Average(…)</small></th></tr></thead>
+        <tbody>
+            @foreach (var g in Model.Kategoriler)
+            {
+                <tr><td>@g.Ad</td><td>@g.Adet</td><td>@g.OrtalamaFiyat.ToString("N2") TL</td></tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h2>Yazarlar <small><code>Select(k =&gt; k.Yazar).Distinct().OrderBy(y =&gt; y)</code></small></h2>
+@if (Model.Yazarlar.Count == 0)
+{
+    <p class="bos">Yazar listesi henüz çıkarılmıyor (TODO 9.7).</p>
+}
+else
+{
+    <p>@Model.Yazarlar.Count yazar: @string.Join(" · ", Model.Yazarlar)</p>
+}
+
+<p><a asp-controller="Kitap" asp-action="Index">← Kitaplar</a></p>

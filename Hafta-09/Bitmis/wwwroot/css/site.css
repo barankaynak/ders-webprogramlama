@@ -96,3 +96,22 @@ body {
 .iki-sutun { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin:1rem 0; }
 .buyuk-sayi { font-size:1.4em; }
 .rol { font-family:Consolas, monospace; background:#fbf0da; padding:0 .3em; border-radius:3px; }
+
+/* ===== Hafta 9 — LINQ ===== */
+.suzgec { display:flex; flex-wrap:wrap; gap:.6rem 1.2rem; align-items:center;
+          background:#f6f3ec; border-radius:8px; padding:.6rem .9rem; margin:1rem 0; }
+.suzgec form { display:flex; gap:.5rem; align-items:center; margin:0; }
+.suzgec .secili { font-weight:700; text-decoration:none; color:#1f1b16; }
+.sayfalar { display:flex; gap:.4rem; align-items:center; margin:1rem 0; }
+.sayfalar a, .sayfalar span { padding:.15rem .6rem; border:1px solid #ddd6ca; border-radius:5px; }
+.sayfalar .secili { background:#8a3d0f; color:#fff; border-color:#8a3d0f; }
+.ozet-kartlar { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:.8rem; margin:1rem 0; }
+.ozet-kart { border:1px solid #ddd6ca; border-radius:10px; padding:.7rem .9rem; background:#fff; }
+.ozet-kart .deger { font-size:1.5em; font-weight:700; }
+.ozet-kart code { font-size:.85em; }
+.lab { border:1px solid #ddd6ca; border-radius:10px; padding:.8rem 1rem; margin:1rem 0; background:#fff; }
+.lab h2 { font-size:1.15rem; margin:0 0 .5rem; }
+.lab pre { background:#f6f3ec; padding:.5rem .8rem; border-radius:6px; margin:.3rem 0; white-space:pre-wrap; }
+.lab .sonuc { font-family:Consolas, monospace; background:#e6f1e4; color:#1f4d1b; padding:.4rem .8rem; border-radius:6px; }
+.lab .sonuc.istisna { background:#fae7e5; color:#a4231b; }
+.indirim { color:#2f6b2a; font-weight:700; }

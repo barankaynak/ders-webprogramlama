@@ -7,8 +7,7 @@
 @{
     ViewData["Title"] = "Razor sözdizimi";
 
-    // Bu sayfa sözdizimini gösterir, veri getirmez: örnek kitap burada elle kuruluyor.
-    var kitap = new Kitap { Id = 42, Baslik = "Otostopçunun Galaksi Rehberi", Yazar = "Douglas Adams", Fiyat = 95, KategoriId = 3 };
+    var kitap = KampusKitap.Data.KitapDeposu.Bul(42)!;
     var sayilar = new[] { 3, 7, 11 };
     var durum = "hazir";
     string? bosEtiket = null;          // null attribute denemesi için

@@ -6,24 +6,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <!--
-    HAFTA 9 — EF Core paketleri (Hafta 9 ders notu bölüm 2.2).
-    Sürüm 10.0.x olmak ZORUNDA: sürüm vermeden kurulan paket EF Core 11'dir ve
-    .NET 10 projesine kurulmaz (NU1202 — ölçüldü).
-      Sqlite → provider: EF Core'un SQLite'la konuşan parçası (çekirdek EF Core'u da getirir)
-      Design → Add-Migration'ın migration kodunu üretebilmesi için
-      Tools  → Package Manager Console komutları: Add-Migration, Update-Database
-  -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.15">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
 </Project>

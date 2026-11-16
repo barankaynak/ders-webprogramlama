@@ -1,23 +1,26 @@
-@* HAFTA 9 — model artık List<string> değil, Kategoriler tablosundan gelen entity'ler. *@
-@model List<Kategori>
+@model List<KampusKitap.ViewModels.KategoriSatiriVM>
 
 <h1>Kategoriler</h1>
 
 <ul class="kategori-liste">
-    @foreach (var kategori in Model)
+    @foreach (var s in Model)
     {
         <li>
-            <a asp-controller="Kategori" asp-action="Detay" asp-route-id="@kategori.Id">@kategori.Ad</a>
-            @* Navigation property (TODO 9.7). Controller Include yazmadıysa (TODO 9.8)
-               liste BOŞ gelir ve sayfa "0 kitap" der: hata yok, yanlış bilgi var. *@
-            @* TODO 9.7 · Bire-çok ilişkiyi kurun: Kitap'a Kategori, Kategori'ye Kitaplar navigation property'si; sonra Add-Migration KategoriIliskisi ve Update-Database *@
+            <a asp-controller="Kategori" asp-action="Detay" asp-route-id="@s.Id">@s.Ad</a>
+            — @s.Adet kitap
         </li>
     }
 </ul>
 
+@if (Model.All(s => s.Adet == 0))
+{
+    @* Başlangıç projesinde TODO 9.8 boşken bütün sayılar 0'dır *@
+    <p class="ipucu">Bütün kategoriler "0 kitap" diyor: sayım henüz yapılmıyor (TODO 9.8).</p>
+}
+
 <p class="ipucu">
     Bu sayfa <code>@@section Scripts</code> <em>tanımlamıyor</em>. Yine de çalışıyor,
-    çünkü layout'ta <code>required: false</code> yazıyor (ders notu bölüm 2.6).
+    çünkü layout'ta <code>required: false</code> yazıyor (Hafta 3 ders notu bölüm 2.6).
     <br />
     Tarayıcı konsolunu açın: <code>/Kitap</code>'taki mesaj burada <strong>yok</strong>.
 </p>

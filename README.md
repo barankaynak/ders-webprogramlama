@@ -33,15 +33,17 @@ Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 | 06 | Model Doğrulama | [PDF](PDF/H06-Ders-Notu.pdf) | [PDF](PDF/H06-Uygulama.pdf) | [PDF](PDF/H06-Detay.pdf) | [Başlangıç](Hafta-06/Baslangic/) · [Bitmiş](Hafta-06/Bitmis/) |
 | 07 | State Management: Cookie ve Session | [PDF](PDF/H07-Ders-Notu.pdf) | [PDF](PDF/H07-Uygulama.pdf) | [PDF](PDF/H07-Detay.pdf) | [Başlangıç](Hafta-07/Baslangic/) · [Bitmiş](Hafta-07/Bitmis/) |
 | 08 | 🔶 **Ara sınav — ders yok** | | | | |
-| 09 | Entity Framework Core: Code First, Migration ve İlişkiler | [PDF](PDF/H09-Ders-Notu.pdf) | [PDF](PDF/H09-Uygulama.pdf) | [PDF](PDF/H09-Detay.pdf) | [Başlangıç](Hafta-09/Baslangic/) · [Bitmiş](Hafta-09/Bitmis/) |
+| 09 | LINQ: Koleksiyonları Sorgulamak | [PDF](PDF/H09-Ders-Notu.pdf) | [PDF](PDF/H09-Uygulama.pdf) | [PDF](PDF/H09-Detay.pdf) | [Başlangıç](Hafta-09/Baslangic/) · [Bitmiş](Hafta-09/Bitmis/) |
 
 > Haftalar ders ilerledikçe eklenir. Aşağıdaki plan dönem başında duyurulmuştur.
 
 **Planlanan konular:**
-10–11 LINQ · 12 Authentication/Authorization · 13 Web API ve MCP · 14 Uygulama geliştirme
+10 ORM ve EF Core · 11 EF Core ile LINQ · 12 Authentication/Authorization · 13 Web API ve MCP · 14 Uygulama geliştirme
 
-> Hafta numaraları takvim haftasıdır: Hafta 8 ara sınav haftasıydı. Hafta 3–6 notlarında
-> EF Core "Hafta 8" diye geçer; o konu Hafta 9'dur.
+> Hafta numaraları takvim haftasıdır: Hafta 8 ara sınav haftasıydı. Sıra da değişti:
+> önce LINQ (Hafta 9), sonra ORM ve EF Core (Hafta 10), sonra ikisi birlikte (Hafta 11).
+> Hafta 3–7 notlarında EF Core "Hafta 8" ya da "ara sınavdan sonraki ilk ders" diye geçer;
+> o konu Hafta 10'dadır.
 
 ---
 
@@ -60,10 +62,10 @@ Ardından terminalde yazan `https://localhost:7xxx` adresini açın.
 | İhtiyacınız olan | Sürüm |
 |---|---|
 | .NET SDK | **10.0** veya üzeri (`dotnet --version` ile kontrol edin) |
-| Veritabanı | Yok — Hafta 7'ye kadar veri bellekte tutulur; Hafta 9'dan itibaren **SQLite** (kurulum gerektirmez) |
+| Veritabanı | Yok — Hafta 9'a kadar veri bellekte tutulur; Hafta 10'dan itibaren **SQLite** (kurulum gerektirmez) |
 
 > 💡 Her hafta klasörü **kendi başına çalışır.** İstediğiniz haftadan başlayabilirsiniz.
-> Hafta 9'dan itibaren tek bir ön adım var: veritabanını kurmak. `Bitmis/` klasöründe bir kez
+> Hafta 10'dan itibaren tek bir ön adım var: veritabanını kurmak. `Bitmis/` klasöründe bir kez
 > `Update-Database` (Visual Studio, Package Manager Console) ya da `dotnet ef database update`.
 
 ### Hafta 5'ten itibaren: Başlangıç ve Bitmiş
@@ -93,7 +95,7 @@ dotnet build              # hata mesajını okuyun
 dotnet dev-certs https --trust   # "bağlantınız gizli değil" diyorsa
 ```
 
-Hafta 9'dan itibaren (veritabanı):
+Hafta 10'dan itibaren (veritabanı):
 
 | Görülen | Yapılacak |
 |---|---|

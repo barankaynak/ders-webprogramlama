@@ -10,8 +10,7 @@
 @model KampusKitap.ViewModels.EtiketVM
 @{
     // List<int> özelliğe bağlı select için: Hafta 5 ders notu bölüm 3.4
-    // HAFTA 9 — liste controller'dan geliyor (Kategoriler tablosu)
-    var kategoriler = (SelectList)ViewData["Kategoriler"]!;
+    var kategoriler = new SelectList(KampusKitap.Data.KitapDeposu.Kategoriler, "Key", "Value");
 
     // <optgroup> üretmek için her seçeneğe bir grup verilir
     var lisans = new SelectListGroup { Name = "Lisans" };

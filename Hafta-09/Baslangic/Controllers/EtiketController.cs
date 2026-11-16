@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using KampusKitap.Data;
-using KampusKitap.Models;
 using KampusKitap.ViewModels;
 
 namespace KampusKitap.Controllers;
@@ -17,20 +14,11 @@ namespace KampusKitap.Controllers;
 /// </summary>
 public class EtiketController : Controller
 {
-    // HAFTA 9 — kategori listesi ve örnek kitap artık veritabanından.
-    private readonly KampusKitapContext _db;
-
-    public EtiketController(KampusKitapContext db)
-    {
-        _db = db;
-    }
-
     // GET /Etiket
     // asp-for galerisi: her tip ve her attribute için üretilen HTML
     public IActionResult Index()
     {
         ViewData["Title"] = "asp-for ne üretiyor?";
-        ViewData["Kategoriler"] = new SelectList(_db.Kategoriler.ToList(), "Id", "Ad");
         return View(new EtiketVM { Fiyat = 120.50m, Sayi = 42 });
     }
 
@@ -79,7 +67,7 @@ public class EtiketController : Controller
     public IActionResult Sayfa()
     {
         ViewData["Title"] = "Sayfa düzeyindeki Tag Helper'lar";
-        return View(new SayfaVM { OneCikan = _db.Kitaplar.Find(1) ?? new Kitap() });
+        return View(new SayfaVM { OneCikan = KampusKitap.Data.KitapDeposu.Hepsi[0] });
     }
 
     // GET /Etiket/Ozel

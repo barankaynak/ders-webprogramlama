@@ -8,14 +8,8 @@
     kendisi çekiyor ve üstelik DÖNGÜNÜN İÇİNDE ikinci bir çağrı daha yapıyor.
 
     50 kitaplık bir listede: 1 liste sorgusu + 50 satır sorgusu = 51 sorgu.
-    Adı: N+1 sorgu problemi.
-
-    HAFTA 9 — sorgular artık GERÇEK: view veritabanına gidiyor. Uygulamanın konsoluna
-    bakın: sayfa her açılışta bir "SELECT … FROM Kitaplar" ve ardından satır başına
-    "SELECT … FROM Kategoriler WHERE Id = …" yazar. Find, context'in zaten izlediği bir
-    kategoriyi ikinci kez sormaz; bu yüzden sorgu sayısı 1 + (farklı kategori sayısı)'dır.
-    Çözüm: veriyi controller'da Include ile TEK sorguda almak (Hafta 9 ders notu bölüm 5.2;
-    /Kategori sayfası bu yolla yazıldı).
+    Adı: N+1 sorgu problemi. Hafta 11'de EF Core ile aynısıyla karşılaşacağız;
+    orada çözümü Include olacak, burada çözümü sorguyu view'dan ÇIKARMAK.
 
     Bedeli:
       1) Test edilemez — view'a birim testi yazılmaz
@@ -24,7 +18,6 @@
       4) "Bu veri nereden geliyor?" sorusunun cevabı artık tek yerde değil
 *@
 @using KampusKitap.Data
-@inject KampusKitapContext Db
 
 <h1>🕳️ Klasik Tuzak: view'ın içinde sorgu</h1>
 
@@ -34,11 +27,11 @@
 </div>
 
 <ul class="tuzak-liste">
-    @foreach (var k in Db.Kitaplar.ToList())                 @* 1. sorgu *@
+    @foreach (var k in KitapDeposu.Hepsi)          @* 1. sorgu *@
     {
         <li>
             @k.Baslik —
-            @(Db.Kategoriler.Find(k.KategoriId)?.Ad)    @* her satır için bir sorgu daha *@
+            @KitapDeposu.KategoriAdi(k.KategoriId)  @* her satır için bir sorgu daha *@
         </li>
     }
 </ul>

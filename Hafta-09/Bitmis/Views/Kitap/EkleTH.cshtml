@@ -38,7 +38,7 @@
     <p>
         <label asp-for="KategoriId"></label><br />
         <select asp-for="KategoriId"
-                asp-items="@(ViewData["Kategoriler"] as SelectList)">  @* HAFTA 9 — liste controller'dan, veritabanından *@
+                asp-items="@(new SelectList(KampusKitap.Data.KitapDeposu.Kategoriler, "Key", "Value"))">
             <option value="">— seçiniz —</option>
         </select>
         <br /><span asp-validation-for="KategoriId" class="hata"></span>
