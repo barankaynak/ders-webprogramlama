@@ -23,19 +23,13 @@ public class SorguController : Controller
         void Ekle(string baslik, string kod, object? sonuc) =>
             satirlar.Add(new LabSatiri(baslik, kod, Yaz(sonuc)));
 
-        // ---- 1. Döngüden sorguya (bölüm 1.1 – 1.2) ----
-        var ucuzlar = new List<string>();
-        foreach (var k in kitaplar)
-        {
-            if (k.Fiyat < 150)
-                ucuzlar.Add(k.Baslik);
-        }
+        // ---- 1. Döngüden sorguya (bölüm 1.1 – 1.2) — iki metot Data/LinqOrnekleri.cs'te ----
         Ekle("1 · foreach ile: 150 TL altı kitaplar",
             "var ucuzlar = new List<string>();\nforeach (var k in kitaplar)\n{\n    if (k.Fiyat < 150)\n        ucuzlar.Add(k.Baslik);\n}",
-            ucuzlar);
+            LinqOrnekleri.DonguIle(kitaplar));
         Ekle("1 · Aynı iş LINQ ile",
-            "kitaplar.Where(k => k.Fiyat < 150).Select(k => k.Baslik)",
-            kitaplar.Where(k => k.Fiyat < 150).Select(k => k.Baslik));
+            "kitaplar.Where(k => k.Fiyat < 150).Select(k => k.Baslik).ToList()",
+            LinqOrnekleri.LinqIle(kitaplar));
 
         // ---- 2. Dil zemini (bölüm 2) ----
         Func<Kitap, bool> ucuzMu = k => k.Fiyat < 150;
