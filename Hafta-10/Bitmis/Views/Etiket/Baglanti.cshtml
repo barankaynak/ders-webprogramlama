@@ -1,0 +1,159 @@
+@*
+    HAFTA 5 — URL üreten Tag Helper'lar ve 🕳️ elle yazılan href tuzağı
+    (Hafta 5 ders notu bölüm 2).
+
+    Bu sayfanın amacı: bugün AYNI görünen iki yazımın, rota değişince
+    aynı kalmadığını göstermek.
+*@
+<h1>URL'yi kim yazmalı?</h1>
+
+<p class="ipucu">
+    <code>Detya</code> satırı dışındaki bağlantıların <strong>hepsi şu an çalışıyor</strong>;
+    Tag Helper'ın ürettiği adresle elle yazılan aynı. Fark, rota değiştiğinde ortaya çıkıyor.
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:420px">Yazdığımız</th><th>Ürettiği adres</th></tr></thead>
+    <tbody>
+        <tr>
+            <td><code>asp-controller="Kitap" asp-action="Detay" asp-route-id="3"</code></td>
+            <td><a asp-controller="Kitap" asp-action="Detay" asp-route-id="3" data-goster>Kitap 3</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-controller="Kitap" asp-action="Ara" asp-route-kelime="suc"</code></td>
+            <td><a asp-controller="Kitap" asp-action="Ara" asp-route-kelime="suc" data-goster>Arama</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-action="Detay" asp-route-id="3" asp-route-kaynak="menu"</code></td>
+            <td><a asp-controller="Kitap" asp-action="Detay" asp-route-id="3" asp-route-kaynak="menu" data-goster>İkisi birden</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-action="Index"</code> <span class="ipucu" style="display:inline-block;padding:1px 6px">controller yazılmazsa: aynı controller</span></td>
+            <td><a asp-action="Index" data-goster>Etiket ana sayfası</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-controller="Kitap" asp-action="Detya" asp-route-id="3"</code> <span class="ipucu" style="display:inline-block;padding:1px 6px">action adında yazım hatası</span></td>
+            <td><a asp-controller="Kitap" asp-action="Detya" asp-route-id="3" data-goster>Kitap 3?</a></td>
+        </tr>
+        <tr class="elle">
+            <td><code>href="/Kitap/Detay/3"</code> <strong>(elle)</strong></td>
+            <td><a href="/Kitap/Detay/3" data-goster>Kitap 3</a></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong><code>asp-route-*</code> nereye gider?</strong>
+    Çatı önce rota şablonuna bakar. <code>id</code> şablonda var
+    (<code>{controller}/{action}/{id:int?}</code>), bu yüzden <strong>yola</strong> yazıldı:
+    <code>/Kitap/Detay/3</code>. <code>kelime</code> şablonda yok, bu yüzden
+    <strong>query string'e</strong> düştü: <code>?kelime=suc</code>.
+    Aynı kuralı Hafta 4'te Model Binding tarafından görmüştük; bu onun ters yönü.
+</div>
+
+<div class="uyari">
+    <strong><code>asp-action="Detya"</code> da adres üretti</strong> — ve o adres 404 verir.
+    Tag Helper adresi <strong>rota şablonuna</strong> göre kurar; öyle bir action'ın var olup
+    olmadığına bakmaz. <code>asp-for</code>'daki yazım hatası derlemede yakalanır, çünkü
+    orada bir C# ifadesi yazıyoruz; <code>asp-action</code>'a ise <strong>düz metin</strong> veriyoruz.
+</div>
+
+<h2>🕳️ Klasik Tuzak — rotayı değiştirin</h2>
+
+<p>
+    <code>Program.cs</code> dosyasındaki rota şablonunun başına <code>site/</code> ekleyin:
+</p>
+
+<pre><code>// önce
+pattern: "{controller=Home}/{action=Index}/{id:int?}"
+
+// sonra
+pattern: "site/{controller=Home}/{action=Index}/{id:int?}"</code></pre>
+
+<p>Uygulamayı yeniden başlatıp <code>/site/Etiket/Baglanti</code> adresinden bu sayfayı açın:</p>
+
+<table class="table">
+    <thead><tr><th style="width:300px">Bağlantı</th><th>Rota değişince</th></tr></thead>
+    <tbody>
+        <tr>
+            <td>Tag Helper ile üretilenler</td>
+            <td><strong>Kendiliğinden</strong> <code>/site/Kitap/Detay/3</code> olur — <strong>200</strong></td>
+        </tr>
+        <tr>
+            <td>Elle yazılan <code>href="/Kitap/Detay/3"</code></td>
+            <td><strong>Olduğu gibi kalır</strong> ve <strong>404</strong> verir</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="uyari">
+    <strong>Tuzağın asıl kötü yanı sessiz olması.</strong> Derleyici uyarmaz, uygulama
+    açılır, sayfalar görünür. Kırık olduğu yalnızca o bağlantıya <em>tıklandığında</em>
+    anlaşılır — çoğu zaman da sizin değil, kullanıcının tıklamasıyla.
+</div>
+
+<div class="ipucu">
+    <strong>Aynı mantık form için de geçerli:</strong>
+    <code>&lt;form asp-controller="Kitap" asp-action="EkleTH" method="post"&gt;</code>
+    hem <code>action</code> adresini üretir hem de — elle yazılan formun almadığı —
+    anti-forgery token'ı ekler. Bölüm 4'ün konusu bu.
+</div>
+
+<h2>Aynı formda iki düğme, iki hedef — <code>formaction</code></h2>
+
+<p>
+    Anchor Tag Helper'ın attribute'leri <code>&lt;button&gt;</code> üzerinde de çalışır.
+    Bu kez üretilen adres <code>href</code>'e değil, düğmenin <code>formaction</code>'ına yazılır:
+    form, <strong>hangi düğmeye basıldıysa</strong> oraya gönderilir.
+</p>
+
+<pre><code>&lt;form method="post"&gt;
+    &lt;input name="mesaj" value="Merhaba" /&gt;
+    &lt;button asp-action="Csrf"&gt;Kaydet&lt;/button&gt;
+    &lt;button asp-controller="Speaker" asp-action="Index"&gt;Learn örneklerine&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+<form method="post" data-goster-form>
+    <input name="mesaj" value="Merhaba" />
+    <button asp-action="Csrf">Kaydet</button>
+    <button asp-controller="Speaker" asp-action="Index">Learn örneklerine</button>
+</form>
+
+<div class="ipucu">
+    Formun kendi <code>action</code>'ı yok; <code>method="post"</code> yazdığımız için Form Tag Helper
+    yine de devrede ve token'ı da ekledi. Düğmelerin <code>formaction</code>'ı formun
+    <code>action</code>'ını <strong>ezer</strong>.
+</div>
+
+<h2>Microsoft Learn'deki bütün Anchor örnekleri</h2>
+
+<p>
+    <code>asp-route</code>, <code>asp-all-route-data</code>, <code>asp-fragment</code>,
+    <code>asp-protocol</code> ve <code>asp-host</code> dahil hepsi Learn'deki
+    <code>SpeakerController</code> ile birebir aynı kurulmuş bir sayfada:
+    <a asp-controller="Speaker" asp-action="Index">/Speaker</a>.
+</p>
+
+<p>
+    <a asp-action="Index">← asp-for galerisi</a> &nbsp;·&nbsp;
+    <a asp-action="Csrf">→ Anti-forgery token</a>
+</p>
+
+@section Scripts {
+    <script>
+        // Her bağlantının gerçekten ürettiği href'i yanına yazar.
+        document.querySelectorAll('a[data-goster]').forEach(function (a) {
+            var k = document.createElement('code');
+            k.style.cssText = 'display:block;margin-top:4px;font-size:.9em';
+            k.textContent = a.getAttribute('href');
+            a.insertAdjacentElement('afterend', k);
+        });
+
+        // Form ve düğmelerin ürettiği HTML'i formun altına yazar.
+        var f = document.querySelector('form[data-goster-form]');
+        var pre = document.createElement('pre');
+        pre.style.cssText = 'margin:6px 0 0;white-space:pre-wrap;word-break:break-all;font-size:.85em';
+        pre.textContent = f.outerHTML.replace(' data-goster-form=""', '');
+        f.insertAdjacentElement('afterend', pre);
+    </script>
+}

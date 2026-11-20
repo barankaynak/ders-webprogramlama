@@ -1,0 +1,40 @@
+@*
+    HAFTA 9 — 🕳️ KLASİK TUZAK (Hafta 9 ders notu, Klasik Tuzak)
+
+    Bu sayfa BİLEREK yanlış ve HATA VERMEZ. Controller 150 TL altındaki kartları
+    "indirimde" işaretledi; aşağıda hiçbiri indirimde görünmüyor.
+
+    Model bir LİSTE değil, bir SORGU (IEnumerable). Bu view'daki foreach sorguyu
+    YENİDEN çalıştırır; Select her çalışmada YENİ kartlar üretir. Controller'ın
+    işaretlediği kartlar o ilk turda kaldı.
+
+    Düzeltme: /Sorgu/Tuzak?duzelt=true — Select'in sonuna ToList().
+*@
+@model IEnumerable<KampusKitap.ViewModels.IndirimKartiVM>
+
+<h1>🕳️ Klasik Tuzak: indirim işaretleri nereye gitti?</h1>
+
+@if (ViewData["Duzelt"] is true)
+{
+    <p class="ipucu">✔ Düzeltilmiş hâl: kartlar <code>ToList()</code> ile <strong>bir kez</strong> üretildi.
+        <a asp-action="Tuzak">Hatalı hâle dön</a></p>
+}
+else
+{
+    <div class="uyari"><strong>Bu sayfa kasten yanlış yazılmıştır.</strong>
+        Controller 150 TL altı kitapları indirimde işaretledi. Aşağıda kaç tane görüyorsunuz?
+        <a asp-action="Tuzak" asp-route-duzelt="true">Düzeltilmiş hâli</a></div>
+}
+
+@{ var indirimde = 0; }
+<ul class="tuzak-liste">
+    @foreach (var kart in Model)
+    {
+        if (kart.Indirimde) { indirimde++; }
+        <li>@kart.Baslik — @kart.Fiyat TL
+            @if (kart.Indirimde) { <span class="indirim">· indirimde</span> }
+        </li>
+    }
+</ul>
+<p><strong>İndirimde görünen kart: @indirimde</strong></p>
+<p><a asp-action="Index">← LINQ laboratuvarı</a></p>

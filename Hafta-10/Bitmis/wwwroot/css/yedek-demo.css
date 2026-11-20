@@ -1,0 +1,6 @@
+/* HAFTA 5 — /Etiket/Sayfa: asp-fallback-href'in yüklediği YEDEK dosya.
+   Asıl dosya (olmayan.css) gelmeyince Tag Helper'ın betiği bunu yazar. */
+.yedek-test { position: absolute; }
+
+.yedek-kutu .hayir { display: none; }
+.yedek-kutu .evet  { display: inline; color: #2f6b2a; font-weight: 700; }

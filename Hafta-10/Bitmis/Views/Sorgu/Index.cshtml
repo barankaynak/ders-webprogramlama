@@ -1,0 +1,26 @@
+@*
+    HAFTA 9 — LINQ laboratuvarı (Hafta 9 ders notu bölüm 1, 2, 4, 6)
+    Kodlar SorguController.Index'te çalıştı; burada yalnızca kod ve sonuç yan yana.
+*@
+@model List<KampusKitap.ViewModels.LabSatiri>
+
+<h1>🧪 LINQ laboratuvarı</h1>
+<p class="ipucu">
+    Her kutudaki kod bu sayfa açılırken <strong>gerçekten çalıştı</strong>; yeşil satır onun sonucu.
+    Veri: <code>_db.Kitaplar.ToList()</code> — Hafta 10'dan beri veritabanından.
+    Kendi denemeniz için <code>SorguController.Index</code>'e bir <code>Ekle(…)</code> satırı yazın.
+</p>
+
+@foreach (var s in Model)
+{
+    <section class="lab">
+        <h2>@s.Baslik</h2>
+        <pre><code>@s.Kod</code></pre>
+        <div class="sonuc @(s.Sonuc.StartsWith("⚠") ? "istisna" : "")">→ @s.Sonuc</div>
+    </section>
+}
+
+<p>
+    🐛 <a asp-action="Bos">Hata Köşesi: <code>First</code> bulamayınca</a> ·
+    🕳️ <a asp-action="Tuzak">Klasik Tuzak: indirim işaretleri nereye gitti?</a>
+</p>
