@@ -20,7 +20,7 @@ public class KampusKitapContext : DbContext
     public KampusKitapContext(DbContextOptions<KampusKitapContext> options) : base(options) { }
 
     // Kitap sınıfı → Kitaplar tablosu. Tablonun adını bu özelliğin adı verir.
-    public DbSet<Kitap> Kitaplar => Set<Kitap>();
+    public DbSet<Kitap> Kitaplar { get; set; }
 
     // Kategoriler bu hafta tabloya geçmiyor: KitapDeposu.Kategoriler'de duruyorlar.
     // Kategori tablosu ve kitapla ilişkisi Hafta 11'in konusu.
