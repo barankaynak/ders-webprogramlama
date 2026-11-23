@@ -12,9 +12,9 @@
 
 - **Veri nerede yaşıyor** — bellek neden veri deposu olamaz; veritabanı, DBMS; tablo, satır, sütun, primary key
 - **SQL** — `SELECT … WHERE … ORDER BY`, `INSERT`, `UPDATE`, `DELETE`; her birinin Hafta 9'daki LINQ karşılığı
-- **ORM** — nesne ↔ tablo eşlemesi; SQL'i elle çalıştırmakla karşılaştırma; Code First ve Database First
+- **ORM** — veritabanı ↔ `DbContext`, tablo ↔ `DbSet`, sütun ↔ özellik, satır ↔ nesne; okuma yolu (satır → nesne) ve yazma yolu (değişiklik → SQL); SQL'i elle çalıştırmakla karşılaştırma; Code First ve Database First
 - **EF Core'u bağlamak** — provider paketi (10.0.x), `DbContext`, `DbSet`, `AddDbContext`, bağlantı dizesi
-- **Migration** — convention ve attribute'ler, `Add-Migration` → `Update-Database`, `Up`/`Down`, seed (`HasData`)
+- **Migration** — convention ve data annotation'lar (`[Key]`, `[Table]`, `[Required]`, `[MaxLength]`, `[Column]`, `[Precision]`, `[NotMapped]`, `[Index]`), `Add-Migration` → `Update-Database`, `Up`/`Down`, seed (`HasData`)
 - **CRUD** — `ToList`, `Find`, `Add`, `Remove`, `SaveChanges`; change tracking
 
 🧩 **Haftanın ilkesi — Şemanın tarifi koddadır.**
@@ -42,6 +42,9 @@ dotnet run                   # → http://localhost:5073
 
 > ⚠️ **Önce Bitmiş'e bakmayın.** Boşluğu kendiniz doldurduğunuzda neyin değiştiğini
 > görürsünüz; hazır çözümü okuduğunuzda yalnızca sonucu görürsünüz.
+>
+> 📘 Bölüm 4 – 6, Microsoft'un **Getting Started with EF Core** öğreticisinin adımlarını izler: paket → model →
+> veritabanı (migration) → CRUD — <https://learn.microsoft.com/ef/core/get-started/overview/first-app>
 >
 > 💡 **Paket sürümü:** projede EF Core **10.0.15** kurulu. Kendi projenize paket eklerken sürümü
 > açıkça verin: sürümsüz kurulum EF Core 11'i seçer ve .NET 10 projesine kurulmaz (NU1202).
