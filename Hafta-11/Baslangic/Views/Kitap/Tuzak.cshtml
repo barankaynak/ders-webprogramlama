@@ -1,0 +1,55 @@
+@*
+    HAFTA 11 — N+1 (Hafta 11 ders notu bölüm 3.1). Hafta 3'ün "view'ın içinde sorgu" tuzağı,
+    bu kez gerçek bir veritabanıyla.
+
+    /Kitap/Tuzak            ⚠️ BİLEREK YANLIŞ: controller veri göndermiyor (Model null). View
+                            kitapları KENDİ çekiyor (1 sorgu) ve DÖNGÜNÜN İÇİNDE her kitabın
+                            kategorisini ayrı bir sorguyla soruyor (N sorgu). 11 kitap → 12 SELECT.
+                            Hata yok, sayfa doğru. Konsolda SELECT'leri sayın.
+    /Kitap/Tuzak?duzelt=true  Doğrusu: controller Include ile TEK sorgu (JOIN) atar (TODO 11.7).
+*@
+@model List<Kitap>?
+@using KampusKitap.Data
+@inject KampusKitapContext Db
+
+<h1>🕳️ N+1: satır başına bir sorgu</h1>
+
+@if (Model is null)
+{
+    <div class="uyari">
+        <strong>Bu sayfa kasten yanlış yazılmıştır.</strong> Çalışıyor — tuzak tam olarak bu.
+        Uygulamanın konsolunda bu sayfa için kaç tane <code>SELECT</code> var?
+    </div>
+
+    <ul class="tuzak-liste">
+        @foreach (var k in Db.Kitaplar.OrderBy(k => k.Id).ToList())   @* 1. sorgu *@
+        {
+            <li>
+                @k.Baslik —
+                @(Db.Kategoriler.Where(c => c.Id == k.KategoriId).Select(c => c.Ad).First())   @* her satır için bir sorgu daha *@
+            </li>
+        }
+    </ul>
+
+    <p class="ipucu">Doğrusu: <a asp-action="Tuzak" asp-route-duzelt="true">/Kitap/Tuzak?duzelt=true</a></p>
+}
+else
+{
+    <div class="ipucu">
+        <strong>Liste controller'dan geldi.</strong> Kategoriler <code>Include</code> ile geldiyse adları aşağıda görünür
+        ve konsolda bu sayfa için tek bir <code>SELECT … INNER JOIN</code> vardır.
+    </div>
+
+    <ul class="tuzak-liste">
+        @foreach (var k in Model)
+        {
+            <li>
+                @k.Baslik —
+                @* TODO 11.7 · N+1'i düzeltin: kitapları kategorileriyle TEK sorguda getirin *@
+                (kategori gelmedi — TODO 11.7)
+            </li>
+        }
+    </ul>
+
+    <p class="ipucu"><a asp-action="Tuzak">← yanlış sürüm</a></p>
+}

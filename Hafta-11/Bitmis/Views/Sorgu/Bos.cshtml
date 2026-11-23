@@ -1,0 +1,19 @@
+@*
+    HAFTA 9 — 🐛 Hata Köşesi (Hafta 9 ders notu, Hata Köşesi)
+    /Sorgu/Bos?yazar=Tolstoy bu sayfaya HİÇ GELMEZ: controller'daki First() istisna fırlatır.
+    /Sorgu/Bos?yazar=Cormen gelir. /Sorgu/Dogru?yazar=Tolstoy 404 döner.
+*@
+@model Kitap
+
+<h1>🐛 Hata Köşesi: <code>First</code></h1>
+<p>Bulunan kitap: <strong>@Model.Baslik</strong> — @Model.Yazar</p>
+
+<div class="ipucu">
+    Bu sayfayı görüyorsanız yazar listede vardı. Şimdi olmayan bir yazar deneyin:
+    <a asp-action="Bos" asp-route-yazar="Tolstoy">/Sorgu/Bos?yazar=Tolstoy</a> —
+    <code>InvalidOperationException: Sequence contains no matching element</code>.
+    <br />
+    Doğrusu: <a asp-action="Dogru" asp-route-yazar="Tolstoy">/Sorgu/Dogru?yazar=Tolstoy</a>
+    (<code>FirstOrDefault</code> + <code>null</code> kontrolü → 404).
+</div>
+<p><a asp-action="Index">← LINQ laboratuvarı</a></p>

@@ -35,11 +35,12 @@ Bu depo dersin **ders notlarını (PDF)**, **etkileşimli sunumlarını** ve
 | 08 | 🔶 **Ara sınav — ders yok** | | | | |
 | 09 | LINQ: Koleksiyonları Sorgulamak | [PDF](PDF/H09-Ders-Notu.pdf) | [PDF](PDF/H09-Uygulama.pdf) | [PDF](PDF/H09-Detay.pdf) | [Başlangıç](Hafta-09/Baslangic/) · [Bitmiş](Hafta-09/Bitmis/) |
 | 10 | ORM ve EF Core: Veriyi Kalıcı Yapmak | [PDF](PDF/H10-Ders-Notu.pdf) | [PDF](PDF/H10-Uygulama.pdf) | [PDF](PDF/H10-Detay.pdf) | [Başlangıç](Hafta-10/Baslangic/) · [Bitmiş](Hafta-10/Bitmis/) |
+| 11 | EF Core ile LINQ: İlişkiler ve Veritabanında Sorgu | [PDF](PDF/H11-Ders-Notu.pdf) | [PDF](PDF/H11-Uygulama.pdf) | [PDF](PDF/H11-Detay.pdf) | [Başlangıç](Hafta-11/Baslangic/) · [Bitmiş](Hafta-11/Bitmis/) |
 
 > Haftalar ders ilerledikçe eklenir. Aşağıdaki plan dönem başında duyurulmuştur.
 
 **Planlanan konular:**
-11 EF Core ile LINQ · 12 Authentication/Authorization · 13 Web API ve MCP · 14 Uygulama geliştirme
+12 Authentication/Authorization · 13 Web API ve MCP · 14 Uygulama geliştirme
 
 > Hafta numaraları takvim haftasıdır: Hafta 8 ara sınav haftasıydı. Sıra da değişti:
 > önce LINQ (Hafta 9), sonra ORM ve EF Core (Hafta 10), sonra ikisi birlikte (Hafta 11).

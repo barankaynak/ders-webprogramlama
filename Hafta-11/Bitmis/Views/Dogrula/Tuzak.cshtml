@@ -1,0 +1,45 @@
+@*
+    HAFTA 6 — 🐛 "ModelState.IsValid hep false" (Hafta 6 Hata Köşesi).
+
+    TuzakVM'nin üç özelliği var; form yalnızca Baslik'i gönderiyor.
+    Hangisi IsValid'i false yapıyor? Tablo söylüyor.
+*@
+@model KampusKitap.ViewModels.TuzakVM
+
+<h1>IsValid neden hep false?</h1>
+
+<pre><code>public class TuzakVM
+{
+    [Required] public int Id { get; set; }               // formda YOK
+    public string Baslik { get; set; } = "";             // formda VAR
+    public YayineviVM Yayinevi { get; set; } = null!;    // formda YOK
+}</code></pre>
+
+<form asp-action="Tuzak" method="post">
+    <label asp-for="Baslik"></label>
+    <input asp-for="Baslik" value="Tutunamayanlar" />
+    <button type="submit">Gönder</button>
+</form>
+
+@if (ViewData["Gonderildi"] is true)
+{
+    <partial name="_ModelStateTablosu" />
+
+    <div class="uyari">
+        <strong>Suçlu <code>Yayinevi</code>.</strong> Formda yok, tipi <code>YayineviVM</code>
+        (nullable değil) — çatı onu <code>[Required]</code> yazılmış gibi denetler.
+        Entity'lerdeki gezinme özellikleri (<code>public Kategori Kategori</code>) aynı
+        yoldan düşer.
+    </div>
+    <div class="ipucu">
+        <strong><code>[Required] int Id</code> ise hata vermedi.</strong> <code>int</code> hiçbir
+        zaman <code>null</code> olmaz; gelmediyse <code>0</code>'dır ve <code>[Required]</code>
+        geçer. Gerçek eksikliği yakalamak için <code>int?</code> gerekir.
+    </div>
+    <div class="ipucu">
+        <strong>Çözüm:</strong> formda olmayan özelliği ViewModel'den çıkarın (en doğrusu);
+        ya da <code>YayineviVM?</code> yapın; ya da <code>[ValidateNever]</code> ile işaretleyin.
+    </div>
+}
+
+<p><a asp-action="Index">← Doğrulama attribute'leri</a></p>

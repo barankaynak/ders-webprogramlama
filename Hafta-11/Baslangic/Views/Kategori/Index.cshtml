@@ -1,0 +1,26 @@
+@model List<KampusKitap.ViewModels.KategoriSatiriVM>
+
+<h1>Kategoriler</h1>
+
+<ul class="kategori-liste">
+    @foreach (var s in Model)
+    {
+        <li>
+            <a asp-controller="Kategori" asp-action="Detay" asp-route-id="@s.Id">@s.Ad</a>
+            — @s.Adet kitap
+        </li>
+    }
+</ul>
+
+@if (Model.All(s => s.Adet == 0))
+{
+    @* Başlangıç projesinde TODO 11.6 boşken bütün sayılar 0'dır *@
+    <p class="ipucu">Bütün kategoriler "0 kitap" diyor: sayım henüz yapılmıyor (TODO 11.6).</p>
+}
+
+<p class="ipucu">
+    Bu sayfa <code>@@section Scripts</code> <em>tanımlamıyor</em>. Yine de çalışıyor,
+    çünkü layout'ta <code>required: false</code> yazıyor (Hafta 3 ders notu bölüm 2.6).
+    <br />
+    Tarayıcı konsolunu açın: <code>/Kitap</code>'taki mesaj burada <strong>yok</strong>.
+</p>

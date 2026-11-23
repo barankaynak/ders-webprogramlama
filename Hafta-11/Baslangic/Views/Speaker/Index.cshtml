@@ -1,0 +1,100 @@
+@*
+    HAFTA 5 — Anchor Tag Helper: Microsoft Learn'deki örneklerin hepsi tek sayfada
+    (Hafta 5 ders notu bölüm 2.5).
+
+    Her satırda solda Learn'deki yazım, sağda BU PROJEDE üretilen adres.
+    Sağ sütunu betik doldurur: bağlantının gerçek href'ini okur.
+*@
+@model List<KampusKitap.Controllers.Speaker>
+@{
+    // Learn'deki asp-all-route-data örneği
+    var parms = new Dictionary<string, string>
+    {
+        { "speakerId", "11" },
+        { "currentYear", "true" }
+    };
+    var ilk = Model.First();
+}
+
+<h1>Anchor Tag Helper — Learn örnekleri</h1>
+
+<p class="ipucu">
+    Bu sayfadaki her bağlantı
+    <a href="https://learn.microsoft.com/aspnet/core/mvc/views/tag-helpers/built-in/anchor-tag-helper?view=aspnetcore-10.0">Anchor Tag Helper</a>
+    belgesindeki bir örneğin birebir aynısıdır. Sağ sütun, bu projede gerçekten üretilen adresi gösteriyor.
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:470px">Yazdığımız</th><th>Üretilen <code>href</code></th></tr></thead>
+    <tbody>
+        <tr>
+            <td><code>asp-controller="Speaker" asp-action="Index"</code></td>
+            <td><a asp-controller="Speaker" asp-action="Index" data-goster>All Speakers</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-controller="Speaker" asp-action="Evaluations"</code></td>
+            <td><a asp-controller="Speaker" asp-action="Evaluations" data-goster>Speaker Evaluations</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-action="Detail" asp-route-id="@ilk.SpeakerId"</code><br />
+                <span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">şablonda <code>{id}</code> var → yola</span></td>
+            <td><a asp-controller="Speaker" asp-action="Detail" asp-route-id="@ilk.SpeakerId" data-goster>SpeakerId: @ilk.SpeakerId</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-action="Detail" asp-route-speakerid="@ilk.SpeakerId"</code><br />
+                <span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">şablonda yok → ?</span></td>
+            <td><a asp-controller="Speaker" asp-action="Detail" asp-route-speakerid="@ilk.SpeakerId" data-goster>SpeakerId: @ilk.SpeakerId</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-route="speakerevals"</code><br />
+                <span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">adlı route</span></td>
+            <td><a asp-route="speakerevals" data-goster>Speaker Evaluations</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-route="speakerevalscurrent" asp-all-route-data="parms"</code><br />
+                <span class="ipucu" style="display:inline-block;padding:1px 6px;margin-top:4px">sözlükteki bütün değerler</span></td>
+            <td><a asp-route="speakerevalscurrent" asp-all-route-data="parms" data-goster>Speaker Evaluations</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-action="Evaluations" asp-fragment="SpeakerEvaluations"</code></td>
+            <td><a asp-controller="Speaker" asp-action="Evaluations" asp-fragment="SpeakerEvaluations" data-goster>Speaker Evaluations</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-protocol="https" asp-controller="Home" asp-action="About"</code></td>
+            <td><a asp-protocol="https" asp-controller="Home" asp-action="About" data-goster>About</a></td>
+        </tr>
+        <tr>
+            <td><code>asp-protocol="https" asp-host="microsoft.com"</code><br /><code>asp-controller="Home" asp-action="About"</code></td>
+            <td><a asp-protocol="https" asp-host="microsoft.com" asp-controller="Home" asp-action="About" data-goster>About</a></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong>Dört soru:</strong>
+    <ol style="margin:6px 0 0;padding-left:20px">
+        <li><code>asp-route-id</code> ile <code>asp-route-speakerid</code> neden farklı adres üretti?</li>
+        <li><code>asp-route</code> ile controller/action yazmadan nasıl adres üretildi?</li>
+        <li><code>asp-protocol</code> verildiğinde adres neden <strong>tam</strong> (https://…) oldu?</li>
+        <li><code>Home/About</code> diye bir action bu projede yok — yine de adres üretildi mi?</li>
+    </ol>
+</div>
+
+<div class="uyari">
+    <strong>Learn'deki iki örnek burada yok:</strong> <code>asp-area</code> bir <em>Area</em>,
+    <code>asp-page</code> ise <em>Razor Pages</em> ister. Bu projede ikisi de yok; yazımları
+    ders notunda.
+</div>
+
+<p><a asp-controller="Etiket" asp-action="Baglanti">← URL üreten Tag Helper'lar</a></p>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('a[data-goster]').forEach(function (a) {
+            var k = document.createElement('code');
+            k.style.cssText = 'display:block;margin-top:4px;font-size:.95em';
+            k.textContent = a.getAttribute('href') || '(href yok)';
+            a.insertAdjacentElement('afterend', k);
+        });
+    </script>
+}

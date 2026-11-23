@@ -1,0 +1,219 @@
+@*
+    HAFTA 5 — Formun DIŞINDAKİ Tag Helper'lar (Hafta 5 ders notu bölüm 1.6).
+
+    Bu sayfadakilerin hiçbiri bir model özelliğine bağlanmaz; sayfanın
+    NE ZAMAN, HANGİ ORTAMDA ve HANGİ DOSYAYLA çizileceğini yönetirler.
+
+    Her kutunun altındaki "Tarayıcıya giden" satırını betik yazar
+    (kutunun kendi innerHTML'i). Sunucunun gönderdiği baytlar için Ctrl+U.
+*@
+@model KampusKitap.ViewModels.SayfaVM
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Ortam
+
+<h1>Sayfa düzeyindeki Tag Helper'lar</h1>
+
+<p class="ipucu">
+    Formdaki Tag Helper'lar bir <strong>model özelliğini</strong> HTML'e çevirir.
+    Buradakiler ise sayfanın <strong>hangi ortamda</strong>, <strong>ne kadar süre</strong> ve
+    <strong>hangi dosyayla</strong> çizileceğine karar verir.
+</p>
+
+@* ---------------------------------------------------------------- *@
+<h2>1 · <code>&lt;environment&gt;</code> — hangi ortamdayız?</h2>
+
+<pre><code>&lt;environment include="Development"&gt;  … &lt;/environment&gt;
+&lt;environment exclude="Development"&gt;  … &lt;/environment&gt;
+&lt;environment names="Staging,Production"&gt; … &lt;/environment&gt;</code></pre>
+
+<div class="cikti" data-cikti>
+    <environment include="Development">
+        <p class="ipucu">✓ <strong>Development</strong> — bu satır yalnızca geliştirme ortamında üretilir.</p>
+    </environment>
+    <environment exclude="Development">
+        <p class="uyari">✓ <strong>Development DEĞİL</strong> — bu satır geliştirme dışındaki her ortamda üretilir.</p>
+    </environment>
+    <environment names="Staging,Production">
+        <p class="uyari">✓ <strong>Staging ya da Production</strong></p>
+    </environment>
+</div>
+
+<p>
+    Uygulama şu an <strong>@Ortam.EnvironmentName</strong>
+    ortamında çalışıyor. Ortamı değiştirip bu sayfayı yeniden açın:
+</p>
+<pre><code>dotnet run -e ASPNETCORE_ENVIRONMENT=Production</code></pre>
+<p class="ipucu">
+    Koşulu tutmayan blok <strong>tarayıcıya hiç gitmez</strong> — Ctrl+U'da da yoktur.
+    CSS ile gizlemek değil, <strong>üretmemek</strong>tir.
+    <span style="display:block;margin-top:6px">Production'da menünün stili biraz değişirse şaşırmayın:
+    derleme klasöründeki <code>KampusKitap.styles.css</code> yalnızca Development'ta sunulur
+    (F12'de 500). Yayımlanan (<code>dotnet publish</code>) uygulamada bu sorun yoktur.</span>
+</p>
+
+@* ---------------------------------------------------------------- *@
+<h2>2 · <code>&lt;cache&gt;</code> — aynı parçayı her istekte yeniden çizmemek</h2>
+
+<pre><code>&lt;cache expires-after="@@TimeSpan.FromSeconds(10)"&gt;
+    @@DateTime.Now.ToString("HH:mm:ss")
+&lt;/cache&gt;</code></pre>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td style="width:300px">Cache <strong>dışında</strong></td>
+            <td><strong style="font-size:1.4em">@DateTime.Now.ToString("HH:mm:ss")</strong></td>
+        </tr>
+        <tr>
+            <td><code>&lt;cache expires-after="10 sn"&gt;</code> içinde</td>
+            <td>
+                <cache expires-after="@TimeSpan.FromSeconds(10)">
+                    <strong style="font-size:1.4em">@DateTime.Now.ToString("HH:mm:ss")</strong>
+                </cache>
+            </td>
+        </tr>
+        <tr>
+            <td><code>&lt;cache vary-by-query="kategori"&gt;</code> içinde</td>
+            <td>
+                <cache vary-by-query="kategori" expires-after="@TimeSpan.FromMinutes(5)">
+                    <strong style="font-size:1.4em">@DateTime.Now.ToString("HH:mm:ss")</strong>
+                    · kategori = <code>@(Context.Request.Query["kategori"].ToString() is { Length: > 0 } k ? k : "(yok)")</code>
+                </cache>
+                <div style="margin-top:6px">
+                    <a asp-action="Sayfa" asp-route-kategori="1">?kategori=1</a> ·
+                    <a asp-action="Sayfa" asp-route-kategori="2">?kategori=2</a> ·
+                    <a asp-action="Sayfa">kategorisiz</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <strong>F5'e birkaç kez basın.</strong> Üst satır her seferinde değişir. Ortadaki
+    10 saniye boyunca <strong>aynı kalır</strong>: sunucu o parçayı yeniden çizmez,
+    bellekteki kopyayı basar. Alttaki her <code>kategori</code> değeri için
+    <strong>ayrı</strong> bir kopya tutar.
+    <div style="margin-top:6px">
+        <code>&lt;cache&gt;</code> etiketinin kendisi tarayıcıya gitmez; yalnızca içeriği gider.
+        Kopya sunucunun <strong>belleğinde</strong> durur ve uygulama yeniden başlayınca silinir.
+        Birden çok sunucunun ortak kullandığı kopya için <code>&lt;distributed-cache name="…"&gt;</code>
+        vardır: anahtarı <code>name</code> attribute'üdür, kopyayı <code>Program.cs</code>'te
+        kaydedilen depoya (Redis, SQL Server) yazar. Depo kaydedilmemişse o da aynı belleği kullanır.
+    </div>
+</div>
+
+@* ---------------------------------------------------------------- *@
+<h2>3 · <code>&lt;img asp-append-version&gt;</code> — tarayıcı eski dosyayı göstermesin</h2>
+
+<pre><code>&lt;img src="~/favicon.ico" asp-append-version="true" alt="…" /&gt;</code></pre>
+
+<div class="cikti" data-cikti>
+    <img src="~/favicon.ico" asp-append-version="true" alt="KampusKitap simgesi" width="32" height="32" />
+</div>
+
+<p class="ipucu">
+    <code>?v=…</code> dosyanın <strong>içeriğinden</strong> hesaplanır. Dosya değişince
+    adres de değişir; tarayıcı eski kopyayı kullanamaz. <code>_Layout.cshtml</code>'deki
+    <code>site.css</code> ve <code>site.js</code> satırları aynı attribute'ü üç haftadır taşıyor.
+    Baştaki <code>~/</code> de çatının işidir: uygulamanın kök adresine çevrilir.
+</p>
+
+@* ---------------------------------------------------------------- *@
+<h2>4 · <code>&lt;link&gt;</code> ve <code>&lt;script&gt;</code> — asıl dosya gelmezse yedeği</h2>
+
+<p>
+    Gerçek projelerde asıl adres bir CDN'dir, yedek kendi sunucunuzdaki kopyadır.
+    Burada asıl adresi <strong>bilerek yanlış</strong> verdik; böylece yedeğin devreye girdiği
+    internet olmadan da görülür.
+</p>
+
+<pre><code>&lt;link rel="stylesheet" href="~/css/olmayan.css"
+      asp-fallback-href="~/css/yedek-demo.css"
+      asp-fallback-test-class="yedek-test"
+      asp-fallback-test-property="position"
+      asp-fallback-test-value="absolute" /&gt;
+
+&lt;script src="~/js/olmayan.js"
+        asp-fallback-src="~/js/yedek-demo.js"
+        asp-fallback-test="window.yedekDemo"&gt;&lt;/script&gt;</code></pre>
+
+<div class="cikti" data-cikti>
+    <link rel="stylesheet" href="~/css/olmayan.css"
+          asp-fallback-href="~/css/yedek-demo.css"
+          asp-fallback-test-class="yedek-test"
+          asp-fallback-test-property="position"
+          asp-fallback-test-value="absolute" />
+    <script src="~/js/olmayan.js"
+            asp-fallback-src="~/js/yedek-demo.js"
+            asp-fallback-test="window.yedekDemo"></script>
+</div>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td style="width:300px">Yedek CSS</td>
+            <td><span class="yedek-kutu"><span class="hayir">✗ yüklenmedi</span><span class="evet">✓ yüklendi</span></span></td>
+        </tr>
+        <tr>
+            <td>Yedek JS</td>
+            <td><span id="yedekJs">✗ yüklenmedi</span></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    Tag Helper, asıl etiketin hemen arkasına <strong>küçük bir sınama betiği</strong> ekler.
+    CSS için gizli bir <code>&lt;meta&gt;</code> etiketine <code>yedek-test</code> sınıfını verir
+    ve <code>position</code> değerinin <code>absolute</code> olup olmadığına bakar; değilse asıl
+    dosya gelmemiştir, yedeği yazar. JS için <code>window.yedekDemo</code> tanımlı mı diye bakar.
+    F12 → <em>Network</em> sekmesinde iki 404 ve hemen arkasından iki 200 görürsünüz.
+</div>
+
+@* ---------------------------------------------------------------- *@
+<h2>5 · <code>&lt;partial&gt;</code> — <code>model</code> mi, <code>for</code> mu?</h2>
+
+<p>
+    Hafta 3'te <code>&lt;partial name="…" model="…"&gt;</code> yazdık. Partial'ın içinde
+    <code>asp-for</code> varsa iki yazım <strong>farklı <code>name</code></strong> üretir:
+</p>
+
+<table class="table">
+    <thead><tr><th style="width:420px">Yazdığımız</th><th>Tarayıcıya giden</th></tr></thead>
+    <tbody>
+        <tr>
+            <td><code>&lt;partial name="_KitapAlan" model="Model.OneCikan" /&gt;</code></td>
+            <td><div data-cikti><partial name="_KitapAlan" model="Model.OneCikan" /></div></td>
+        </tr>
+        <tr>
+            <td><code>&lt;partial name="_KitapAlan" for="OneCikan" /&gt;</code></td>
+            <td><div data-cikti><partial name="_KitapAlan" for="OneCikan" /></div></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ipucu">
+    <code>model=</code> yalnızca <strong>veriyi</strong> verir; partial kendini en üstte sanır:
+    <code>name="Baslik"</code>. <code>for=</code> ise veriyle birlikte <strong>yolu</strong> da
+    verir: <code>name="OneCikan.Baslik"</code>. Bu form gönderildiğinde Model Binding
+    değeri <code>SayfaVM.OneCikan.Baslik</code>'a yazabilir — Hafta 4'teki noktalı ad kuralı.
+</div>
+
+<p>
+    <a asp-action="Csrf">← Anti-forgery token</a> &nbsp;·&nbsp;
+    <a asp-action="Ozel">→ Sıradaki: kendi Tag Helper'ımızı yazmak</a>
+</p>
+
+@section Scripts {
+    <script>
+        // Her [data-cikti] kutusunun altına KENDİ innerHTML'ini yazar.
+        document.querySelectorAll('[data-cikti]').forEach(function (el) {
+            var kod = document.createElement('pre');
+            kod.style.cssText = 'margin:6px 0 0;white-space:pre-wrap;word-break:break-all;font-size:.85em;background:#f6f3ec;padding:.5rem';
+            var ic = el.innerHTML.replace(/\n\s*\n/g, '\n').trim();
+            kod.textContent = ic || '(boş — hiçbir şey üretilmedi)';
+            el.insertAdjacentElement('afterend', kod);
+        });
+        document.getElementById('yedekJs').textContent =
+            window.yedekDemo ? '✓ yüklendi' : '✗ yüklenmedi';
+    </script>
+}

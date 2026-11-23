@@ -1,0 +1,42 @@
+@*
+    HAFTA 4 — 🐛 Hata Köşesi: GET isteğinde Request.Form okumak
+    (ders notu bölüm 2.6).
+*@
+<h1>GET isteğinde <code>Request.Form</code></h1>
+
+<p class="ipucu">
+    Bu sayfa bir <strong>GET</strong> isteğiyle açıldı. GET isteğinin
+    <strong>form gövdesi yoktur</strong>.
+</p>
+
+@if ((bool)ViewData["Korumali"]!)
+{
+    <div class="ipucu">
+        <strong>Korumalı yazım çalıştı.</strong>
+        <div style="margin-top:6px">
+            <code>Request.HasFormContentType</code> önce soruldu, cevap
+            <strong>false</strong> geldiği için <code>Request.Form</code>'a hiç
+            dokunulmadı.
+        </div>
+        <div style="margin-top:6px">Sonuç: <code>@ViewData["Sonuc"]</code></div>
+    </div>
+
+    <h2>Doğru yazım</h2>
+
+    <pre><code>if (Request.HasFormContentType)
+{
+    var baslik = Request.Form["Baslik"];
+}</code></pre>
+
+    <p>
+        Şimdi korumayı kaldırın ve aynı sayfayı açın:
+        <a href="/Baglam/Tehlike?korumali=false"><strong>/Baglam/Tehlike?korumali=false</strong></a>
+    </p>
+
+    <div class="uyari">
+        Sayfa bir <strong>hata</strong> ile düşecek. Hatanın tam metnini okuyun;
+        ders notunun 🐛 Hata Köşesi bölümünde aynısı yazıyor.
+    </div>
+}
+
+<p><a href="/Baglam">← Başa dön</a></p>
